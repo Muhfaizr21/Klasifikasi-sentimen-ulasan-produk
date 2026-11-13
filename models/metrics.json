@@ -1,0 +1,421 @@
+{
+  "experiment_name": "CountVectorizer + MultinomialNB (Stopwords Removed)",
+  "model_type": "MultinomialNB",
+  "vectorizer_type": "CountVectorizer",
+  "use_stopwords": true,
+  "ngram_range": [
+    1,
+    2
+  ],
+  "accuracy": 0.859,
+  "f1_macro": 0.7728,
+  "f1_weighted": 0.8592,
+  "classification_report": {
+    "positif": {
+      "precision": 0.9421487603305785,
+      "recall": 0.9065606361829026,
+      "f1-score": 0.9240121580547113,
+      "support": 503.0
+    },
+    "netral": {
+      "precision": 0.5163934426229508,
+      "recall": 0.5121951219512195,
+      "f1-score": 0.5142857142857142,
+      "support": 123.0
+    },
+    "negatif": {
+      "precision": 0.8621399176954733,
+      "recall": 0.8991416309012875,
+      "f1-score": 0.8802521008403361,
+      "support": 466.0
+    },
+    "accuracy": 0.8589743589743589,
+    "macro avg": {
+      "precision": 0.7735607068830008,
+      "recall": 0.7726324630118032,
+      "f1-score": 0.7728499910602539,
+      "support": 1092.0
+    },
+    "weighted avg": {
+      "precision": 0.8600498365705078,
+      "recall": 0.8589743589743589,
+      "f1-score": 0.8591874884159884,
+      "support": 1092.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      456,
+      22,
+      25
+    ],
+    [
+      18,
+      63,
+      42
+    ],
+    [
+      10,
+      37,
+      419
+    ]
+  ],
+  "labels": [
+    "positif",
+    "netral",
+    "negatif"
+  ],
+  "trained_at": "2026-11-13T20:07:43.947090+00:00",
+  "dataset_info": {
+    "total_samples": 5459,
+    "train_samples": 4367,
+    "test_samples": 1092,
+    "class_distribution": {
+      "positif": 2517,
+      "negatif": 2329,
+      "netral": 613
+    }
+  },
+  "experiments": [
+    {
+      "experiment_name": "TF-IDF + MultinomialNB (Stopwords Removed)",
+      "model_type": "MultinomialNB",
+      "vectorizer_type": "TfidfVectorizer",
+      "use_stopwords": true,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "accuracy": 0.8617,
+      "f1_macro": 0.7046,
+      "f1_weighted": 0.8364,
+      "classification_report": {
+        "positif": {
+          "precision": 0.9264413518886679,
+          "recall": 0.9264413518886679,
+          "f1-score": 0.9264413518886679,
+          "support": 503.0
+        },
+        "netral": {
+          "precision": 0.8846153846153846,
+          "recall": 0.18699186991869918,
+          "f1-score": 0.3087248322147651,
+          "support": 123.0
+        },
+        "negatif": {
+          "precision": 0.8028419182948491,
+          "recall": 0.9699570815450643,
+          "f1-score": 0.8785228377065112,
+          "support": 466.0
+        },
+        "accuracy": 0.8617216117216118,
+        "macro avg": {
+          "precision": 0.8712995515996339,
+          "recall": 0.6944634344508104,
+          "f1-score": 0.7045630072699813,
+          "support": 1092.0
+        },
+        "weighted avg": {
+          "precision": 0.8689853720083259,
+          "recall": 0.8617216117216118,
+          "f1-score": 0.8364146490234893,
+          "support": 1092.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          466,
+          2,
+          35
+        ],
+        [
+          24,
+          23,
+          76
+        ],
+        [
+          13,
+          1,
+          452
+        ]
+      ],
+      "labels": [
+        "positif",
+        "netral",
+        "negatif"
+      ]
+    },
+    {
+      "experiment_name": "TF-IDF + ComplementNB (Stopwords Removed)",
+      "model_type": "ComplementNB",
+      "vectorizer_type": "TfidfVectorizer",
+      "use_stopwords": true,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "accuracy": 0.8608,
+      "f1_macro": 0.7415,
+      "f1_weighted": 0.8472,
+      "classification_report": {
+        "positif": {
+          "precision": 0.9362139917695473,
+          "recall": 0.904572564612326,
+          "f1-score": 0.9201213346814965,
+          "support": 503.0
+        },
+        "netral": {
+          "precision": 0.6785714285714286,
+          "recall": 0.3089430894308943,
+          "f1-score": 0.4245810055865922,
+          "support": 123.0
+        },
+        "negatif": {
+          "precision": 0.8127272727272727,
+          "recall": 0.9592274678111588,
+          "f1-score": 0.8799212598425197,
+          "support": 466.0
+        },
+        "accuracy": 0.8608058608058609,
+        "macro avg": {
+          "precision": 0.8091708976894162,
+          "recall": 0.724247707284793,
+          "f1-score": 0.7415412000368695,
+          "support": 1092.0
+        },
+        "weighted avg": {
+          "precision": 0.854497099510327,
+          "recall": 0.8608058608058609,
+          "f1-score": 0.8471500019400712,
+          "support": 1092.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          455,
+          10,
+          38
+        ],
+        [
+          20,
+          38,
+          65
+        ],
+        [
+          11,
+          8,
+          447
+        ]
+      ],
+      "labels": [
+        "positif",
+        "netral",
+        "negatif"
+      ]
+    },
+    {
+      "experiment_name": "CountVectorizer + MultinomialNB (Stopwords Removed)",
+      "model_type": "MultinomialNB",
+      "vectorizer_type": "CountVectorizer",
+      "use_stopwords": true,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "accuracy": 0.859,
+      "f1_macro": 0.7728,
+      "f1_weighted": 0.8592,
+      "classification_report": {
+        "positif": {
+          "precision": 0.9421487603305785,
+          "recall": 0.9065606361829026,
+          "f1-score": 0.9240121580547113,
+          "support": 503.0
+        },
+        "netral": {
+          "precision": 0.5163934426229508,
+          "recall": 0.5121951219512195,
+          "f1-score": 0.5142857142857142,
+          "support": 123.0
+        },
+        "negatif": {
+          "precision": 0.8621399176954733,
+          "recall": 0.8991416309012875,
+          "f1-score": 0.8802521008403361,
+          "support": 466.0
+        },
+        "accuracy": 0.8589743589743589,
+        "macro avg": {
+          "precision": 0.7735607068830008,
+          "recall": 0.7726324630118032,
+          "f1-score": 0.7728499910602539,
+          "support": 1092.0
+        },
+        "weighted avg": {
+          "precision": 0.8600498365705078,
+          "recall": 0.8589743589743589,
+          "f1-score": 0.8591874884159884,
+          "support": 1092.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          456,
+          22,
+          25
+        ],
+        [
+          18,
+          63,
+          42
+        ],
+        [
+          10,
+          37,
+          419
+        ]
+      ],
+      "labels": [
+        "positif",
+        "netral",
+        "negatif"
+      ]
+    },
+    {
+      "experiment_name": "CountVectorizer + ComplementNB (Stopwords Removed)",
+      "model_type": "ComplementNB",
+      "vectorizer_type": "CountVectorizer",
+      "use_stopwords": true,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "accuracy": 0.8526,
+      "f1_macro": 0.7124,
+      "f1_weighted": 0.8315,
+      "classification_report": {
+        "positif": {
+          "precision": 0.9019607843137255,
+          "recall": 0.9145129224652088,
+          "f1-score": 0.9081934846989141,
+          "support": 503.0
+        },
+        "netral": {
+          "precision": 0.8,
+          "recall": 0.22764227642276422,
+          "f1-score": 0.35443037974683544,
+          "support": 123.0
+        },
+        "negatif": {
+          "precision": 0.8098720292504571,
+          "recall": 0.9506437768240343,
+          "f1-score": 0.8746298124383021,
+          "support": 466.0
+        },
+        "accuracy": 0.8525641025641025,
+        "macro avg": {
+          "precision": 0.8372776045213942,
+          "recall": 0.6975996585706691,
+          "f1-score": 0.7124178922946839,
+          "support": 1092.0
+        },
+        "weighted avg": {
+          "precision": 0.8511782418869204,
+          "recall": 0.8525641025641025,
+          "f1-score": 0.8314961099896184,
+          "support": 1092.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          460,
+          2,
+          41
+        ],
+        [
+          32,
+          28,
+          63
+        ],
+        [
+          18,
+          5,
+          443
+        ]
+      ],
+      "labels": [
+        "positif",
+        "netral",
+        "negatif"
+      ]
+    },
+    {
+      "experiment_name": "TF-IDF + MultinomialNB (Tanpa Stopword Removal)",
+      "model_type": "MultinomialNB",
+      "vectorizer_type": "TfidfVectorizer",
+      "use_stopwords": false,
+      "ngram_range": [
+        1,
+        2
+      ],
+      "accuracy": 0.8581,
+      "f1_macro": 0.7049,
+      "f1_weighted": 0.8339,
+      "classification_report": {
+        "positif": {
+          "precision": 0.9243027888446215,
+          "recall": 0.9224652087475149,
+          "f1-score": 0.9233830845771144,
+          "support": 503.0
+        },
+        "netral": {
+          "precision": 0.8571428571428571,
+          "recall": 0.1951219512195122,
+          "f1-score": 0.31788079470198677,
+          "support": 123.0
+        },
+        "negatif": {
+          "precision": 0.798932384341637,
+          "recall": 0.9635193133047211,
+          "f1-score": 0.8735408560311284,
+          "support": 466.0
+        },
+        "accuracy": 0.858058608058608,
+        "macro avg": {
+          "precision": 0.8601260101097052,
+          "recall": 0.6937021577572494,
+          "f1-score": 0.7049349117700765,
+          "support": 1092.0
+        },
+        "weighted avg": {
+          "precision": 0.8632375140298707,
+          "recall": 0.858058608058608,
+          "f1-score": 0.8339112346164275,
+          "support": 1092.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          464,
+          3,
+          36
+        ],
+        [
+          22,
+          24,
+          77
+        ],
+        [
+          16,
+          1,
+          449
+        ]
+      ],
+      "labels": [
+        "positif",
+        "netral",
+        "negatif"
+      ]
+    }
+  ]
+}

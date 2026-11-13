@@ -23,7 +23,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-(cd "$ROOT/backend" && exec "$PYTHON_BIN" -m flask --app app run --port "$BACKEND_PORT" --debug --no-reload) &
+(cd "$ROOT/backend" && exec "$PYTHON_BIN" -m flask --app app.main:app run --port "$BACKEND_PORT" --debug --no-reload) &
 BACKEND_PID=$!
 echo "[dev] Flask → http://127.0.0.1:$BACKEND_PORT"
 

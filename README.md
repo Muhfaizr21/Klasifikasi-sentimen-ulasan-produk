@@ -1,227 +1,274 @@
-# Klasifikasi Sentimen Ulasan Produk (Naive Bayes)
+<div align="center">
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/Framework-Flask-black.svg?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Machine Learning](https://img.shields.io/badge/ML-Scikit--Learn-orange.svg?logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![NLP](https://img.shields.io/badge/NLP-Sastrawi-green.svg)](https://github.com/harisamp/pysastrawi)
-[![License](https://img.shields.io/badge/License-Academic%20Use%20Only-lightgrey.svg)](#lisensi)
+# 🧠 Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia
+### *End-to-End Indonesian NLP Pipeline with Naive Bayes & Interactive Web Dashboard*
 
-> **Tugas Besar Mata Kuliah Kecerdasan Buatan**  
-> Program Studi D4 Rekayasa Perangkat Lunak / Teknik Informatika  
-> **Politeknik Negeri Indramayu**
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Flask](https://img.shields.io/badge/Flask-REST_API-000000?style=for-the-badge&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+
+<p align="center">
+  <strong>Tugas Besar Mata Kuliah Kecerdasan Buatan</strong><br/>
+  Program Studi D4 Rekayasa Perangkat Lunak / Jurusan Teknik Informatika<br/>
+  <strong>Politeknik Negeri Indramayu</strong>
+</p>
+
+[📌 Ringkasan](#-ringkasan-eksekutif) •
+[📊 Dataset Publik](#-dataset-publik--aturan-pelabelan) •
+[🏗️ Arsitektur](#️-arsitektur-sistem--clean-code) •
+[📈 Hasil Eksperimen](#-hasil-eksperimen--evaluasi-model) •
+[🚀 Instalasi](#-instalasi--cara-menjalankan) •
+[🔌 REST API](#-spesifikasi-rest-api)
+
+</div>
 
 ---
 
 ## 📌 Ringkasan Eksekutif
 
-Proyek ini mengimplementasikan sistem *end-to-end* untuk klasifikasi sentimen ulasan produk marketplace (Tokopedia/Shopee) berbahasa Indonesia ke dalam 3 kelas: **Positif**, **Netral**, dan **Negatif**. 
+Sistem ini mengimplementasikan pipeline **Natural Language Processing (NLP)** *end-to-end* untuk mengklasifikasikan ulasan pembeli e-commerce berbahasa Indonesia (Tokopedia & Shopee) ke dalam tiga kelas sentimen: **Positif**, **Netral**, dan **Negatif**.
 
-Menggunakan pendekatan algoritma **Multinomial / Complement Naive Bayes** yang dipadukan dengan teknik representasi fitur **TF-IDF / Count Vectorizer** serta preprocessing spesifik bahasa Indonesia (normalisasi *slang*, pembersihan teks, dan stopword removal). Sistem dilengkapi antarmuka web interaktif berbasis **Flask** untuk pengujian inferensi *real-time* (< 2 detik) dan visualisasi evaluasi model.
+Dirancang dengan prinsip **Clean Code** dan **Single Source of Truth**, seluruh tahapan mulai dari akuisisi dataset publik, pembersihan teks, normalisasi *slang* Indonesia, *stopword removal* berbasis **PySastrawi** (dengan preservasi kata negasi), ekstraksi fitur **N-Gram (1, 2)**, pelatihan model **Multinomial & Complement Naive Bayes**, hingga penyajian antarmuka web modern (**React + TypeScript + Flask**) terintegrasi secara utuh dan dapat direproduksi sepenuhnya (*100% reproducible*).
 
 ---
 
 ## 👥 Tim Pengembang
 
-| No | Foto / Inisial | Nama Lengkap | NIM | Peran Utama |
-|:--:|:--------------:|:-------------|:---:|:------------|
-| 1  | 👨‍💻 | **Muhammad Faiz Ramadhan** | `2305072` | **Ketua Tim**, ML Modeling & Backend Engineering |
-| 2  | 📊 | *(Nama Anggota 2)* | `(NIM)` | Data Acquisition & Preprocessing Pipeline |
-| 3  | 🎨 | *(Nama Anggota 3)* | `(NIM)` | Frontend UI/UX & Web Demo Integration |
-| 4  | 📝 | *(Nama Anggota 4)* | `(NIM)` | Model Evaluation, Documentation & Reporting |
+| No | Nama Lengkap | NIM | Peran & Tanggung Jawab |
+|:--:|:-------------|:---:|:-----------------------|
+| 1 | **Muhammad Faiz Ramadhan** | `2305072` | **Ketua Tim** — Arsitektur Sistem, ML Modeling & Flask REST API |
+| 2 | *(Anggota Kelompok 2)* | `(NIM)` | Akuisisi Data Publik, EDA & Preprocessing Pipeline (`src/preprocess.py`) |
+| 3 | *(Anggota Kelompok 3)* | `(NIM)` | Frontend Engineering (React + TypeScript) & Integrasi UI/UX |
+| 4 | *(Anggota Kelompok 4)* | `(NIM)` | Evaluasi Metrik, Eksperimen Komparasi & Dokumentasi Laporan |
 
 ---
 
-## 🚀 Fitur Utama
+## 📊 Dataset Publik & Aturan Pelabelan
 
-- **End-to-End NLP Pipeline:** Integrasi konsisten preprocessing, ekstraksi fitur, dan inferensi menggunakan Scikit-Learn `Pipeline`.
-- **Indonesian Slang Normalization:** Pembersihan tanda baca, angka, URL, karakter non-alfanumerik, dan konversi kata gaul/informal ke bentuk baku.
-- **Prediksi Real-time Berbasis Probabilitas:** Menampilkan label sentimen dominan sekaligus rincian bar probabilitas keyakinan model (`predict_proba`) per kelas dalam waktu < 2 detik.
-- **Model Comparison & Experimentation:** Mendukung komparasi antara `CountVectorizer` vs `TfidfVectorizer`, serta `MultinomialNB` vs `ComplementNB` (efektif mengatasi *class imbalance*).
-- **Interactive Evaluation Dashboard:** Halaman evaluasi terdedikasi untuk inspeksi metrik performa (*Macro F1*, *Precision*, *Recall*, dan *Confusion Matrix*).
+Proyek ini menggunakan gabungan dataset publik terverifikasi untuk ulasan e-commerce Bahasa Indonesia dengan total **5.459 ulasan unik** (melampaui target ideal PRD $\ge 5.000$ sampel):
+
+1. **PRDECT-ID (*Indonesian Product Reviews Dataset*) — Tokopedia**
+   - **Sumber:** [rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset](https://github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset) / Mendeley Data (`DOI: 10.17632/574v66hf2v.1`).
+   - **Karakteristik:** 5.400 ulasan produk asli pembeli Tokopedia dari 29 kategori produk.
+2. **Hugging Face Indonesian E-Commerce Sentiment**
+   - **Sumber:** [`AIbnuHibban/e-commerce-sentiment-bahasa-indonesia`](https://huggingface.co/datasets/AIbnuHibban/e-commerce-sentiment-bahasa-indonesia).
+   - **Karakteristik:** Digunakan untuk memperkaya sampel unik pada kelas minoritas (`netral`).
+
+### Distribusi Kelas & Aturan Konversi Rating
+
+| Kelas Sentimen | Aturan Konversi Rating | Jumlah Sampel | Persentase |Data Latih (80%) | Data Uji (20%) |
+|:---------------|:----------------------:|:-------------:|:----------:|:---------------:|:--------------:|
+| 😊 **Positif** | Bintang `4` & `5` | **2.517** | 46.11% | 2.014 | 503 |
+| 😠 **Negatif** | Bintang `1` & `2` | **2.329** | 42.66% | 1.863 | 466 |
+| 😐 **Netral** | Bintang `3` | **613** | 11.23% | 490 | 123 |
+| **Total** | **Stratified Split (80:20)** | **5.459** | **100.0%** | **4.367** | **1.092** |
 
 ---
 
-## 🏗️ Arsitektur Sistem & Alur Kerja
+## 🏗️ Arsitektur Sistem & Clean Code
+
+Sistem memisahkan **Offline Training Pipeline** dan **Online Web Inference** namun mengikat keduanya pada satu modul `src/preprocess.py` dan `src/constants.py` yang sama agar tidak terjadi *feature skew* antara saat pelatihan dan prediksi.
 
 ```mermaid
-flowchart TD
-    subgraph Offline_Pipeline["1. Offline Training Pipeline"]
-        A[Dataset Mentah CSV] --> B[Data Validation & Preprocessing]
-        B --> C[Stratified Split 80:20]
-        C --> D[Scikit-Learn Pipeline: Vectorizer + Naive Bayes]
-        D --> E[Evaluasi Metrik & Confusion Matrix]
-        D --> F[(Model Artifact: models/model_sentimen.pkl)]
-        E --> G[(Metrics Report: models/metrics.json)]
+flowchart TB
+    subgraph Offline["1. Offline Training & Experimentation (src/train.py)"]
+        A[("Dataset Publik\nPRDECT-ID & HuggingFace\n(5.459 Ulasan)")] --> B["src/preprocess.py\nClean + Slang Dict + Sastrawi Stopwords"]
+        B --> C["Stratified Train/Test Split (80:20)\nTrain: 4.367 | Test: 1.092"]
+        C --> D["Suite 5 Eksperimen Pipeline\n(CountVec vs TF-IDF | MultinomialNB vs ComplementNB)"]
+        D --> E[("Artefak Model Terbaik\nmodels/model_sentimen.pkl")]
+        D --> F[("Laporan Evaluasi Lengkap\nmodels/metrics.json")]
     end
 
-    subgraph Online_Inference["2. Online Web Application"]
-        H[Pengguna Web / Browser] -->|Kirim Teks Ulasan| I[Flask API: POST /predict]
-        I --> J[Validasi Input Teks]
-        J --> K[src/preprocess.py]
-        K --> L[Pipeline Termuat dari .pkl]
-        F -.->|Load Sekali saat Startup| L
-        L --> M[Kalkulasi Probabilitas per Kelas]
-        M --> N[Respon JSON & Visualisasi Probabilitas]
-        N --> H
+    subgraph Online["2. Online Web Inference (Flask + React TS)"]
+        U["Browser Pengguna\n(React 19 + Vite :5173)"] <-->|"/api/predict, /api/metrics, /api/samples"| API["Flask REST API\n(backend/app/main.py :5000)"]
+        API --> P["src/predict.py\n(Singleton SentimentPredictor)"]
+        P --> B
+        E -.->|"Dimuat sekali saat startup"| P
+        F -.->|"Dibaca endpoint /api/metrics"| API
     end
 ```
 
-> **Prinsip Desain:** Modul [`src/preprocess.py`](src/preprocess.py) digunakan bersama oleh tahap pelatihan ([`src/train.py`](src/train.py)) dan inferensi web ([`src/predict.py`](src/predict.py)) untuk mencegah ketidakcocokan fitur (*feature leakage/skew*).
-
----
-
-## 📂 Struktur Proyek
+### Struktur Direktori (Clean Architecture)
 
 ```text
 Klasifikasi-sentimen-ulasan-produk/
-├── ARSITEKTUR.md           # Desain teknis, komponen arsitektur, dan spesifikasi API
-├── PRD.md                  # Product Requirement Document dan metrik keberhasilan
-├── README.md               # Dokumentasi utama proyek
-├── requirements.txt        # Daftar pustaka & dependensi Python
+├── ARSITEKTUR.md                        # Spesifikasi desain teknis & keputusan arsitektur
+├── PRD.md                               # Product Requirements Document (Fungsional & Non-Fungsional)
+├── README.md                            # Dokumentasi utama repositori
+├── requirements.txt                     # Dependensi Python terpusat
 │
-├── data/
-│   ├── raw/                # Dataset ulasan mentah (.csv)
-│   └── processed/          # Data hasil pembersihan dan split
+├── scripts/
+│   ├── generate_data.py                 # Pengunduh otomatis dataset publik PRDECT-ID & HuggingFace
+│   └── dev.sh                           # Launcher terpadu (menjalankan Flask + Vite sekaligus)
 │
-├── notebooks/
-│   └── 01_eda_dan_eksperimen.ipynb   # Eksplorasi data awal (EDA) & perbandingan model
-│
-├── src/
+├── src/                                 # Core Machine Learning & NLP Package (Single Source of Truth)
 │   ├── __init__.py
-│   ├── preprocess.py       # Modul preprocessing & normalisasi kata slang
-│   ├── train.py            # Script pelatihan, validasi silang, dan export model
-│   └── predict.py          # Wrapper inferensi model untuk backend
+│   ├── constants.py                     # Konfigurasi path, kamus slang Indonesia, & kata negasi
+│   ├── preprocess.py                    # Pembersihan teks, normalisasi slang, & Sastrawi stopword
+│   ├── train.py                         # Orkestrasi 5 eksperimen model & ekspor metrics.json
+│   └── predict.py                       # Singleton predictor service untuk CLI & Web API
 │
-├── app/
-│   ├── main.py             # Server Flask (routing halaman & endpoint API)
-│   ├── templates/
-│   │   ├── index.html      # Halaman form ulasan & hasil inferensi
-│   │   └── evaluasi.html   # Halaman dashboard metrik & confusion matrix
-│   └── static/
-│       ├── css/style.css   # Styling antarmuka
-│       └── js/main.js      # Fetch handler asinkron & render probabilitas
+├── models/                              # Artefak hasil pelatihan
+│   └── metrics.json                     # Hasil akurasi, Macro F1, & Confusion Matrix 5 eksperimen
 │
-├── models/
-│   ├── model_sentimen.pkl  # Objek pipeline Scikit-Learn tersimpan
-│   └── metrics.json        # Skor performa (Macro F1, Precision, Recall)
+├── backend/                             # Backend REST API Server
+│   ├── requirements.txt
+│   └── app/
+│       ├── __init__.py
+│       └── main.py                      # Controller endpoint (/api/predict, /api/metrics, /api/samples)
 │
-└── laporan/                # Draft laporan akhir dan berkas presentasi
+└── frontend/                            # Modern Frontend Application (React 19 + TypeScript + Vite)
+    ├── package.json
+    ├── vite.config.ts                   # Konfigurasi Vite dev server & reverse proxy ke Flask
+    └── src/
+        ├── App.tsx                      # State halaman utama & navigasi tab
+        ├── index.css                    # Desain sistem CSS modern & responsif
+        ├── types/
+        │   └── sentiment.ts             # Kontrak tipe data TypeScript
+        ├── services/
+        │   └── sentimentApi.ts          # Layer klien HTTP REST API
+        └── components/
+            ├── ProbabilityBar.tsx       # Visualisasi bar probabilitas kelas
+            ├── PredictionResultCard.tsx # Kartu hasil prediksi & inspeksi preprocessing
+            └── EvaluationDashboard.tsx  # Dashboard KPI, Confusion Matrix, & tabel eksperimen
 ```
 
 ---
 
-## 🛠️ Instalasi & Cara Menjalankan
+## 📈 Hasil Eksperimen & Evaluasi Model
 
-### Prasyarat Sistem
-- **Python:** Versi 3.10 atau lebih baru
-- **Git**
+Pengujian dilakukan terhadap **1.092 data uji** (*stratified split* 20%, `random_state=42`) dengan fitur **N-Gram `(1, 2)`** dan `max_features=2500`. Seluruh konfigurasi **melampaui target keberhasilan PRD (Macro F1 $\ge$ 0.70)**:
 
-### 1. Kloning Repositori
+| No | Konfigurasi Eksperimen | Vectorizer | Classifier | Stopword Removal | Accuracy | Macro F1 | Weighted F1 |
+|:--:|:-----------------------|:-----------|:-----------|:----------------:|:--------:|:--------:|:-----------:|
+| 🏆 **1** | **CountVectorizer + MultinomialNB** *(Terbaik)* | `CountVectorizer` | `MultinomialNB` | **Ya (Sastrawi)** | **85.90%** | **77.28%** | **85.92%** |
+| 2 | **TF-IDF + ComplementNB** | `TfidfVectorizer` | `ComplementNB` | Ya (Sastrawi) | 86.08% | 74.15% | 84.72% |
+| 3 | **CountVectorizer + ComplementNB** | `CountVectorizer` | `ComplementNB` | Ya (Sastrawi) | 85.26% | 71.24% | 83.15% |
+| 4 | **TF-IDF + MultinomialNB (Tanpa Stopwords)** | `TfidfVectorizer` | `MultinomialNB` | Tidak | 85.81% | 70.49% | 83.39% |
+| 5 | **TF-IDF + MultinomialNB** | `TfidfVectorizer` | `MultinomialNB` | Ya (Sastrawi) | **86.17%** | 70.46% | 83.64% |
+
+### Rincian Performa per Kelas (Model Terbaik: `CountVectorizer + MultinomialNB`)
+
+| Kelas Sentimen | Precision | Recall | F1-Score | Support (Data Uji) |
+|:---------------|:---------:|:------:|:--------:|:------------------:|
+| 😊 **Positif** | **94.21%** | 90.66% | **92.40%** | 503 ulasan |
+| 😠 **Negatif** | 86.21% | **89.91%** | **88.03%** | 466 ulasan |
+| 😐 **Netral** *(Minoritas)* | 51.64% | 51.22% | **51.43%** | 123 ulasan |
+| **Macro Average** | **77.36%** | **77.26%** | **77.28%** | **1.092 ulasan** |
+
+### Confusion Matrix (Data Uji = 1.092 Ulasan)
+
+| Aktual \ Prediksi | Prediksi: Positif | Prediksi: Netral | Prediksi: Negatif |
+|:-----------------:|:-----------------:|:----------------:|:-----------------:|
+| **Aktual: Positif** | **456** | 22 | 25 |
+| **Aktual: Netral** | 18 | **63** | 42 |
+| **Aktual: Negatif** | 10 | 37 | **419** |
+
+> **Temuan Analisis:**
+> 1. **Preservasi Kata Negasi:** Secara bawaan, daftar stopword Sastrawi menghapus kata `"tidak"`, yang menyebabkan frasa *"tidak bagus"* terprediksi positif. Dengan memfilter kata negasi (`PRESERVED_SENTIMENT_WORDS` di `src/constants.py`) dan menggunakan `ngram_range=(1, 2)`, bigram seperti `"tidak bagus"` dan `"tidak sesuai"` berhasil ditangkap dengan baik.
+> 2. **Tantangan Kelas Netral:** Pada ulasan bintang 3 di Tokopedia, pembeli sering menulis keluhan bercampur pujian (misal *"barang bagus tapi pengiriman lama"*), sehingga kelas `netral` memiliki distribusi kosakata yang beririsan dengan kelas `positif` dan `negatif`. Penggunaan `CountVectorizer + MultinomialNB` memberikan *Recall* kelas netral tertinggi (**51.22%**) dibanding `TF-IDF + MultinomialNB` (**18.70%**).
+
+---
+
+## 🚀 Instalasi & Cara Menjalankan
+
+### Prasyarat
+- **Python** `3.10+`
+- **Node.js** `18+` & **npm**
+
+### 1. Clone Repositori
 ```bash
 git clone https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk.git
 cd Klasifikasi-sentimen-ulasan-produk
 ```
 
-### 2. Konfigurasi Virtual Environment
-Gunakan virtual environment agar dependensi terisolasi:
-
-- **Linux / macOS:**
-  ```bash
-  python3 -m venv .venv
-  source .venv/bin/activate
-  ```
-- **Windows:**
-  ```cmd
-  python -m venv .venv
-  .venv\Scripts\activate
-  ```
-
-### 3. Instal Dependensi
+### 2. Siapkan Environment Python & Dependensi
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 4. Pelatihan Model (*Training*)
-Jalankan proses pelatihan untuk menghasilkan berkas artefak model di direktori `models/`:
+### 3. Unduh Dataset Publik & Latih Model
 ```bash
+# Mengunduh dataset asli PRDECT-ID (Tokopedia) & HuggingFace ke folder data/
+python scripts/generate_data.py
+
+# Menjalankan 5 eksperimen pelatihan & menyimpan model terbaik ke folder models/
 python src/train.py
 ```
-> Tahap ini akan memproses dataset, melatih model Naive Bayes, lalu membuat file `models/model_sentimen.pkl` dan `models/metrics.json`.
 
-### 5. Jalankan Web Demo
-Jalankan aplikasi backend Flask:
+### 4. Instal Dependensi Frontend & Jalankan Server Terpadu
 ```bash
-python app/main.py
+cd frontend
+npm install
+cd ..
+
+# Menjalankan Backend Flask (http://127.0.0.1:5000) & Frontend Vite (http://localhost:5173)
+PYTHON_BIN="$(pwd)/.venv/bin/python" bash scripts/dev.sh
 ```
-Akses antarmuka web melalui browser di:  
-👉 **`http://127.0.0.1:5000`**
+Buka browser di **`http://localhost:5173`**.
 
 ---
 
-## 🔌 Dokumentasi REST API
+## 🔌 Spesifikasi REST API
 
-### Prediksi Sentimen
-Melakukan analisis sentimen terhadap sebuah teks ulasan.
+Backend Flask berjalan di `http://127.0.0.1:5000` dan di-*proxy* secara otomatis oleh Vite pada `/api/*`.
 
-- **URL:** `/predict`
-- **Method:** `POST`
-- **Content-Type:** `application/json`
+### 1. `POST /api/predict` (atau `POST /predict`)
+Mengklasifikasikan sentimen satu teks ulasan produk (maksimal 1.000 karakter).
 
-#### Request Body
+**Request Body:**
 ```json
 {
-  "teks": "Barang original, pengemasan rapi dan cepat sampai! Sangat puas belanja disini."
+  "teks": "Brg ori 100%, paking rapi dan pengiriman cepet bgt! Sangat puas belanja disini."
 }
 ```
 
-#### Response Success (200 OK)
+**Response `200 OK`:**
 ```json
 {
+  "success": true,
   "label": "positif",
+  "confidence": 99.98,
   "probabilitas": {
-    "positif": 0.9412,
-    "netral": 0.0431,
-    "negatif": 0.0157
+    "positif": 0.9998,
+    "netral": 0.0002,
+    "negatif": 0.0
   },
-  "teks_bersih": "barang original kemas rapi cepat sampai puas belanja"
+  "probabilities": {
+    "positif": 99.98,
+    "netral": 0.02,
+    "negatif": 0.0
+  },
+  "teks_bersih": "barang original pengemasan rapi pengiriman cepat sangat sangat puas belanja disini",
+  "text": "Brg ori 100%, paking rapi dan pengiriman cepet bgt! Sangat puas belanja disini.",
+  "timestamp": "2026-11-13T20:15:00.000000+00:00"
 }
 ```
 
-#### Response Errors
-- `400 Bad Request`: Input teks kosong, tipe data tidak valid, atau panjang melebihi 1.000 karakter.
-- `500 Internal Server Error`: Berkas model gagal dimuat atau belum dilatih.
+### 2. `GET /api/metrics` (atau `GET /evaluasi`)
+Mengambil laporan metrik evaluasi lengkap (`Accuracy`, `Macro F1`, `Classification Report`, `Confusion Matrix`, dan tabel 5 eksperimen) dari `models/metrics.json`.
+
+### 3. `GET /api/samples`
+Mengambil sampel ulasan asli acak per kelas sentimen (`positif`, `netral`, `negatif`) langsung dari dataset Tokopedia untuk fitur uji cepat di halaman web.
+
+### 4. `GET /api/health`
+Memeriksa status kesehatan server dan kesiapan model di memori (`models_loaded: true`).
 
 ---
 
-## 📊 Target & Evaluasi Model
+## 📄 Dokumentasi Terkait
 
-| Metrik Evaluasi | Target Capaian | Deskripsi Target |
-|:----------------|:--------------:|:-----------------|
-| **Macro F1-Score** | **≥ 0.70** | Mengukur performa rata-rata harmonis ketiga kelas secara adil |
-| **Waktu Inferensi** | **< 2.0 Detik** | Latensi respons prediksi pada pengujian laptop standar |
-| **Recall (Kelas Netral)** | Dilaporkan | Analisis khusus evaluasi kelas minoritas / batas ambigu |
-
-> *Hasil evaluasi aktual dari setiap varian eksperimen (TF-IDF vs CountVectorizer, MultinomialNB vs ComplementNB) dapat ditinjau langsung di halaman `/evaluasi` web demo.*
+- 📋 [**Product Requirements Document (PRD.md)**](PRD.md): Latar belakang, ruang lingkup, kebutuhan fungsional (`F1`–`F13`), target metrik, dan mitigasi risiko.
+- 📐 [**Arsitektur Sistem (ARSITEKTUR.md)**](ARSITEKTUR.md): Diagram alur pelatihan & prediksi, spesifikasi komponen, serta keputusan desain.
 
 ---
 
-## ⚠️ Batasan Sistem & Mitigasi
+## 📜 Lisensi & Etika Penggunaan
 
-1. **Struktur Tata Bahasa & Negasi:** Asumsi independensi fitur pada Naive Bayes mengabaikan urutan kata, sehingga kalimat negasi seperti *"tidak mengecewakan"* berpotensi salah diidentifikasi sebagai negatif. Mitigasi: Eksperimen n-gram (`ngram_range=(1, 2)`).
-2. **Keterbatasan Kosakata (*Out of Vocabulary*):** Kata-kata yang tidak muncul pada fase pelatihan akan diabaikan.
-3. **Cakupan Bahasa:** Model dioptimalkan khusus untuk Bahasa Indonesia. Campuran bahasa gaul daerah atau istilah asing dapat memengaruhi tingkat akurasi prediksi.
-4. **Sarkasme:** Sentimen yang mengandung ironi/sarkasme merupakan limitasi alami dari model berbasis *bag-of-words*.
-
----
-
-## 📄 Dokumen Terkait
-
-- 📋 [**Product Requirements Document (PRD)**](PRD.md): Latar belakang masalah, ruang lingkup, kebutuhan fungsional & non-fungsional, dan mitigasi risiko.
-- 📐 [**Arsitektur Sistem (ARSITEKTUR.md)**](ARSITEKTUR.md): Desain teknis modular, alur data training vs inferensi, spesifikasi endpoint, dan keputusan arsitektural.
-
----
-
-## 📜 Lisensi & Etika Data
-
-Proyek ini dikembangkan semata-mata untuk **keperluan akademis Tugas Besar Mata Kuliah Kecerdasan Buatan Politeknik Negeri Indramayu**. Dataset yang digunakan dibersihkan dari informasi sensitif/pribadi (PII) dan tidak merepresentasikan opini resmi terkait entitas komersial tertentu.
+Proyek ini dikembangkan untuk memenuhi **Tugas Besar Mata Kuliah Kecerdasan Buatan di Politeknik Negeri Indramayu**. Seluruh data ulasan publik telah dibersihkan dari informasi identitas pribadi (*Personally Identifiable Information*) dan digunakan murni untuk tujuan riset akademik.

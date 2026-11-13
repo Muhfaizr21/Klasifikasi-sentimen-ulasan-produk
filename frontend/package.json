@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "bash scripts/dev.sh",
-    "dev:web": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "dev:web": "./node_modules/.bin/vite",
+    "build": "./node_modules/.bin/tsc -b && ./node_modules/.bin/vite build",
+    "lint": "./node_modules/.bin/oxlint",
+    "preview": "./node_modules/.bin/vite preview"
   },
   "dependencies": {
     "react": "^19.3.1",

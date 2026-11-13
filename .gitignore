@@ -9,7 +9,9 @@ venv/
 models/*.pkl
 data/
 
-# Editor
+# Editor & Build
 .vscode/
 .idea/
 .DS_Store
+frontend/dist/
+frontend/node_modules/
