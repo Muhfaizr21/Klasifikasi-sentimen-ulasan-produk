@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# ML artifacts
+models/*.pkl
+data/
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
