@@ -29,127 +29,102 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onEnterWorkspace,
 }) => {
   const isDesktopHero = winSize.width >= 1024;
-  const isTallViewport = winSize.height >= 900;
+  const yOffset = 200 * clamp((winSize.height - 800) / 400, 0, 1);
 
-  // Atmospheric Background Mesh
-  const bgY = lerp(0, -130, easeOutQuad(invLerp(t, 0, 1.2)));
-
-  // Top Announcement Banner Pill
+  // Announcement Banner (P): R={opacity:1, y:0} -> I={opacity:0, y:-40, duration:0.3} at 0
   const pBanner = easeOutQuad(invLerp(t, 0, 0.3));
-  const bannerY = lerp(0, -100, pBanner);
+  const bannerY = lerp(0, -40, pBanner);
   const bannerOpacity = lerp(1, 0, pBanner);
 
-  // Center Hero Heading Block
-  const pHeading = easeOutQuad(invLerp(t, 0, 0.4));
-  const headingY = lerp(0, -200, pHeading);
-  const headingScale = lerp(1, 0.9, pHeading);
-  const headingOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0, 0.25)));
+  // Atmospheric Background (g): K={y:0} -> Q={y:-130, duration:0.5} at 0
+  const pBg = easeOutQuad(invLerp(t, 0, 0.5));
+  const bgY = lerp(0, -130, pBg);
 
-  // Main 1200x880 Desktop App Window (reaches 100% scale by t=0.35, docks at t=0.45)
-  const pDock = easeOutQuad(invLerp(t, 0, 0.45));
-  const pWinScale = easeOutQuad(invLerp(t, 0.02, 0.33));
-  const windowY = lerp(280, 110, pDock);
-  const windowScale = lerp(0.68, 1, pWinScale);
-  const windowOpacity = lerp(0, 1, easeOutQuad(invLerp(t, 0.03, 0.25)));
-  const homeContentFadeIn = easeOutQuad(invLerp(t, 0.24, 0.16));
-  const homeStartOpacity = homeContentFadeIn * lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
-  const homeStartY = t <= 0.55 ? 0 : lerp(0, -204, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  // Hero Heading & CTA Block (m): E={opacity:1, y:-90+yOffset, scale:1} -> O={opacity:0, scale:0.5, y:-300, duration:0.5} at 0
+  const pHeading = easeOutQuad(invLerp(t, 0, 0.5));
+  const headingY = lerp(-90 + yOffset, -300, pHeading);
+  const headingScale = lerp(1, 0.5, pHeading);
+  const headingOpacity = lerp(1, 0, pHeading);
 
-  // Final AI Reasoning & Chart Report View
-  const reportY = lerp(200, 84, easeOutQuad(invLerp(t, 0.65, 0.45)));
-  const reportOpacity = lerp(0, 1, easeOutQuad(invLerp(t, 0.65, 0.35)));
+  // 1200x880 App Window (c): M={scale:0.8, y:800, opacity:0} -> z={scale:1, y:200, opacity:1, duration:0.5} at 0
+  const pWindow = easeOutQuad(invLerp(t, 0, 0.5));
+  const windowScale = lerp(0.8, 1, pWindow);
+  const windowY = lerp(800, 200, pWindow);
+  const windowOpacity = lerp(0, 1, pWindow);
 
-  // Bento Grid Constants inside 1200x880 Window (Sidebar = 248px, Padding = 38px -> X: 286..1162, Width: 876px)
-  // Row 0 (AI Composer): Y = 224 (top: 114 in window, -656 from 880), H = 76 (bottom = 300)
-  // Row 1 (Pink 294 + Gap 22 + Blue 560 = 876): Y = 344 (top: 234 in window, -536 from 880), H = 235 (bottom = 579)
-  // Row 2 (Gray 294 + Gap 22 + Dist 560 = 876): Y = 601 (top: 491 in window, -279 from 880), H = 200 (bottom = 801)
+  // Initial Home Dashboard inside App Window (w): opacity 1 -> 0 at start=0.6, duration=0.3
+  const pHomeStart = easeOutQuad(invLerp(t, 0.6, 0.3));
+  const homeStartOpacity = lerp(1, 0, pHomeStart);
+  const homeStartY = 0;
 
-  // Floating Block 1: Pink/Peach Registrations Card (294x235)
-  const pinkStartX = isTallViewport ? 980 : 1020;
-  const pinkStartY = isTallViewport ? -520 : -500;
-  const pinkX = lerp(pinkStartX, 286, pDock);
-  const pinkY =
-    t <= 0.55
-      ? lerp(pinkStartY, -536, pDock)
-      : lerp(-536, -740, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const pinkShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
-  const pinkOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
+  // Final AI Reasoning Report inside App Window (b): Y={opacity:0, top:28, left:286, y:200} -> ee={opacity:1, y:84, duration:0.5} at 0.7
+  const pReport = easeOutQuad(invLerp(t, 0.7, 0.5));
+  const reportOpacity = lerp(0, 1, pReport);
+  const reportY = lerp(200, 84, pReport);
 
-  // Floating Block 2: Blue Region/Category Card (560x235)
-  const blueStartX = isTallViewport ? -120 : -160;
-  const blueStartY = isTallViewport ? -700 : -680;
-  const blueX = lerp(blueStartX, 602, pDock);
-  const blueY =
-    t <= 0.55
-      ? lerp(blueStartY, -536, pDock)
-      : lerp(-536, -740, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const blueShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
-  const blueOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
+  // Bento Grid inside App Window (windowY = 200, Sidebar = 248px, Content X = 286..1162, Width = 876px):
+  // Greeting ("Selamat datang kembali, Tim Analitik"): top = 84 in window (Stage Y = 284..312)
+  // Row 0 (AI Composer, 876x84): Stage Y = 330 (-550 from 880, top = 130 in window), X = 286..1162
+  // Row 1 (Blue 560x235 at X=286..846 + Gap 22 + Pink 294x235 at X=868..1162): Stage Y = 460 (-420 from 880, top = 260 in window)
+  // Row 2 (Gray 294x200 at X=286..580 + Gap 22 + Dist 560x200 at X=602..1162): Stage Y = 717 (-163 from 880, top = 517 in window)
 
-  // Floating Block 3: White Activation Card (294x200)
-  const grayStartX = isTallViewport ? 60 : 20;
-  const grayStartY = isTallViewport ? -240 : -250;
-  const grayX = lerp(grayStartX, 286, pDock);
-  const grayY =
-    t <= 0.55
-      ? lerp(grayStartY, -279, pDock)
-      : lerp(-279, -483, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const grayShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
-  const grayOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
+  // Pink Registrations/Accuracy Block (o, 294x235):
+  const pMoveO = easeOutQuad(invLerp(t, 0, 0.5));
+  const pFadeO = easeOutQuad(invLerp(t, 0.7, 0.3));
+  const pinkX = lerp(1100, 868, pMoveO);
+  const pinkY = lerp(-560 + yOffset, -420, pMoveO);
+  const pinkShadow = lerp(1, 0, pMoveO);
+  const pinkOpacity = lerp(1, 0, pFadeO);
 
-  // Left Cursor Bubble (Green JB)
-  const curLStartX = isTallViewport ? -50 : -110;
-  const curLStartY = isTallViewport ? -500 : -480;
-  const cursorLX = lerp(curLStartX, 650, pDock);
-  const cursorLY = lerp(curLStartY, -240, pDock);
-  const cursorLOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.2, 0.25)));
+  // Blue Region/Category Block (n, 560x235):
+  const pMoveN = easeOutQuad(invLerp(t, 0, 0.5));
+  const pFadeN = easeOutQuad(invLerp(t, 0.7, 0.3));
+  const blueX = lerp(-480, 286, pMoveN);
+  const blueY = lerp(-750 + yOffset, -420, pMoveN);
+  const blueShadow = lerp(1, 0, pMoveN);
+  const blueOpacity = lerp(1, 0, pFadeN);
 
-  // Right Cursor Bubble (Blue AF) -> Aims cleanly at the Send Button (X=1122, Y=-608) above Row 1
-  const curRStartX = isTallViewport ? 720 : 760;
-  const curRStartY = isTallViewport ? -140 : -160;
-  let cursorRX = curRStartX;
-  let cursorRY = curRStartY;
-  if (t <= 0.45) {
-    cursorRX = lerp(curRStartX, 1060, pDock);
-    cursorRY = lerp(curRStartY, -604, pDock);
-  } else {
-    const p2 = easeOutQuad(invLerp(t, 0.45, 0.1));
-    cursorRX = lerp(1060, 1122, p2);
-    cursorRY = lerp(-604, -608, p2);
-  }
-  let cursorRScale = 1;
-  if (t >= 0.52 && t <= 0.56) {
-    cursorRScale = lerp(1, 0.88, easeOutQuad(invLerp(t, 0.52, 0.04)));
-  } else if (t > 0.56 && t <= 0.6) {
-    cursorRScale = lerp(0.88, 1, easeOutQuad(invLerp(t, 0.56, 0.04)));
-  }
-  const cursorROpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.2)));
+  // White Activation Line-Chart Block (l, 294x200):
+  const pMoveL = easeOutQuad(invLerp(t, 0, 0.5));
+  const pFadeL = easeOutQuad(invLerp(t, 0.7, 0.3));
+  const grayX = lerp(-20, 286, pMoveL);
+  const grayY = lerp(-280 + yOffset, -163, pMoveL);
+  const grayShadow = lerp(1, 0, pMoveL);
+  const grayOpacity = lerp(1, 0, pFadeL);
 
-  // AI Composer Bar (876px wide when docked at X=286..1162) -> Morphs into User Prompt Pill
-  const aiStartX = isTallViewport ? 620 : 660;
-  const aiStartY = isTallViewport ? -210 : -230;
-  let aiX = aiStartX;
-  let aiY = aiStartY;
-  let aiWidth = 420;
-  if (t <= 0.55) {
-    aiX = lerp(aiStartX, 286, pDock);
-    aiY = lerp(aiStartY, -656, pDock);
-    aiWidth = lerp(420, 876, pDock);
-  } else {
-    const p2 = easeOutQuad(invLerp(t, 0.6, 0.38));
-    aiX = lerp(286, 622, p2);
-    aiY = lerp(-656, -730, p2);
-    aiWidth = lerp(876, 540, p2);
-  }
-  const aiHeight = lerp(76, 44, easeOutQuad(invLerp(t, 0.6, 0.38)));
-  const aiBgColor = lerpColorHex('#fdf1eb', '#f3f3f5', easeOutQuad(invLerp(t, 0.6, 0.3)));
-  const aiShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
-  const aiPlaceholderOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0, 0.1)));
-  const aiTypedWidthPct = clamp(invLerp(t, 0.04, 0.35) * 100, 0, 100);
-  const aiTypedY = lerp(0, -1, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  // Left Cursor JB (p, 61x67):
+  const pMoveCursorL = easeOutQuad(invLerp(t, 0, 0.5));
+  const pFadeCursorL = easeOutQuad(invLerp(t, 0.6, 0.3));
+  const cursorLX = lerp(-70, 240, pMoveCursorL);
+  const cursorLY = lerp(-210 + yOffset, -94, pMoveCursorL);
+  const cursorLOpacity = lerp(1, 0, pFadeCursorL);
+
+  // Right Cursor AF (f, 56x66) -> Aims at the Send Button on AI Composer (X=1122, Y=-492, well above Row 1 at -420)
+  const pMoveCursorR = easeOutQuad(invLerp(t, 0, 0.5));
+  const pFadeCursorR = easeOutQuad(invLerp(t, 0.6, 0.3));
+  const cursorRX = lerp(780, 1122, pMoveCursorR);
+  const cursorRY = lerp(-150 + yOffset, -492, pMoveCursorR);
+  const cursorRScale = lerp(0.9, 1, pMoveCursorR);
+  const cursorROpacity = lerp(1, 0, pFadeCursorR);
+
+  // Floating AI Composer (u):
+  const pAiPhase1 = easeOutQuad(invLerp(t, 0, 0.5));
+  const pAiPhase2 = easeOutQuad(invLerp(t, 0.7, 0.5));
+  const aiX = t <= 0.7 ? lerp(660, 286, pAiPhase1) : lerp(286, 622, pAiPhase2);
+  const aiY = t <= 0.7 ? lerp(-190 + yOffset, -550, pAiPhase1) : lerp(-550, -620, pAiPhase2);
+  const aiWidth = t <= 0.7 ? lerp(420, 876, pAiPhase1) : lerp(876, 540, pAiPhase2);
+  const aiShadow = t <= 0.7 ? 1 : lerp(1, 0, pAiPhase2);
+  const aiHeight = lerp(84, 45, pAiPhase2);
+  const aiBgColor = lerpColorHex('#fdf1eb', '#F3F3F5', pAiPhase2);
+
+  // AI Composer Inner Text & Icons:
+  const aiPlaceholderOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0, 0.35)));
+  const pTyped = invLerp(t, 0.18, 0.42);
+  const aiTypedWidthPct = lerp(0, 100, pTyped);
+  const aiTypedY = lerp(0, -3, pTyped);
   const aiIconsOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.2)));
 
-  // Logo Carousel
+  // Logo Carousel (y): F={y:800} -> D={y:280} over [0, 0.5]
   const pCarousel = easeOutQuad(invLerp(t, 0, 0.5));
   const carouselY = lerp(800, 280, pCarousel);
 
@@ -645,7 +620,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div
                 style={{
                   position: 'absolute',
-                  top: '72px',
+                  top: '84px',
                   left: '286px',
                   fontSize: 22,
                   fontFamily: 'var(--font-signifier)',
@@ -659,7 +634,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               <div
                 style={{
                   position: 'absolute',
-                  top: '491px',
+                  top: '517px',
                   left: '602px',
                   width: '560px',
                   height: '200px',

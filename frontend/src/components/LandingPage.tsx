@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import '../styles/steep-landing.css';
 import {
   clamp,
   type LandingPageProps,
@@ -23,55 +24,77 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     width: typeof window !== 'undefined' ? window.innerWidth : 1440,
     height: typeof window !== 'undefined' ? window.innerHeight : 900,
   });
-  const [scrollY, setScrollY] = useState(0);
   const [isNavScrolled, setIsNavScrolled] = useState(false);
   const [isNavOverDark, setIsNavOverDark] = useState(false);
 
+  // Smoothed timeline value t in [0, 1.2] matching GSAP scrub: 0.7
+  const [timelineT, setTimelineT] = useState(0);
+  const targetTRef = useRef(0);
+  const currentTRef = useRef(0);
   const heroSpacerRef = useRef<HTMLDivElement | null>(null);
   const [semanticRef, semanticInView] = useSteepInView();
 
   useEffect(() => {
-    const handleResize = () => {
+    const onResize = () => {
       setWinSize({ width: window.innerWidth, height: window.innerHeight });
     };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
-    let rafId: number | null = null;
-    const handleScroll = () => {
-      if (rafId !== null) return;
-      rafId = window.requestAnimationFrame(() => {
-        const y = window.scrollY;
-        setScrollY(y);
-        setIsNavScrolled(y > 24);
-        if (semanticRef.current) {
-          const rect = semanticRef.current.getBoundingClientRect();
-          setIsNavOverDark(rect.top <= 64 && rect.bottom >= 64);
-        }
-        rafId = null;
-      });
+  // Exact Steep scaleFactor, containerHeight, yOffset formulas
+  const isDesktopHero = winSize.width >= 1024;
+  const scaleFactor =
+    winSize.width === 0 || winSize.width >= 1360
+      ? 1
+      : Math.max((winSize.width - 160) / 1200, 0.5);
+  const containerHeight = Math.round(1480 * scaleFactor);
+  const pinScrollDistance = Math.round(1.2 * containerHeight);
+  const totalHeroSpacerHeight = containerHeight + pinScrollDistance;
+
+  useEffect(() => {
+    let rafId = 0;
+
+    const updateScrollTarget = () => {
+      const y = window.scrollY || window.pageYOffset;
+      setIsNavScrolled(y > 16);
+
+      if (semanticRef.current) {
+        const sRect = semanticRef.current.getBoundingClientRect();
+        setIsNavOverDark(sRect.top <= 64 && sRect.bottom >= 64);
+      }
+
+      if (!heroSpacerRef.current || !isDesktopHero) {
+        targetTRef.current = 0;
+        return;
+      }
+      const rect = heroSpacerRef.current.getBoundingClientRect();
+      const scrolledInHero = Math.max(0, -rect.top);
+      const rawProgress = clamp(scrolledInHero / Math.max(1, pinScrollDistance), 0, 1);
+      targetTRef.current = rawProgress * 1.2;
     };
 
-    window.addEventListener('resize', handleResize, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    const tick = () => {
+      const diff = targetTRef.current - currentTRef.current;
+      if (Math.abs(diff) > 0.0008) {
+        currentTRef.current += diff * 0.14;
+        setTimelineT(currentTRef.current);
+      } else if (currentTRef.current !== targetTRef.current) {
+        currentTRef.current = targetTRef.current;
+        setTimelineT(currentTRef.current);
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+
+    updateScrollTarget();
+    window.addEventListener('scroll', updateScrollTarget, { passive: true });
+    rafId = requestAnimationFrame(tick);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
-      if (rafId !== null) {
-        window.cancelAnimationFrame(rafId);
-      }
+      window.removeEventListener('scroll', updateScrollTarget);
+      cancelAnimationFrame(rafId);
     };
-  }, [semanticRef]);
-
-  // Scroll-scrubbed Hero Timeline math (matching Steep's 1200x880 stage)
-  const containerHeight = clamp(winSize.height - 64, 720, 1080);
-  const scaleX = (winSize.width - 48) / 1200;
-  const scaleY = (containerHeight - 24) / 880;
-  const scaleFactor = clamp(Math.min(scaleX, scaleY, 1.05), 0.72, 1.05);
-
-  const scrollDistance = 760;
-  const totalHeroSpacerHeight = containerHeight + scrollDistance;
-  const t = clamp(scrollY / 600, 0, 1.25);
+  }, [isDesktopHero, pinScrollDistance, semanticRef]);
 
   return (
     <div className="steep-page">
@@ -84,7 +107,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <HeroSection
         winSize={winSize}
         heroSpacerRef={heroSpacerRef}
-        t={t}
+        t={timelineT}
         totalHeroSpacerHeight={totalHeroSpacerHeight}
         containerHeight={containerHeight}
         scaleFactor={scaleFactor}
