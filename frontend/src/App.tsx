@@ -1127,8 +1127,8 @@ export default function App() {
                 : ''
             }`}
           >
-            {/* Non-Prediksi Tabs Header (kecuali tab komparasi yang memiliki hero tersendiri) */}
-            {activeTab !== 'prediksi' && activeTab !== 'komparasi' && (
+            {/* Non-Prediksi Tabs Header (hanya untuk batch & evaluasi; halaman komparasi dan 5 halaman intelijen memiliki header halaman mandiri) */}
+            {(activeTab === 'batch' || activeTab === 'evaluasi') && (
               <div className="hero-workspace compact">
                 <h1 className="wordmark">sentimen</h1>
                 <p className="wordmark-sub">
@@ -1623,32 +1623,17 @@ export default function App() {
             )}
 
             {activeTab === 'evaluasi' && (
-              <>
-                <EvaluationDashboard
-                  metrics={metrics}
-                  loading={metricsLoading}
-                  error={metricsError}
-                  onRefresh={loadMetrics}
-                  onSelectWord={word => {
-                    setActiveTab('prediksi')
-                    setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
-                    window.scrollTo({ top: 0, behavior: 'smooth' })
-                  }}
-                />
-                <div style={{ marginTop: '32px' }}>
-                  <CorpusIntelligenceHub
-                    activeSubTab="peta-korpus"
-                    onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
-                    initialAiQuestion={initialAiQuestion}
-                    onInspectReview={(revText, cat) => {
-                      if (cat) setSelectedCategory(cat)
-                      setActiveTab('prediksi')
-                      setText(revText)
-                      void handlePredict(revText, { category: cat })
-                    }}
-                  />
-                </div>
-              </>
+              <EvaluationDashboard
+                metrics={metrics}
+                loading={metricsLoading}
+                error={metricsError}
+                onRefresh={loadMetrics}
+                onSelectWord={word => {
+                  setActiveTab('prediksi')
+                  setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+              />
             )}
 
             {(activeTab === 'ai-chat' ||

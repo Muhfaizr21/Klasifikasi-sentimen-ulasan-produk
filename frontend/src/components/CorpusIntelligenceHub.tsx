@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   fetchCorpusAnalytics,
   requestAiAnalyst,
@@ -39,13 +39,6 @@ const Terminal: React.FC<IconProps> = ({ size = 16, style }) => (
   <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <polyline points="4 17 10 11 4 5" strokeLinecap="round" strokeLinejoin="round" />
     <line x1="12" y1="19" x2="20" y2="19" strokeLinecap="round" />
-  </svg>
-)
-const Database: React.FC<IconProps> = ({ size = 15, style }) => (
-  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <ellipse cx="12" cy="5" rx="8" ry="3" />
-    <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5" />
-    <path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
   </svg>
 )
 const MessageSquare: React.FC<IconProps> = ({ size = 16, style }) => (
@@ -99,11 +92,6 @@ const TrendingDown: React.FC<IconProps> = ({ size = 16, style }) => (
     <polyline points="16 17 22 17 22 11" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
-const Filter: React.FC<IconProps> = ({ size = 16, style }) => (
-  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" strokeLinejoin="round" />
-  </svg>
-)
 const Star: React.FC<IconProps> = ({ size = 16, style }) => (
   <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5">
     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -143,6 +131,187 @@ const Play: React.FC<IconProps> = ({ size = 14, style }) => (
     <polygon points="5 3 19 12 5 21 5 3" />
   </svg>
 )
+
+/* ==========================================================================
+   CUSTOM PROFESSIONAL DROPDOWN (Zero Native OS Select Widget)
+   ========================================================================== */
+export interface SelectOptionItem {
+  value: string
+  label: string
+  badge?: string
+  group?: string
+}
+
+interface CustomSelectProps {
+  value: string
+  onChange: (nextVal: string) => void
+  options: SelectOptionItem[]
+  prefixLabel?: string
+  ariaLabel?: string
+  align?: 'left' | 'right'
+  fullWidth?: boolean
+  minWidth?: number
+  searchable?: boolean
+}
+
+const CustomSelect: React.FC<CustomSelectProps> = ({
+  value,
+  onChange,
+  options,
+  prefixLabel,
+  ariaLabel,
+  align = 'left',
+  fullWidth = false,
+  minWidth = 210,
+  searchable = false,
+}) => {
+  const [open, setOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  const selectedOption = useMemo(
+    () => options.find((opt) => opt.value === value) || options[0],
+    [options, value]
+  )
+
+  const filteredOptions = useMemo(() => {
+    if (!searchable || !searchQuery.trim()) return options
+    const q = searchQuery.toLowerCase()
+    return options.filter(
+      (opt) =>
+        opt.label.toLowerCase().includes(q) ||
+        opt.value.toLowerCase().includes(q) ||
+        (opt.group && opt.group.toLowerCase().includes(q))
+    )
+  }, [options, searchable, searchQuery])
+
+  useEffect(() => {
+    if (!open) return
+    const handlePointerDown = (e: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [open])
+
+  return (
+    <div
+      ref={rootRef}
+      className={`cih-dropdown ${fullWidth ? 'is-full' : ''} ${open ? 'is-open' : ''}`}
+      style={{ minWidth: fullWidth ? undefined : `${minWidth}px` }}
+    >
+      <button
+        type="button"
+        className="cih-dropdown-trigger"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={ariaLabel || prefixLabel || 'Pilih opsi'}
+        onClick={() => {
+          setOpen((prev) => !prev)
+          setSearchQuery('')
+        }}
+      >
+        <span className="cih-dropdown-trigger-text">
+          {prefixLabel && <span className="cih-dropdown-prefix">{prefixLabel}:</span>}
+          <span className="cih-dropdown-value">{selectedOption?.label ?? value}</span>
+        </span>
+        {selectedOption?.badge && (
+          <span className="cih-dropdown-trigger-badge">{selectedOption.badge}</span>
+        )}
+        <svg
+          className="cih-dropdown-chevron"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+        >
+          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      {open && (
+        <div
+          className={`cih-dropdown-popover ${align === 'right' ? 'align-right' : 'align-left'}`}
+          role="listbox"
+        >
+          {searchable && (
+            <div className="cih-dropdown-search-box">
+              <Search size={13} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari dalam daftar..."
+                className="cih-dropdown-search-input"
+                autoFocus
+              />
+            </div>
+          )}
+          <div className="cih-dropdown-list">
+            {filteredOptions.length === 0 ? (
+              <div className="cih-dropdown-empty">Tidak ada opsi yang cocok</div>
+            ) : (
+              filteredOptions.map((opt) => {
+                const isSelected = opt.value === value
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    className={`cih-dropdown-option ${isSelected ? 'is-selected' : ''}`}
+                    onClick={() => {
+                      onChange(opt.value)
+                      setOpen(false)
+                    }}
+                  >
+                    <span className="cih-dropdown-option-main">
+                      <span className="cih-dropdown-option-label">{opt.label}</span>
+                      {opt.group && (
+                        <span className="cih-dropdown-option-group">{opt.group}</span>
+                      )}
+                    </span>
+                    <span className="cih-dropdown-option-right">
+                      {opt.badge && (
+                        <span className="cih-dropdown-option-badge">{opt.badge}</span>
+                      )}
+                      {isSelected && (
+                        <svg
+                          className="cih-dropdown-check"
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.3"
+                          aria-hidden="true"
+                        >
+                          <polyline points="20 6 9 17 4 12" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
+                    </span>
+                  </button>
+                )
+              })
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export type IntelligenceSubTab =
   | 'ai-chat'
@@ -307,6 +476,101 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
       })
   }, [analytics?.category_map, mapGroupFilter, mapSearch, mapSortBy])
 
+  const aiScopeOptions = useMemo<SelectOptionItem[]>(() => {
+    const base: SelectOptionItem[] = [
+      { value: 'Semua', label: 'Semua Kategori Korpus', badge: '5.459' },
+      { value: 'Elektronik', label: 'Grup: Elektronik & Gadget', group: 'Makro' },
+      { value: 'Fashion', label: 'Grup: Fashion & Kecantikan', group: 'Makro' },
+      { value: 'Rumah Tangga', label: 'Grup: Rumah Tangga & Dapur', group: 'Makro' },
+      { value: 'Otomotif & Hobi', label: 'Grup: Otomotif, Hobi & Medis', group: 'Makro' },
+    ]
+    if (analytics?.category_map) {
+      analytics.category_map.forEach((c) => {
+        base.push({
+          value: c.id,
+          label: c.label,
+          badge: String(c.total),
+          group: c.group,
+        })
+      })
+    }
+    return base
+  }, [analytics?.category_map])
+
+  const mapGroupOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: 'Semua', label: 'Semua Grup Makro', badge: `${analytics?.category_map.length || 30}` },
+      { value: 'Elektronik', label: 'Elektronik & Gadget' },
+      { value: 'Fashion', label: 'Fashion & Kecantikan' },
+      { value: 'Rumah Tangga', label: 'Rumah Tangga & Dapur' },
+      { value: 'Otomotif & Hobi', label: 'Otomotif, Hobi & Medis' },
+    ],
+    [analytics?.category_map.length]
+  )
+
+  const mapSortOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: 'total', label: 'Volume Ulasan Terbanyak' },
+      { value: 'nss_desc', label: 'NSS Tertinggi (Terpuas)' },
+      { value: 'nss_asc', label: 'NSS Terendah (Prioritas Audit)' },
+      { value: 'rating', label: 'Rating Bintang Tertinggi' },
+    ],
+    []
+  )
+
+  const drillCategoryOptions = useMemo<SelectOptionItem[]>(() => {
+    const list: SelectOptionItem[] = [
+      {
+        value: 'Semua',
+        label: `Semua Kategori (${analytics?.category_map.length || 30})`,
+        badge: '5.459',
+      },
+    ]
+    analytics?.category_map.forEach((c) => {
+      list.push({
+        value: c.id,
+        label: c.label,
+        badge: String(c.total),
+        group: c.group,
+      })
+    })
+    return list
+  }, [analytics?.category_map])
+
+  const drillEmotionOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: 'Semua', label: 'Semua Emosi PRDECT-ID (5)' },
+      { value: 'Happy', label: 'Senang (Happy)', badge: 'Positif' },
+      { value: 'Love', label: 'Sangat Puas / Cinta (Love)', badge: 'Positif' },
+      { value: 'Sadness', label: 'Kecewa / Sedih (Sadness)', badge: 'Negatif' },
+      { value: 'Fear', label: 'Khawatir / Ragu (Fear)', badge: 'Negatif' },
+      { value: 'Anger', label: 'Marah / Komplain (Anger)', badge: 'Negatif' },
+    ],
+    []
+  )
+
+  const drillRatingOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: 'Semua', label: 'Semua Rating (★1 s.d. ★5)' },
+      { value: '5', label: '★ 5 Bintang (Sangat Puas)' },
+      { value: '4', label: '★ 4 Bintang (Puas)' },
+      { value: '3', label: '★ 3 Bintang (Netral / Standar)' },
+      { value: '2', label: '★ 2 Bintang (Kurang Memuaskan)' },
+      { value: '1', label: '★ 1 Bintang (Komplain Kritis)' },
+    ],
+    []
+  )
+
+  const drillSentimentOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: 'Semua', label: 'Semua Kelas Sentimen (3)' },
+      { value: 'positif', label: 'Positif (Kepuasan)' },
+      { value: 'netral', label: 'Netral (Observasional)' },
+      { value: 'negatif', label: 'Negatif (Keluhan)' },
+    ],
+    []
+  )
+
   const handleRunPlayground = async () => {
     setPlaygroundRunning(true)
     try {
@@ -351,118 +615,8 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
     }
   }
 
-  const subTabs: Array<{
-    id: IntelligenceSubTab
-    label: string
-    badge: string
-    icon: React.ReactNode
-  }> = [
-    {
-      id: 'ai-chat',
-      label: 'Sentimen AI Chat',
-      badge: 'Tanya Jawab Korpus',
-      icon: <Sparkles size={15} />,
-    },
-    {
-      id: 'peta-korpus',
-      label: 'Peta Korpus (29 Kategori)',
-      badge: `${analytics?.category_map.length || 29} Kategori`,
-      icon: <Compass size={15} />,
-    },
-    {
-      id: 'target-kpi',
-      label: 'Target KPI & NSS',
-      badge: '5 Indikator',
-      icon: <Target size={15} />,
-    },
-    {
-      id: 'bedah-data',
-      label: 'Bedah Data (Drill-Down)',
-      badge: 'Rating & Emosi',
-      icon: <SlidersHorizontal size={15} />,
-    },
-    {
-      id: 'katalog-api',
-      label: 'Katalog Semantik & API',
-      badge: 'Live Playground',
-      icon: <Terminal size={15} />,
-    },
-  ]
-
   return (
-    <div className="cih-root">
-      {/* Header Banner */}
-      <div className="cih-header-card">
-        <div className="cih-header-top">
-          <div>
-            <div className="cih-eyebrow">
-              <Database size={14} />
-              <span>Platform Semantik &amp; Analitik Korpus PRDECT-ID Terintegrasi</span>
-            </div>
-            <h2 className="cih-title">
-              Pusat Intelijen Korpus, Target KPI &amp; Eksplorasi Multi-Dimensi
-            </h2>
-            <p className="cih-subtitle">
-              Seluruh fitur analitik dari halaman depan terhubung langsung ke{' '}
-              <strong>
-                {(analytics?.kpi_summary.total_samples ?? 5459).toLocaleString('id-ID')} ulasan
-                riil
-              </strong>{' '}
-              beserta atribut Emosi Pelanggan, Rating Bintang (★1 s.d. ★5), 29 Kategori Produk, dan
-              Sentimen API.
-            </p>
-          </div>
-
-          {analytics && (
-            <div className="cih-quick-kpis">
-              <div className="cih-quick-kpi">
-                <div className="cih-quick-kpi-label">Skor NSS</div>
-                <div
-                  className="cih-quick-kpi-val"
-                  style={{
-                    color:
-                      analytics.kpi_summary.overall_nss >= 0 ? '#047857' : '#be123c',
-                  }}
-                >
-                  {analytics.kpi_summary.overall_nss >= 0 ? '+' : ''}
-                  {analytics.kpi_summary.overall_nss.toFixed(1)} pt
-                </div>
-              </div>
-              <div className="cih-quick-kpi">
-                <div className="cih-quick-kpi-label">Macro F1</div>
-                <div className="cih-quick-kpi-val" style={{ color: '#016a71' }}>
-                  {analytics.kpi_summary.f1_macro.toFixed(2)}%
-                </div>
-              </div>
-              <div className="cih-quick-kpi">
-                <div className="cih-quick-kpi-label">Akurasi Uji</div>
-                <div className="cih-quick-kpi-val">
-                  {analytics.kpi_summary.accuracy.toFixed(2)}%
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="cih-subtabs">
-          {subTabs.map((tab) => {
-            const active = activeSubTab === tab.id
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onSubTabChange(tab.id)}
-                className={`cih-subtab-btn ${active ? 'is-active' : ''}`}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-                <span className="cih-subtab-badge">{tab.badge}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
+    <div className="compare-workspace cih-standalone-page">
       {analyticsError && (
         <div className="error-banner" role="alert">
           <span>{analyticsError}</span>
@@ -478,46 +632,60 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
       )}
 
       {/* =====================================================================
-          1. MODE TANYA-JAWAB ANALITIK KORPUS ("SENTIMEN AI CHAT")
+          HALAMAN 1: ASISTEN ANALITIK KORPUS ("SENTIMEN AI CHAT")
          ===================================================================== */}
       {activeSubTab === 'ai-chat' && (
         <>
-          <div className="cih-panel">
-            <div className="cih-panel-head">
-              <div>
-                <h3 className="cih-panel-title">
-                  <Sparkles size={18} style={{ color: '#016a71' }} />
-                  <span>Tanya Jawab Analitik Korpus (Sentimen AI)</span>
-                </h3>
-                <p className="cih-panel-desc">
-                  Tanyakan penyebab keluhan, perbandingan kategori, atau tren emosi pelanggan dalam
-                  bahasa alami. AI menyintesis jawaban langsung dari 5.459 ulasan PRDECT-ID dan
-                  bobot token Multinomial Naive Bayes.
-                </p>
+          <div className="compare-workspace-header">
+            <div className="compare-header-left">
+              <div className="cih-page-kicker">
+                <Sparkles size={13} />
+                <span>SENTIMEN AI · NATURAL LANGUAGE CORPUS ANALYST</span>
               </div>
-              <select
+              <h1 className="compare-title">Asisten Analitik Korpus (Sentimen AI)</h1>
+              <p className="compare-subtitle">
+                Tanyakan penyebab keluhan pengiriman, kualitas kemasan, atau psikografi emosi pelanggan
+                dalam bahasa alami. Sistem menyintesis jawaban langsung dari{' '}
+                {(analytics?.kpi_summary.total_samples ?? 5459).toLocaleString('id-ID')} ulasan
+                PRDECT-ID beserta bobot log-probabilitas Multinomial Naive Bayes.
+              </p>
+            </div>
+            <div className="compare-header-right">
+              <CustomSelect
+                prefixLabel="Cakupan"
                 value={aiCategoryFilter}
-                onChange={(e) => {
-                  const nextCat = e.target.value
+                options={aiScopeOptions}
+                align="right"
+                searchable
+                minWidth={255}
+                onChange={(nextCat) => {
                   setAiCategoryFilter(nextCat)
                   void runAiQuery(questionInput, nextCat)
                 }}
-                aria-label="Filter cakupan kategori AI"
-                className="cih-select"
-              >
-                <option value="Semua">Cakupan: Semua Kategori (29)</option>
-                <option value="Elektronik">Grup: Elektronik &amp; Gadget</option>
-                <option value="Fashion">Grup: Fashion &amp; Kecantikan</option>
-                <option value="Rumah Tangga">Grup: Rumah Tangga &amp; Dapur</option>
-                <option value="Otomotif & Hobi">Grup: Otomotif, Hobi &amp; Kesehatan</option>
-                {analytics?.category_map.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    Kategori: {c.label} ({c.total})
-                  </option>
-                ))}
-              </select>
+              />
             </div>
+          </div>
 
+          <div className="compare-scenarios-bar">
+            <span className="compare-scenarios-label">Pertanyaan Cepat:</span>
+            <div className="compare-scenarios-list">
+              {PRESET_AI_QUESTIONS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => {
+                    setQuestionInput(preset)
+                    void runAiQuery(preset, aiCategoryFilter)
+                  }}
+                  className={`compare-scenario-chip ${questionInput === preset ? 'is-active' : ''}`}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="cih-panel">
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -533,7 +701,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                   type="text"
                   value={questionInput}
                   onChange={(e) => setQuestionInput(e.target.value)}
-                  placeholder="Contoh: Apa penyebab utama keluhan pengiriman pada kategori Elektronik?"
+                  placeholder="Ketik pertanyaan analitik tentang kategori, pengiriman, harga, atau emosi pelanggan..."
                   className="cih-input"
                 />
               </div>
@@ -545,35 +713,16 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 {aiLoading ? (
                   <>
                     <RefreshCw size={15} />
-                    <span>Menganalisis Korpus...</span>
+                    <span>Menyintesis Korpus...</span>
                   </>
                 ) : (
                   <>
                     <Send size={15} />
-                    <span>Tanyakan ke AI</span>
+                    <span>Jalankan Analisis AI</span>
                   </>
                 )}
               </button>
             </form>
-
-            <div className="cih-presets">
-              <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#66645e' }}>
-                Pertanyaan Populer:
-              </span>
-              {PRESET_AI_QUESTIONS.map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => {
-                    setQuestionInput(preset)
-                    void runAiQuery(preset, aiCategoryFilter)
-                  }}
-                  className="cih-preset-chip"
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
           </div>
 
           {aiError && (
@@ -587,83 +736,61 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               {/* Left Column: Narrative, Key Findings & Evidence Reviews */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div className="cih-panel">
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
-                    <span className="cih-badge is-pos">{aiResult.matched_category_label}</span>
-                    <span className="cih-badge" style={{ background: '#f1f0ec', color: '#3f3d37' }}>
-                      Aspek: {aiResult.matched_aspect}
+                  <div className="cih-meta-strip">
+                    <span className="cih-badge is-pos">
+                      Cakupan: {aiResult.matched_category_label}
+                    </span>
+                    <span className="cih-badge is-neutral-outline">
+                      Dimensi Analisis: {aiResult.matched_aspect}
+                    </span>
+                    <span className="cih-badge is-neutral-outline">
+                      Sampel Dianalisis: {aiResult.metrics_highlight.total_analyzed.toLocaleString('id-ID')} ulasan
                     </span>
                   </div>
 
-                  <h4 style={{ fontSize: '1.08rem', fontWeight: 700, margin: '0 0 6px', color: '#27251e' }}>
-                    {aiResult.headline}
-                  </h4>
+                  <h2 className="cih-synthesis-headline">{aiResult.headline}</h2>
 
                   <div className="cih-narrative-box">{aiResult.narrative}</div>
 
-                  <div className="cih-grid-4">
-                    <div className="cih-stat-card is-pos">
-                      <div className="cih-quick-kpi-label" style={{ color: '#065f46' }}>
-                        Sentimen Positif
-                      </div>
-                      <div className="cih-quick-kpi-val" style={{ color: '#047857' }}>
+                  <div className="cih-ledger-strip-4">
+                    <div className="cih-ledger-cell">
+                      <span className="cih-ledger-label">Sentimen Positif</span>
+                      <span className="cih-ledger-val is-pos">
                         {aiResult.metrics_highlight.positif_pct}%
-                      </div>
+                      </span>
                     </div>
-                    <div className="cih-stat-card is-neg">
-                      <div className="cih-quick-kpi-label" style={{ color: '#9f1239' }}>
-                        Sentimen Negatif
-                      </div>
-                      <div className="cih-quick-kpi-val" style={{ color: '#be123c' }}>
+                    <div className="cih-ledger-cell">
+                      <span className="cih-ledger-label">Sentimen Negatif</span>
+                      <span className="cih-ledger-val is-neg">
                         {aiResult.metrics_highlight.negatif_pct}%
-                      </div>
+                      </span>
                     </div>
-                    <div className="cih-stat-card">
-                      <div className="cih-quick-kpi-label">Net Sentiment (NSS)</div>
-                      <div
-                        className="cih-quick-kpi-val"
-                        style={{
-                          color: aiResult.metrics_highlight.nss >= 0 ? '#016a71' : '#be123c',
-                        }}
+                    <div className="cih-ledger-cell">
+                      <span className="cih-ledger-label">Net Sentiment (NSS)</span>
+                      <span
+                        className={`cih-ledger-val ${
+                          aiResult.metrics_highlight.nss >= 0 ? 'is-teal' : 'is-neg'
+                        }`}
                       >
                         {aiResult.metrics_highlight.nss >= 0 ? '+' : ''}
                         {aiResult.metrics_highlight.nss} pt
-                      </div>
+                      </span>
                     </div>
-                    <div className="cih-stat-card is-warn">
-                      <div className="cih-quick-kpi-label" style={{ color: '#92400e' }}>
-                        Rata-rata Rating
-                      </div>
-                      <div className="cih-quick-kpi-val" style={{ color: '#b45309' }}>
+                    <div className="cih-ledger-cell">
+                      <span className="cih-ledger-label">Rata-rata Rating</span>
+                      <span className="cih-ledger-val is-amber">
                         ★ {aiResult.metrics_highlight.avg_rating.toFixed(2)}
-                      </div>
+                      </span>
                     </div>
                   </div>
 
-                  <div style={{ marginTop: '18px' }}>
-                    <div
-                      style={{
-                        fontSize: '0.73rem',
-                        fontWeight: 700,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
-                        color: '#66645e',
-                        marginBottom: '10px',
-                      }}
-                    >
-                      Temuan Utama Korpus &amp; Psikografi Emosi
+                  <div style={{ marginTop: '20px' }}>
+                    <div className="cih-section-eyebrow">
+                      Temuan Utama Korpus &amp; Psikografi Emosi Pelanggan
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="cih-findings-list">
                       {aiResult.key_findings.map((finding, idx) => (
-                        <div
-                          key={idx}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            gap: '8px',
-                            fontSize: '0.84rem',
-                            color: '#3f3d37',
-                          }}
-                        >
+                        <div key={idx} className="cih-finding-item">
                           <CheckCircle2 size={16} style={{ color: '#016a71', marginTop: '2px' }} />
                           <span>{finding}</span>
                         </div>
@@ -674,30 +801,20 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
                 {/* Evidence Reviews */}
                 <div className="cih-panel">
-                  <h5 style={{ fontSize: '0.94rem', fontWeight: 700, margin: '0 0 12px', color: '#27251e' }}>
-                    Bukti Empiris Ulasan Pelanggan Terkait ({aiResult.evidence_reviews.length} Sampel)
-                  </h5>
+                  <div className="cih-panel-head" style={{ marginBottom: '12px' }}>
+                    <div>
+                      <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                        <span>Kutipan Ulasan Empiris Terkait ({aiResult.evidence_reviews.length} Sampel)</span>
+                      </h3>
+                      <p className="cih-panel-desc">
+                        Sampel ulasan nyata dari dataset PRDECT-ID yang mendukung kesimpulan di atas
+                      </p>
+                    </div>
+                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {aiResult.evidence_reviews.map((rev, idx) => (
-                      <div
-                        key={idx}
-                        style={{
-                          padding: '13px 15px',
-                          borderRadius: '12px',
-                          background: '#faf9f6',
-                          border: '1px solid #e4e2dd',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: '8px',
-                            marginBottom: '6px',
-                          }}
-                        >
+                      <div key={idx} className="cih-evidence-card">
+                        <div className="cih-evidence-top">
                           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px' }}>
                             <span
                               className={`cih-badge ${
@@ -711,40 +828,25 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                               {rev.sentiment.toUpperCase()}
                             </span>
                             <span className="cih-badge is-net">★ {rev.rating}/5</span>
-                            <span
-                              className="cih-badge"
-                              style={{ background: '#ffffff', border: '1px solid #e4e2dd', color: '#3f3d37' }}
-                            >
+                            <span className="cih-badge is-neutral-outline">
                               Emosi: {rev.emotion_label}
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: '#66645e' }}>
-                              • {rev.category_label} ({rev.location})
+                            <span className="cih-evidence-meta">
+                              {rev.category_label} · {rev.location}
                             </span>
                           </div>
                           {onInspectReview && (
                             <button
                               type="button"
                               onClick={() => onInspectReview(rev.text, rev.category_label)}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                background: 'none',
-                                border: 'none',
-                                color: '#016a71',
-                                fontSize: '0.78rem',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                              }}
+                              className="cih-link-action"
                             >
                               <span>Inspeksi XAI</span>
                               <ArrowRight size={13} />
                             </button>
                           )}
                         </div>
-                        <p style={{ margin: 0, fontSize: '0.84rem', fontStyle: 'italic', color: '#27251e' }}>
-                          &ldquo;{rev.text}&rdquo;
-                        </p>
+                        <p className="cih-evidence-quote">&ldquo;{rev.text}&rdquo;</p>
                       </div>
                     ))}
                   </div>
@@ -754,27 +856,29 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               {/* Right Column: Chart Breakdown & Driving Tokens */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div className="cih-panel">
-                  <h4 className="cih-panel-title" style={{ fontSize: '0.95rem', marginBottom: '4px' }}>
+                  <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '4px' }}>
                     <BarChart3 size={16} style={{ color: '#016a71' }} />
                     <span>{aiResult.chart_title}</span>
-                  </h4>
-                  <p className="cih-panel-desc" style={{ marginBottom: '14px' }}>
-                    Proporsi sentimen positif (hijau) berbanding negatif (merah) pada segmen terkait
+                  </h3>
+                  <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
+                    Proporsi sentimen positif (hijau) berbanding negatif (merah) pada segmen yang dianalisis
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                     {aiResult.chart_bars.map((bar, idx) => (
-                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            fontSize: '0.79rem',
+                            fontSize: '0.8rem',
                             gap: '8px',
                           }}
                         >
                           <strong style={{ color: '#27251e' }}>{bar.label}</strong>
-                          <span style={{ color: '#66645e' }}>{bar.value_label}</span>
+                          <span style={{ color: '#66645e', fontVariantNumeric: 'tabular-nums' }}>
+                            {bar.value_label}
+                          </span>
                         </div>
                         <div className="cih-bar-track">
                           {bar.positif_pct > 0 && (
@@ -798,16 +902,16 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 </div>
 
                 <div className="cih-panel">
-                  <h4 className="cih-panel-title" style={{ fontSize: '0.95rem', marginBottom: '4px' }}>
+                  <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '4px' }}>
                     <span>Atribusi Token Pendorong (Multinomial Naive Bayes)</span>
-                  </h4>
-                  <p className="cih-panel-desc" style={{ marginBottom: '14px' }}>
-                    Kata kunci dengan bobot log-probability tertinggi pada kamus TF-IDF
+                  </h3>
+                  <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
+                    Kata kunci dengan rasio log-probabilitas tertinggi pada vektorisasi TF-IDF
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#be123c', marginBottom: '8px' }}>
+                      <div className="cih-token-group-title is-neg">
                         Token Pemicu Keluhan (Kelas Negatif)
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -820,7 +924,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     </div>
 
                     <div>
-                      <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#047857', marginBottom: '8px' }}>
+                      <div className="cih-token-group-title is-pos">
                         Token Pendorong Kepuasan (Kelas Positif)
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -840,74 +944,93 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
       )}
 
       {/* =====================================================================
-          2. PETA PERSEBARAN SENTIMEN 29 KATEGORI (PETA KORPUS)
+          HALAMAN 2: PETA PERSEBARAN SENTIMEN 29 KATEGORI (PETA KORPUS)
          ===================================================================== */}
       {activeSubTab === 'peta-korpus' && (
-        <div className="cih-panel">
-          <div className="cih-panel-head">
-            <div>
-              <h3 className="cih-panel-title">
-                <Compass size={18} style={{ color: '#016a71' }} />
-                <span>
-                  Peta Persebaran Sentimen {analytics?.category_map.length || 29} Kategori Produk
-                </span>
-              </h3>
-              <p className="cih-panel-desc">
-                Distribusi lengkap Positif vs Netral vs Negatif, Net Sentiment Score (NSS), rata-rata
-                rating bintang, dan emosi dominan di setiap kategori e-commerce. Klik kartu kategori
-                untuk membedah ulasan.
+        <>
+          <div className="compare-workspace-header">
+            <div className="compare-header-left">
+              <div className="cih-page-kicker">
+                <Compass size={13} />
+                <span>PETA KORPUS PRDECT-ID · DISTRIBUSI LINTAS SEKTOR</span>
+              </div>
+              <h1 className="compare-title">
+                Peta Persebaran Sentimen {analytics?.category_map.length || 29} Kategori Produk
+              </h1>
+              <p className="compare-subtitle">
+                Pemetaan lengkap rasio Positif vs Netral vs Negatif, Net Sentiment Score (NSS),
+                rata-rata rating bintang pelanggan, serta emosi dominan di setiap kategori Tokopedia
+                PRDECT-ID.
               </p>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
-              <div style={{ position: 'relative' }}>
-                <span className="cih-input-icon">
-                  <Search size={14} />
-                </span>
-                <input
-                  type="text"
-                  value={mapSearch}
-                  onChange={(e) => setMapSearch(e.target.value)}
-                  placeholder="Cari kategori..."
-                  className="cih-input"
-                  style={{ padding: '8px 12px 8px 32px', fontSize: '0.8rem', width: '180px' }}
-                />
+            {analytics && (
+              <div className="cih-header-stat-strip">
+                <div className="cih-header-stat">
+                  <span className="cih-header-stat-label">Total Korpus</span>
+                  <span className="cih-header-stat-val">
+                    {analytics.kpi_summary.total_samples.toLocaleString('id-ID')}
+                  </span>
+                </div>
+                <div className="cih-header-stat">
+                  <span className="cih-header-stat-label">Kategori Aktif</span>
+                  <span className="cih-header-stat-val">{analytics.category_map.length}</span>
+                </div>
+                <div className="cih-header-stat">
+                  <span className="cih-header-stat-label">NSS Global</span>
+                  <span className="cih-header-stat-val" style={{ color: '#047857' }}>
+                    +{analytics.kpi_summary.overall_nss.toFixed(1)} pt
+                  </span>
+                </div>
               </div>
+            )}
+          </div>
 
-              <select
+          <div className="cih-toolbar-card">
+            <div className="cih-toolbar-search">
+              <Search size={15} />
+              <input
+                type="text"
+                value={mapSearch}
+                onChange={(e) => setMapSearch(e.target.value)}
+                placeholder="Cari nama kategori produk (misal: Komputer, Kecantikan, Kamera)..."
+                className="cih-toolbar-search-input"
+              />
+              {mapSearch && (
+                <button
+                  type="button"
+                  className="cih-toolbar-clear"
+                  onClick={() => setMapSearch('')}
+                >
+                  Reset
+                </button>
+              )}
+            </div>
+
+            <div className="cih-toolbar-controls">
+              <CustomSelect
+                prefixLabel="Grup"
                 value={mapGroupFilter}
-                onChange={(e) => setMapGroupFilter(e.target.value)}
-                aria-label="Filter grup kategori"
-                className="cih-select"
-              >
-                <option value="Semua">Semua Grup Makro</option>
-                <option value="Elektronik">Elektronik</option>
-                <option value="Fashion">Fashion &amp; Kecantikan</option>
-                <option value="Rumah Tangga">Rumah Tangga</option>
-                <option value="Otomotif & Hobi">Otomotif &amp; Hobi</option>
-              </select>
-
-              <select
+                options={mapGroupOptions}
+                minWidth={225}
+                onChange={(val) => setMapGroupFilter(val)}
+              />
+              <CustomSelect
+                prefixLabel="Urutkan"
                 value={mapSortBy}
-                onChange={(e) =>
-                  setMapSortBy(
-                    e.target.value as 'total' | 'nss_desc' | 'nss_asc' | 'rating'
-                  )
+                options={mapSortOptions}
+                align="right"
+                minWidth={250}
+                onChange={(val) =>
+                  setMapSortBy(val as 'total' | 'nss_desc' | 'nss_asc' | 'rating')
                 }
-                aria-label="Urutkan kategori"
-                className="cih-select"
-              >
-                <option value="total">Urutkan: Volume Terbanyak</option>
-                <option value="nss_desc">Urutkan: NSS Tertinggi (Terpuas)</option>
-                <option value="nss_asc">Urutkan: NSS Terendah (Kritis)</option>
-                <option value="rating">Urutkan: Rating Bintang Tertinggi</option>
-              </select>
+              />
             </div>
           </div>
 
           {loadingAnalytics ? (
-            <div style={{ padding: '36px 0', textAlign: 'center', color: '#66645e' }}>
-              Memuat peta persebaran 29 kategori...
+            <div className="cih-panel" style={{ padding: '48px 24px', textAlign: 'center', color: '#66645e' }}>
+              Memuat peta persebaran kategori dari server...
             </div>
           ) : (
             <div className="cih-grid-3">
@@ -919,20 +1042,8 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
                     <div>
-                      <div
-                        style={{
-                          fontSize: '0.66rem',
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.04em',
-                          color: '#66645e',
-                        }}
-                      >
-                        {cat.group}
-                      </div>
-                      <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#27251e' }}>
-                        {cat.label}
-                      </div>
+                      <div className="cih-cat-group-tag">{cat.group}</div>
+                      <div className="cih-cat-title">{cat.label}</div>
                     </div>
                     <span
                       className={`cih-badge ${
@@ -962,14 +1073,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     />
                   </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '0.73rem',
-                      fontWeight: 600,
-                    }}
-                  >
+                  <div className="cih-cat-pct-row">
                     <span style={{ color: '#047857' }}>
                       {cat.positif_pct}% Pos ({cat.positif})
                     </span>
@@ -981,50 +1085,84 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     </span>
                   </div>
 
-                  <div
-                    style={{
-                      paddingTop: '8px',
-                      borderTop: '1px solid #e4e2dd',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '0.74rem',
-                      color: '#66645e',
-                    }}
-                  >
+                  <div className="cih-cat-footer">
                     <span>
-                      Total: <strong style={{ color: '#27251e' }}>{cat.total}</strong> •{' '}
-                      <strong style={{ color: '#b45309' }}>★ {cat.avg_rating}</strong>
+                      Sampel: <strong style={{ color: '#27251e' }}>{cat.total}</strong> ·{' '}
+                      <strong style={{ color: '#b45309' }}>★ {cat.avg_rating}</strong> ·{' '}
+                      <span>{cat.top_emotion_label}</span>
                     </span>
-                    <span style={{ color: '#016a71', fontWeight: 700 }}>Bedah Data →</span>
+                    <span className="cih-link-action">
+                      <span>Bedah</span>
+                      <ArrowRight size={13} />
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </>
       )}
 
       {/* =====================================================================
-          3. PANEL PELACAK TARGET KPI & NET SENTIMENT SCORE (NSS)
+          HALAMAN 3: PANEL PELACAK TARGET KPI & NET SENTIMENT SCORE (NSS)
          ===================================================================== */}
       {activeSubTab === 'target-kpi' && analytics && (
         <>
+          <div className="compare-workspace-header">
+            <div className="compare-header-left">
+              <div className="cih-page-kicker">
+                <Target size={13} />
+                <span>GOVERNED KPI TRACKER · NET SENTIMENT SCORE &amp; MODEL SLA</span>
+              </div>
+              <h1 className="compare-title">Pelacak Target KPI &amp; Net Sentiment Score (NSS)</h1>
+              <p className="compare-subtitle">
+                Pemantauan terukur atas 5 indikator kinerja utama sistem: kualitas generalisasi model
+                (Macro F1-Score &amp; Akurasi Uji), Net Sentiment Score (NSS), rata-rata rating
+                bintang pelanggan, dan ambang batas keluhan kritis.
+              </p>
+            </div>
+
+            <div className="cih-header-stat-strip">
+              <div className="cih-header-stat">
+                <span className="cih-header-stat-label">Skor NSS Korpus</span>
+                <span className="cih-header-stat-val" style={{ color: '#047857' }}>
+                  +{analytics.kpi_summary.overall_nss.toFixed(1)} pt
+                </span>
+              </div>
+              <div className="cih-header-stat">
+                <span className="cih-header-stat-label">Macro F1-Score</span>
+                <span className="cih-header-stat-val" style={{ color: '#016a71' }}>
+                  {analytics.kpi_summary.f1_macro.toFixed(2)}%
+                </span>
+              </div>
+              <div className="cih-header-stat">
+                <span className="cih-header-stat-label">Akurasi Uji</span>
+                <span className="cih-header-stat-val">
+                  {analytics.kpi_summary.accuracy.toFixed(2)}%
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="cih-grid-3">
             {analytics.kpi_summary.kpi_targets.map((kpi) => (
-              <div key={kpi.id} className="cih-panel" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div
+                key={kpi.id}
+                className="cih-panel"
+                style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}
+              >
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <span className="cih-quick-kpi-label">Indikator Terkelola</span>
                     <span className={`cih-badge ${kpi.achieved ? 'is-pos' : 'is-net'}`}>
                       {kpi.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#27251e' }}>
+                  <div style={{ fontSize: '0.98rem', fontWeight: 700, color: '#27251e' }}>
                     {kpi.label}
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '10px' }}>
-                    <span style={{ fontSize: '1.85rem', fontWeight: 800, color: '#27251e' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginTop: '12px' }}>
+                    <span style={{ fontSize: '1.9rem', fontWeight: 800, color: '#27251e', fontVariantNumeric: 'tabular-nums' }}>
                       {kpi.id === 'net_sentiment_score' && kpi.current_value > 0 ? '+' : ''}
                       {kpi.current_value}
                       {kpi.unit}
@@ -1036,28 +1174,17 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     </span>
                   </div>
                 </div>
-                <div
-                  style={{
-                    marginTop: '14px',
-                    paddingTop: '10px',
-                    borderTop: '1px solid #e4e2dd',
-                    fontSize: '0.73rem',
-                    color: '#66645e',
-                    fontFamily: 'monospace',
-                  }}
-                >
-                  Rumus: {kpi.formula}
-                </div>
+                <div className="cih-formula-footer">Rumus: {kpi.formula}</div>
               </div>
             ))}
           </div>
 
           <div className="cih-grid-2">
             <div className="cih-panel">
-              <h4 className="cih-panel-title" style={{ marginBottom: '12px' }}>
+              <h3 className="cih-panel-title" style={{ marginBottom: '14px' }}>
                 <TrendingUp size={17} style={{ color: '#047857' }} />
                 <span>Top 5 Kategori dengan Net Sentiment Score (NSS) Tertinggi</span>
-              </h4>
+              </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {analytics.kpi_summary.top_nss_categories.map((cat) => (
                   <div
@@ -1072,12 +1199,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#27251e' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#27251e' }}>
                         {cat.label}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#57554f' }}>
+                      <div style={{ fontSize: '0.76rem', color: '#57554f', marginTop: '2px' }}>
                         {cat.positif_pct}% Positif vs {cat.negatif_pct}% Negatif ({cat.total} ulasan
-                        • ★{cat.avg_rating})
+                        · ★{cat.avg_rating})
                       </div>
                     </div>
                     <span className="cih-badge is-pos">+{cat.nss} pt</span>
@@ -1087,10 +1214,10 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             </div>
 
             <div className="cih-panel">
-              <h4 className="cih-panel-title" style={{ marginBottom: '12px' }}>
+              <h3 className="cih-panel-title" style={{ marginBottom: '14px' }}>
                 <TrendingDown size={17} style={{ color: '#be123c' }} />
                 <span>5 Kategori Prioritas Perbaikan (Rasio Keluhan Tertinggi)</span>
-              </h4>
+              </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {analytics.kpi_summary.critical_nss_categories.map((cat) => (
                   <div
@@ -1105,12 +1232,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#27251e' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#27251e' }}>
                         {cat.label}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#57554f' }}>
+                      <div style={{ fontSize: '0.76rem', color: '#57554f', marginTop: '2px' }}>
                         {cat.negatif_pct}% Negatif vs {cat.positif_pct}% Positif ({cat.total} ulasan
-                        • ★{cat.avg_rating})
+                        · ★{cat.avg_rating})
                       </div>
                     </div>
                     <span className="cih-badge is-neg">
@@ -1125,147 +1252,122 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
       )}
 
       {/* =====================================================================
-          4. BEDAH DATA (DRILL-DOWN EXPLORER RATING ★1-★5, EMOSI, & KOTA)
+          HALAMAN 4: BEDAH DATA MULTI-DIMENSI (DRILL-DOWN EXPLORER)
          ===================================================================== */}
       {activeSubTab === 'bedah-data' && analytics && (
         <>
+          <div className="compare-workspace-header">
+            <div className="compare-header-left">
+              <div className="cih-page-kicker">
+                <SlidersHorizontal size={13} />
+                <span>MULTI-DIMENSIONAL DRILL-DOWN · RATING, EMOTION &amp; CITY</span>
+              </div>
+              <h1 className="compare-title">
+                Bedah Data Multi-Dimensi (Rating ★1–★5, Emosi &amp; Kota)
+              </h1>
+              <p className="compare-subtitle">
+                Eksplorasi silang atribut asli dataset PRDECT-ID: saring berdasarkan kategori produk,
+                tingkat psikografi emosi pelanggan (Happy, Love, Sadness, Fear, Anger), rating
+                bintang, dan kelas sentimen.
+              </p>
+            </div>
+
+            <div className="cih-header-stat-strip">
+              <div className="cih-header-stat">
+                <span className="cih-header-stat-label">Sampel Tersaring</span>
+                <span className="cih-header-stat-val" style={{ color: '#016a71' }}>
+                  {analytics.drilldown.filtered_total.toLocaleString('id-ID')}
+                </span>
+              </div>
+              <div className="cih-header-stat">
+                <span className="cih-header-stat-label">Rata-rata Rating</span>
+                <span className="cih-header-stat-val" style={{ color: '#b45309' }}>
+                  ★ {analytics.drilldown.filtered_avg_rating.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div className="cih-panel">
-            <div className="cih-panel-head">
+            <div className="cih-panel-head" style={{ marginBottom: '14px' }}>
               <div>
-                <h3 className="cih-panel-title">
-                  <Filter size={18} style={{ color: '#016a71' }} />
-                  <span>Bedah Data Multi-Dimensi (Rating ★1–★5, Emosi PRDECT-ID &amp; Kota)</span>
+                <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                  <span>Parameter Filter Silang (Cross-Filter)</span>
                 </h3>
                 <p className="cih-panel-desc">
-                  Eksplorasi silang atribut asli dataset PRDECT-ID: saring berdasarkan kategori,
-                  tingkat emosi pelanggan, rating bintang, dan kelas sentimen.
+                  Pilih kombinasi dimensi di bawah ini atau klik langsung bar grafik untuk memfokuskan sampel ulasan
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => handleDrillFilterChange('Semua', 'Semua', 'Semua', 'Semua')}
-                className="cih-select"
+                className="cih-reset-filter-btn"
               >
-                Reset Filter ({analytics.drilldown.filtered_total.toLocaleString('id-ID')} cocok)
+                Reset Semua Filter ({analytics.drilldown.filtered_total.toLocaleString('id-ID')} cocok)
               </button>
             </div>
 
             <div className="cih-grid-4">
-              <div>
-                <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '5px' }}>
-                  1. Kategori Produk
-                </label>
-                <select
+              <div className="cih-filter-field">
+                <span className="cih-filter-label">1. Kategori Produk</span>
+                <CustomSelect
                   value={drillCategory}
-                  onChange={(e) =>
-                    handleDrillFilterChange(
-                      e.target.value,
-                      drillEmotion,
-                      drillRating,
-                      drillSentiment
-                    )
+                  options={drillCategoryOptions}
+                  fullWidth
+                  searchable
+                  onChange={(nextVal) =>
+                    handleDrillFilterChange(nextVal, drillEmotion, drillRating, drillSentiment)
                   }
-                  className="cih-select"
-                  style={{ width: '100%' }}
-                >
-                  <option value="Semua">Semua Kategori (29)</option>
-                  {analytics.category_map.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.label} ({c.total})
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
-              <div>
-                <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '5px' }}>
-                  2. Emosi Pelanggan (PRDECT-ID)
-                </label>
-                <select
+              <div className="cih-filter-field">
+                <span className="cih-filter-label">2. Emosi Pelanggan (PRDECT-ID)</span>
+                <CustomSelect
                   value={drillEmotion}
-                  onChange={(e) =>
-                    handleDrillFilterChange(
-                      drillCategory,
-                      e.target.value,
-                      drillRating,
-                      drillSentiment
-                    )
+                  options={drillEmotionOptions}
+                  fullWidth
+                  onChange={(nextVal) =>
+                    handleDrillFilterChange(drillCategory, nextVal, drillRating, drillSentiment)
                   }
-                  className="cih-select"
-                  style={{ width: '100%' }}
-                >
-                  <option value="Semua">Semua Tingkat Emosi (5)</option>
-                  <option value="Happy">Senang (Happy)</option>
-                  <option value="Love">Sangat Puas / Cinta (Love)</option>
-                  <option value="Sadness">Kecewa / Sedih (Sadness)</option>
-                  <option value="Fear">Khawatir / Ragu (Fear)</option>
-                  <option value="Anger">Marah / Komplain Keras (Anger)</option>
-                </select>
+                />
               </div>
 
-              <div>
-                <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '5px' }}>
-                  3. Rating Bintang Pelanggan
-                </label>
-                <select
+              <div className="cih-filter-field">
+                <span className="cih-filter-label">3. Rating Bintang Pelanggan</span>
+                <CustomSelect
                   value={drillRating}
-                  onChange={(e) =>
-                    handleDrillFilterChange(
-                      drillCategory,
-                      drillEmotion,
-                      e.target.value,
-                      drillSentiment
-                    )
+                  options={drillRatingOptions}
+                  fullWidth
+                  onChange={(nextVal) =>
+                    handleDrillFilterChange(drillCategory, drillEmotion, nextVal, drillSentiment)
                   }
-                  className="cih-select"
-                  style={{ width: '100%' }}
-                >
-                  <option value="Semua">Semua Rating (★1 s.d. ★5)</option>
-                  <option value="5">★ 5 Bintang (Sangat Puas)</option>
-                  <option value="4">★ 4 Bintang (Puas)</option>
-                  <option value="3">★ 3 Bintang (Standar)</option>
-                  <option value="2">★ 2 Bintang (Kurang)</option>
-                  <option value="1">★ 1 Bintang (Kecewa)</option>
-                </select>
+                />
               </div>
 
-              <div>
-                <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '5px' }}>
-                  4. Kelas Sentimen
-                </label>
-                <select
+              <div className="cih-filter-field">
+                <span className="cih-filter-label">4. Kelas Sentimen</span>
+                <CustomSelect
                   value={drillSentiment}
-                  onChange={(e) =>
-                    handleDrillFilterChange(
-                      drillCategory,
-                      drillEmotion,
-                      drillRating,
-                      e.target.value
-                    )
+                  options={drillSentimentOptions}
+                  fullWidth
+                  align="right"
+                  onChange={(nextVal) =>
+                    handleDrillFilterChange(drillCategory, drillEmotion, drillRating, nextVal)
                   }
-                  className="cih-select"
-                  style={{ width: '100%' }}
-                >
-                  <option value="Semua">Semua Sentimen</option>
-                  <option value="positif">Positif</option>
-                  <option value="netral">Netral</option>
-                  <option value="negatif">Negatif</option>
-                </select>
+                />
               </div>
             </div>
           </div>
 
-          <div
-            className="cih-grid-3"
-            style={{ opacity: drillLoading ? 0.6 : 1 }}
-          >
+          <div className="cih-grid-3" style={{ opacity: drillLoading ? 0.6 : 1 }}>
             {/* Rating Breakdown */}
             <div className="cih-panel">
-              <h4 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '12px' }}>
+              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
                 <Star size={16} style={{ color: '#d97706' }} />
                 <span>Distribusi Rating Bintang (★1 s.d. ★5)</span>
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {analytics.drilldown.ratings.map((r) => (
                   <div
                     key={r.rating}
@@ -1283,12 +1385,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: '0.79rem',
-                        marginBottom: '4px',
+                        fontSize: '0.8rem',
+                        marginBottom: '5px',
                       }}
                     >
                       <strong style={{ color: '#27251e' }}>★ {r.rating} Bintang</strong>
-                      <span style={{ color: '#66645e' }}>
+                      <span style={{ color: '#66645e', fontVariantNumeric: 'tabular-nums' }}>
                         {r.count.toLocaleString('id-ID')} ({r.percentage}%)
                       </span>
                     </div>
@@ -1311,11 +1413,11 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
             {/* Emotion Breakdown */}
             <div className="cih-panel">
-              <h4 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '12px' }}>
+              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
                 <Activity size={16} style={{ color: '#016a71' }} />
                 <span>Psikografi Emosi Pelanggan (PRDECT-ID)</span>
-              </h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '11px' }}>
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {analytics.drilldown.emotions.map((emo) => (
                   <div
                     key={emo.emotion}
@@ -1333,13 +1435,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                       style={{
                         display: 'flex',
                         justifyContent: 'space-between',
-                        fontSize: '0.79rem',
-                        marginBottom: '4px',
+                        fontSize: '0.8rem',
+                        marginBottom: '5px',
                       }}
                     >
                       <strong style={{ color: '#27251e' }}>{emo.label}</strong>
-                      <span style={{ color: '#66645e' }}>
-                        {emo.count.toLocaleString('id-ID')} ({emo.percentage}%) • ★{emo.avg_rating}
+                      <span style={{ color: '#66645e', fontVariantNumeric: 'tabular-nums' }}>
+                        {emo.count.toLocaleString('id-ID')} ({emo.percentage}%) · ★{emo.avg_rating}
                       </span>
                     </div>
                     <div className="cih-bar-track">
@@ -1357,32 +1459,18 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
             {/* Store Locations */}
             <div className="cih-panel">
-              <h4 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '12px' }}>
+              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
                 <MapPin size={16} style={{ color: '#016a71' }} />
                 <span>Sebaran Lokasi Toko / Kota Teratas</span>
-              </h4>
+              </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {analytics.drilldown.locations.map((loc) => (
-                  <div
-                    key={loc.location}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '8px 10px',
-                      borderRadius: '10px',
-                      background: '#faf9f6',
-                      border: '1px solid #e4e2dd',
-                      fontSize: '0.78rem',
-                    }}
-                  >
+                  <div key={loc.location} className="cih-location-row">
                     <strong style={{ color: '#27251e' }}>{loc.location}</strong>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ color: '#047857', fontWeight: 600 }}>{loc.positif_pct}% Pos</span>
                       <span style={{ color: '#be123c', fontWeight: 600 }}>{loc.negatif_pct}% Neg</span>
-                      <span className="cih-badge" style={{ background: '#ffffff', border: '1px solid #e4e2dd' }}>
-                        {loc.count}
-                      </span>
+                      <span className="cih-badge is-neutral-outline">{loc.count}</span>
                     </div>
                   </div>
                 ))}
@@ -1391,12 +1479,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
           </div>
 
           <div className="cih-panel">
-            <h4 className="cih-panel-title" style={{ fontSize: '0.95rem', marginBottom: '12px' }}>
+            <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '14px' }}>
               <span>
                 Sampel Ulasan Hasil Bedah Data ({analytics.drilldown.filtered_total.toLocaleString('id-ID')}{' '}
                 ulasan cocok)
               </span>
-            </h4>
+            </h3>
             <div className="cih-grid-2">
               {analytics.drilldown.samples.map((s, idx) => (
                 <div key={idx} className="cih-cat-card" style={{ cursor: 'default' }}>
@@ -1423,52 +1511,31 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                           {s.sentiment.toUpperCase()}
                         </span>
                         <span className="cih-badge is-net">★ {s.rating}</span>
-                        <span
-                          className="cih-badge"
-                          style={{ background: '#ffffff', border: '1px solid #e4e2dd', color: '#3f3d37' }}
-                        >
-                          {s.emotion_label}
-                        </span>
+                        <span className="cih-badge is-neutral-outline">{s.emotion_label}</span>
                       </div>
                       <span style={{ fontSize: '0.73rem', color: '#66645e' }}>{s.location}</span>
                     </div>
-                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#27251e', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#27251e', marginBottom: '4px' }}>
                       {s.product_name}
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.81rem', fontStyle: 'italic', color: '#3f3d37' }}>
+                    <p style={{ margin: 0, fontSize: '0.82rem', fontStyle: 'italic', color: '#3f3d37', lineHeight: 1.55 }}>
                       &ldquo;{s.text}&rdquo;
                     </p>
                   </div>
 
-                  <div
-                    style={{
-                      paddingTop: '8px',
-                      borderTop: '1px solid #e4e2dd',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontSize: '0.73rem',
-                      color: '#66645e',
-                    }}
-                  >
+                  <div className="cih-cat-footer">
                     <span>
                       Kategori: <strong>{s.category_label}</strong>
-                      {s.price > 0 ? ` • Rp${s.price.toLocaleString('id-ID')}` : ''}
+                      {s.price > 0 ? ` · Rp${s.price.toLocaleString('id-ID')}` : ''}
                     </span>
                     {onInspectReview && (
                       <button
                         type="button"
                         onClick={() => onInspectReview(s.text, s.category)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#016a71',
-                          fontWeight: 700,
-                          fontSize: '0.76rem',
-                          cursor: 'pointer',
-                        }}
+                        className="cih-link-action"
                       >
-                        Uji di XAI Predictor →
+                        <span>Uji di XAI Predictor</span>
+                        <ArrowRight size={13} />
                       </button>
                     )}
                   </div>
@@ -1480,56 +1547,51 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
       )}
 
       {/* =====================================================================
-          5. PANEL KATALOG METRIK & DOKUMENTASI INTERAKTIF API
+          HALAMAN 5: KATALOG METRIK SEMANTIK & REST API PLAYGROUND
          ===================================================================== */}
       {activeSubTab === 'katalog-api' && analytics && (
         <>
+          <div className="compare-workspace-header">
+            <div className="compare-header-left">
+              <div className="cih-page-kicker">
+                <Terminal size={13} />
+                <span>SEMANTIC LAYER · GOVERNED METRICS &amp; REST API PLAYGROUND</span>
+              </div>
+              <h1 className="compare-title">
+                Katalog Metrik Semantik &amp; Dokumentasi Interaktif API
+              </h1>
+              <p className="compare-subtitle">
+                Spesifikasi tunggal untuk formula metrik sentimen terkelola, definisi kode pipeline
+                Scikit-Learn (TF-IDF + Multinomial Naive Bayes), dan terminal pengujian endpoint
+                REST API secara langsung.
+              </p>
+            </div>
+          </div>
+
           <div className="cih-panel">
             <h3 className="cih-panel-title" style={{ marginBottom: '4px' }}>
               <Layers size={18} style={{ color: '#016a71' }} />
               <span>Katalog Metrik Semantik Terkelola (Governed Metrics Catalog)</span>
             </h3>
             <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
-              Definisi metrik baku yang disinkronkan di seluruh dasbor, laporan komparasi, dan
-              Sentimen API.
+              Definisi metrik baku yang disinkronkan di seluruh dasbor evaluasi, laporan komparasi,
+              dan Sentimen API.
             </p>
 
             <div className="cih-grid-2">
               {analytics.semantic_catalog.metrics_catalog.map((m) => (
-                <div key={m.id} className="cih-stat-card" style={{ padding: '15px 17px' }}>
+                <div key={m.id} className="cih-stat-card" style={{ padding: '16px 18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                    <code
-                      style={{
-                        fontSize: '0.76rem',
-                        fontWeight: 700,
-                        color: '#016a71',
-                        background: 'rgba(1, 106, 113, 0.1)',
-                        padding: '2px 8px',
-                        borderRadius: '6px',
-                      }}
-                    >
-                      {m.name}
-                    </code>
-                    <strong style={{ fontSize: '0.96rem', color: '#27251e' }}>{m.current_value}</strong>
+                    <code className="cih-metric-code-pill">{m.name}</code>
+                    <strong style={{ fontSize: '0.98rem', color: '#27251e', fontVariantNumeric: 'tabular-nums' }}>
+                      {m.current_value}
+                    </strong>
                   </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#27251e', marginBottom: '6px' }}>
+                  <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#27251e', marginBottom: '8px' }}>
                     {m.title}
                   </div>
-                  <div
-                    style={{
-                      fontFamily: 'monospace',
-                      fontSize: '0.75rem',
-                      background: '#ffffff',
-                      padding: '8px 10px',
-                      borderRadius: '8px',
-                      border: '1px solid #e4e2dd',
-                      color: '#3f3d37',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    {m.formula}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#66645e' }}>
+                  <div className="cih-formula-box">{m.formula}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.73rem', color: '#66645e' }}>
                     <span>Dimensi: {m.dimension}</span>
                     <span>Owner: {m.owner}</span>
                   </div>
@@ -1542,9 +1604,9 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             {/* Pipeline Code Definition */}
             <div className="cih-panel" style={{ background: '#17191c', color: '#f8fafc', borderColor: '#262b33' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.84rem', fontWeight: 700 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem', fontWeight: 700 }}>
                   <Code2 size={16} style={{ color: '#2dd4bf' }} />
-                  <span>Definisi Dalam Kode (Scikit-Learn)</span>
+                  <span>Definisi Dalam Kode (Scikit-Learn Pipeline)</span>
                 </div>
                 <button
                   type="button"
@@ -1553,25 +1615,14 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     setCopiedCode(true)
                     setTimeout(() => setCopiedCode(false), 2000)
                   }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '5px 10px',
-                    borderRadius: '8px',
-                    background: '#262b33',
-                    color: '#e2e8f0',
-                    border: '1px solid #374151',
-                    fontSize: '0.75rem',
-                    cursor: 'pointer',
-                  }}
+                  className="cih-copy-code-btn"
                 >
                   <Copy size={13} />
                   <span>{copiedCode ? 'Tersalin!' : 'Salin Kode'}</span>
                 </button>
               </div>
               <pre className="cih-code-box">{analytics.semantic_catalog.pipeline_code}</pre>
-              <p style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '12px', marginBottom: 0 }}>
+              <p style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: '12px', marginBottom: 0 }}>
                 Pipeline ini dimuat secara persisten dari <code>models/model_sentimen.pkl</code> dan
                 mendukung pembaruan bobot instan via <code>partial_fit</code>.
               </p>
@@ -1579,19 +1630,19 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
             {/* Interactive REST API Playground */}
             <div className="cih-panel">
-              <div className="cih-panel-head">
+              <div className="cih-panel-head" style={{ marginBottom: '12px' }}>
                 <div>
-                  <h4 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                  <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
                     <Terminal size={16} style={{ color: '#016a71' }} />
                     <span>Sentimen REST API Playground (Uji Langsung)</span>
-                  </h4>
+                  </h3>
                   <p className="cih-panel-desc">
                     Pilih endpoint dan jalankan request HTTP langsung ke server Flask backend.
                   </p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
                 {analytics.semantic_catalog.api_endpoints.slice(0, 3).map((ep, idx) => (
                   <button
                     key={ep.path}
@@ -1608,25 +1659,25 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                         )
                       }
                     }}
-                    className={`cih-subtab-btn ${selectedEndpointIdx === idx ? 'is-active' : ''}`}
-                    style={{ fontFamily: 'monospace', fontSize: '0.76rem', padding: '6px 11px' }}
+                    className={`cih-endpoint-tab ${selectedEndpointIdx === idx ? 'is-active' : ''}`}
                   >
-                    {ep.method} {ep.path}
+                    <span className="cih-endpoint-method">{ep.method}</span>
+                    <span>{ep.path}</span>
                   </button>
                 ))}
               </div>
 
-              <div className="cih-stat-card" style={{ marginBottom: '12px', fontSize: '0.8rem', color: '#3f3d37' }}>
+              <div className="cih-stat-card" style={{ marginBottom: '14px', fontSize: '0.8rem', color: '#3f3d37' }}>
                 <strong>
                   {analytics.semantic_catalog.api_endpoints[selectedEndpointIdx]?.title}:
                 </strong>{' '}
                 {analytics.semantic_catalog.api_endpoints[selectedEndpointIdx]?.description}
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '14px' }}>
                 <div>
-                  <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '4px' }}>
-                    {selectedEndpointIdx === 1 ? 'Payload: question' : 'Payload: text (Ulasan)'}
+                  <label className="cih-filter-label">
+                    {selectedEndpointIdx === 1 ? 'Payload JSON: question' : 'Payload JSON: text (Ulasan)'}
                   </label>
                   <input
                     type="text"
@@ -1638,15 +1689,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="cih-quick-kpi-label" style={{ display: 'block', marginBottom: '4px' }}>
-                    Parameter: category
-                  </label>
-                  <input
-                    type="text"
+                  <label className="cih-filter-label">Parameter Kategori (category)</label>
+                  <CustomSelect
                     value={playgroundCategory}
-                    onChange={(e) => setPlaygroundCategory(e.target.value)}
-                    className="cih-input"
-                    style={{ paddingLeft: '12px' }}
+                    options={drillCategoryOptions}
+                    fullWidth
+                    searchable
+                    onChange={(val) => setPlaygroundCategory(val)}
                   />
                 </div>
               </div>
@@ -1661,7 +1710,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                   <Play size={13} />
                   <span>{playgroundRunning ? 'Mengeksekusi Request...' : 'Kirim Request API'}</span>
                 </button>
-                <span style={{ fontSize: '0.73rem', fontFamily: 'monospace', color: '#66645e' }}>
+                <span style={{ fontSize: '0.73rem', fontFamily: 'var(--font-mono, monospace)', color: '#66645e' }}>
                   Content-Type: application/json
                 </span>
               </div>
