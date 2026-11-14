@@ -156,7 +156,12 @@ const STORAGE_KEY = 'sentiment_review_history_v1'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'prediksi' | 'batch' | 'evaluasi' | 'komparasi'>('prediksi')
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 860
+    }
+    return false
+  })
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua')
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
@@ -537,6 +542,22 @@ export default function App() {
 
   return (
     <div className="workspace-shell">
+      {/* Floating Button to Re-open Sidebar when Collapsed on Desktop */}
+      {sidebarCollapsed && (
+        <button
+          type="button"
+          className="desktop-sidebar-toggle-btn"
+          onClick={() => setSidebarCollapsed(false)}
+          aria-label="Buka navigasi samping"
+          title="Buka navigasi samping"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2.5" />
+            <path d="M9 4v16" />
+          </svg>
+        </button>
+      )}
+
       {/* Backdrop Overlay for Responsive Off-Canvas Sidebar (DeepSeek Pattern) */}
       <div
         className={`sidebar-backdrop ${!sidebarCollapsed ? 'is-open' : ''}`}

@@ -42,7 +42,7 @@
   /* Layout & Geometry */
   --page-max-width: 1020px;
   --query-max-width: 880px;
-  --sidebar-width: 236px;
+  --sidebar-width: 256px;
   --radius-xs: 6px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -99,6 +99,32 @@ body {
   display: none;
 }
 
+/* Floating Button to Reopen Sidebar on Desktop when Collapsed */
+.desktop-sidebar-toggle-btn {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  z-index: 95;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-soft-paper);
+  color: var(--color-ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.desktop-sidebar-toggle-btn:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-warm-mist);
+  transform: translateY(-1px);
+}
+
 /* Left Sidebar Navigation */
 .sidebar {
   width: var(--sidebar-width);
@@ -108,26 +134,27 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 14px 12px;
+  padding: 16px 14px;
   position: sticky;
   top: 0;
   height: 100dvh;
   overflow-y: auto;
-  transition: width 0.2s ease, padding 0.2s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.24s cubic-bezier(0.2, 0, 0, 1),
+              margin-left 0.24s cubic-bezier(0.2, 0, 0, 1),
+              padding 0.24s ease,
+              opacity 0.2s ease;
 }
 
+/* When collapsed on desktop: cleanly slide away to left (like DeepSeek / ChatGPT), NO awkward 60px strip */
 .sidebar.collapsed {
-  width: 60px;
-  padding: 14px 8px;
-}
-
-.sidebar.collapsed .brand-mark-text,
-.sidebar.collapsed .sidebar-label-text,
-.sidebar.collapsed .sidebar-subnav,
-.sidebar.collapsed .sidebar-history,
-.sidebar.collapsed .sidebar-label-block,
-.sidebar.collapsed .sidebar-label-icon {
-  display: none;
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  border-right: none;
+  margin-left: calc(-1 * var(--sidebar-width));
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
 }
 
 .sidebar-top {
@@ -2267,6 +2294,10 @@ body {
 }
 
 @media (max-width: 860px) {
+  .desktop-sidebar-toggle-btn {
+    display: none !important;
+  }
+
   .workspace-shell {
     position: relative;
     overflow-x: hidden;
@@ -2298,7 +2329,9 @@ body {
     top: 0;
     left: 0;
     bottom: 0;
-    width: min(268px, 82vw);
+    width: min(280px, 82vw);
+    min-width: 0;
+    margin-left: 0;
     height: 100dvh;
     z-index: 120;
     padding: 16px 14px;
@@ -2306,12 +2339,15 @@ body {
     border-bottom: none;
     box-shadow: 16px 0 42px rgba(0, 0, 0, 0.22);
     transform: translateX(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .sidebar.collapsed {
     transform: translateX(-105%);
     box-shadow: none;
     pointer-events: none;
+    opacity: 0;
   }
 
   /* Inside the mobile drawer, always show full vertical items when open */
