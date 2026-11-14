@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { BatchUploadCard } from './components/BatchUploadCard'
 import { EvaluationDashboard } from './components/EvaluationDashboard'
 import { HistoryDrawer } from './components/HistoryDrawer'
+import { LandingPage, type WorkspaceTabTarget } from './components/LandingPage'
 import { PredictionResultCard } from './components/PredictionResultCard'
 import { ProductSummaryCard } from './components/ProductSummaryCard'
 import { ProductComparisonView } from './components/ProductComparisonView'
@@ -155,6 +156,12 @@ const SENTIMENT_LABEL: Record<SentimentClass, string> = {
 const STORAGE_KEY = 'sentiment_review_history_v1'
 
 export default function App() {
+  const [showLanding, setShowLanding] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.hash !== '#workspace'
+    }
+    return true
+  })
   const [activeTab, setActiveTab] = useState<'prediksi' | 'batch' | 'evaluasi' | 'komparasi'>('prediksi')
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -538,7 +545,58 @@ export default function App() {
     void handleFetchRealtimeStream(liveSearchQuery, category)
   }
 
-  const f1BadgeText = metrics ? `${(metrics.f1_macro * 100).toFixed(1)}% F1` : '73.1% F1'
+  useEffect(() => {
+    const onHashChange = () => {
+      setShowLanding(window.location.hash !== '#workspace')
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const openLandingPage = () => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', window.location.pathname)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    setShowLanding(true)
+    closeSidebarOnMobile()
+  }
+
+  const handleEnterWorkspace = (
+    targetTab: WorkspaceTabTarget = 'prediksi',
+    initialReviewText?: string
+  ) => {
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '#workspace')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    setShowLanding(false)
+    setActiveTab(targetTab)
+    if (initialReviewText && initialReviewText.trim().length > 0) {
+      setText(initialReviewText)
+      void handlePredict(initialReviewText)
+    }
+  }
+
+  const f1BadgeText = metrics ? `${(metrics.f1_macro * 100).toFixed(1)}% F1` : '77.3% F1'
+  const accuracyPctText = metrics
+    ? (metrics.accuracy * 100).toFixed(2).replace('.', ',')
+    : '85,90'
+  const f1MacroPctText = metrics
+    ? (metrics.f1_macro * 100).toFixed(2).replace('.', ',')
+    : '77,28'
+
+  if (showLanding) {
+    return (
+      <LandingPage
+        corpusTotal={corpusTotal}
+        accuracyPct={accuracyPctText}
+        f1MacroPct={f1MacroPctText}
+        totalCategories={categoriesCatalog?.total_categories || 30}
+        onEnterWorkspace={handleEnterWorkspace}
+      />
+    )
+  }
 
   return (
     <div className="workspace-shell">
@@ -696,6 +754,17 @@ export default function App() {
               <span className="sidebar-label-text">
                 {samplesLoading ? 'Memuat Sampel...' : 'Uji Sampel Acak'}
               </span>
+            </button>
+
+            <button
+              type="button"
+              className="sidebar-nav-item"
+              onClick={openLandingPage}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-9.5z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="sidebar-label-text">Halaman Pengantar</span>
             </button>
           </nav>
 

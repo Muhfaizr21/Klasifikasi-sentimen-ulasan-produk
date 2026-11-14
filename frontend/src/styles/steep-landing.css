@@ -1,0 +1,1446 @@
+/* ==========================================================================
+   STEEP DESIGN SYSTEM — Editorial Serif Analytics Landing Page
+   Scoped strictly to .steep-landing to preserve workspace isolation
+   ========================================================================== */
+
+.steep-landing {
+  /* Steep Color Tokens */
+  --color-ink-black: #17191c;
+  --color-paper-white: #ffffff;
+  --color-mist-gray: #f2f2f3;
+  --color-fog-white: #fafafb;
+  --color-slate-gray: #777b86;
+  --color-ash-gray: #979799;
+  --color-smoke-gray: #a3a6af;
+  --color-blush-peach: #fbe1d1;
+  --color-sienna-brown: #5d2a1a;
+  --color-hairline: #ececec;
+
+  /* Steep Typography Families */
+  --font-signifier: 'Signifier', 'Newsreader', 'Source Serif 4', Georgia, serif;
+  --font-sohne: 'Sohne', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Steep Typography Scale */
+  --text-caption: 15px;
+  --leading-caption: 1.5;
+  --text-body: 17px;
+  --leading-body: 1.42;
+  --text-body-lg: 20px;
+  --leading-body-lg: 1.38;
+  --text-subheading: 22px;
+  --leading-subheading: 1.5;
+  --text-heading-sm: 26px;
+  --leading-heading-sm: 1.18;
+  --tracking-heading-sm: -0.23px;
+  --text-heading: 44px;
+  --leading-heading: 1.24;
+  --tracking-heading: -0.66px;
+  --text-heading-lg: 64px;
+  --leading-heading-lg: 1.18;
+  --tracking-heading-lg: -0.96px;
+  --text-display: 90px;
+  --leading-display: 1.08;
+  --tracking-display: -2.25px;
+
+  /* Steep Spacing Scale (4px base unit) */
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-64: 64px;
+  --spacing-80: 80px;
+  --spacing-96: 96px;
+  --spacing-128: 128px;
+
+  /* Steep Radii */
+  --radius-cards: 24px;
+  --radius-elevatedcards: 20px;
+  --radius-smallcards: 16px;
+  --radius-inputs: 16px;
+  --radius-images: 12px;
+  --radius-buttons: 9999px;
+
+  /* Steep Elevation (Only Floating Product Artifacts earn shadow) */
+  --shadow-artifact: rgba(4, 23, 43, 0.05) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.09) 0px 20px 25px -5px,
+    rgba(0, 0, 0, 0.07) 0px 8px 10px -6px;
+  --shadow-popover: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px,
+    rgba(0, 0, 0, 0.08) 0px 8px 28px 0px;
+
+  /* Layout */
+  --steep-max-width: 1200px;
+
+  background-color: var(--color-paper-white);
+  color: var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  font-weight: 400;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle paper grain overlay in Hero (matches Steep hero texture) */
+.steep-paper-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.28;
+  background-image: radial-gradient(rgba(23, 25, 28, 0.055) 1px, transparent 0);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, transparent 92%);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85) 0%, transparent 92%);
+}
+
+.steep-container {
+  width: 100%;
+  max-width: var(--steep-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-24);
+}
+
+/* ==========================================================================
+   STEEP KEYFRAME ANIMATIONS (1:1 from steep.app)
+   ========================================================================== */
+
+@keyframes steep-arrow-slide {
+  0% {
+    transform: translateX(0);
+  }
+  48% {
+    transform: translateX(130%);
+    opacity: 0;
+  }
+  52% {
+    transform: translateX(-130%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes steep-progress-fill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes steep-sweep {
+  0% {
+    transform: scaleY(0.28);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes steep-fade-in-y {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes steep-carousel-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes steep-cursor-drift-left {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  50% {
+    transform: translate3d(10px, -8px, 0);
+  }
+}
+
+@keyframes steep-cursor-drift-right {
+  0%,
+  100% {
+    transform: translate3d(0px, 0px, 0);
+  }
+  50% {
+    transform: translate3d(-12px, 7px, 0);
+  }
+}
+
+@keyframes steep-float-gentle {
+  0%,
+  100% {
+    transform: translate3d(0, 0px, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+/* Scroll-triggered Editorial Reveal */
+.steep-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.78s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.78s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.steep-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   1. WHISPER-QUIET TOP NAVIGATION
+   ========================================================================== */
+
+.steep-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  transition: background-color 0.25s ease, backdrop-filter 0.25s ease;
+}
+
+.steep-nav-wrap.is-scrolled {
+  background-color: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.steep-nav {
+  max-width: var(--steep-max-width);
+  margin: 0 auto;
+  padding: var(--spacing-20) var(--spacing-24);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-24);
+}
+
+.steep-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-ink-black);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-sohne);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.steep-brand-mark {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-black);
+}
+
+.steep-nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-28);
+}
+
+.steep-nav-link {
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  color: var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.steep-nav-link:hover {
+  color: var(--color-slate-gray);
+}
+
+.steep-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-20);
+}
+
+/* ==========================================================================
+   STEEP SIGNATURE PILL BUTTONS & INLINE ARROW LINKS
+   ========================================================================== */
+
+.steep-btn-row {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-12);
+}
+
+.steep-pill-filled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-ink-black);
+  color: var(--color-paper-white);
+  border: 1px solid var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.steep-pill-filled:hover {
+  opacity: 0.88;
+}
+
+.steep-pill-filled.sm {
+  height: 38px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+.steep-pill-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-8);
+  height: 44px;
+  padding: 0 var(--spacing-20);
+  border-radius: var(--radius-buttons);
+  background-color: transparent;
+  color: var(--color-ink-black);
+  border: 1px solid var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.steep-pill-ghost:hover {
+  background-color: var(--color-mist-gray);
+}
+
+.steep-btn-arrow-mask {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: 16px;
+}
+
+.steep-pill-filled:hover .steep-btn-arrow-glyph,
+.steep-pill-ghost:hover .steep-btn-arrow-glyph,
+.steep-text-link:hover .steep-btn-arrow-glyph {
+  animation: steep-arrow-slide 0.46s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.steep-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: var(--spacing-20) 0 0;
+  color: var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.steep-text-link:hover .steep-text-link-label {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY PRIMITIVES (Signifier Weight 400 Exclusively)
+   ========================================================================== */
+
+.steep-display {
+  font-family: var(--font-signifier);
+  font-weight: 400;
+  font-size: clamp(46px, 7vw, var(--text-display));
+  line-height: var(--leading-display);
+  letter-spacing: clamp(-1.2px, -0.025em, var(--tracking-display));
+  color: var(--color-ink-black);
+  margin: 0;
+}
+
+.steep-display em,
+.steep-h2-lg em,
+.steep-h2 em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.steep-h2-lg {
+  font-family: var(--font-signifier);
+  font-weight: 400;
+  font-size: clamp(38px, 5vw, var(--text-heading-lg));
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  color: var(--color-ink-black);
+  margin: 0;
+}
+
+.steep-h2 {
+  font-family: var(--font-signifier);
+  font-weight: 400;
+  font-size: clamp(30px, 3.8vw, var(--text-heading));
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-ink-black);
+  margin: 0;
+}
+
+.steep-tag {
+  display: block;
+  font-family: var(--font-sohne);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-ash-gray);
+  margin-bottom: var(--spacing-12);
+  letter-spacing: 0;
+}
+
+.steep-subhead {
+  font-family: var(--font-sohne);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--color-slate-gray);
+  margin: 0;
+}
+
+/* ==========================================================================
+   2. HERO EDITORIAL COLLAGE + FLOATING PRODUCT ARTIFACTS
+   ========================================================================== */
+
+.steep-hero {
+  position: relative;
+  padding: var(--spacing-40) 0 var(--spacing-80);
+}
+
+.steep-hero-center {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.steep-announcement {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding: 6px 16px;
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-mist-gray);
+  color: var(--color-ink-black);
+  font-size: 14px;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+  margin-bottom: var(--spacing-28);
+  transition: background-color 0.2s ease;
+}
+
+.steep-announcement:hover {
+  background-color: #e8e8ea;
+}
+
+.steep-announcement-muted {
+  color: var(--color-slate-gray);
+}
+
+.steep-hero-sub {
+  max-width: 560px;
+  margin: var(--spacing-24) auto var(--spacing-32);
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--color-slate-gray);
+}
+
+/* Hero Floating Collage Stage */
+.steep-collage-stage {
+  position: relative;
+  max-width: var(--steep-max-width);
+  margin: var(--spacing-64) auto 0;
+  padding: 0 var(--spacing-24);
+  display: grid;
+  grid-template-columns: 1.08fr 1.24fr 0.96fr;
+  gap: var(--spacing-24);
+  align-items: start;
+}
+
+.steep-artifact {
+  position: relative;
+  background-color: var(--color-paper-white);
+  border-radius: var(--radius-elevatedcards);
+  box-shadow: var(--shadow-artifact);
+  padding: 18px 20px 16px;
+  text-align: left;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.steep-artifact:hover {
+  transform: translateY(-4px);
+}
+
+.steep-artifact.float-slow {
+  animation: steep-float-gentle 7.5s ease-in-out infinite;
+}
+
+.steep-artifact.float-delayed {
+  animation: steep-float-gentle 8.5s ease-in-out 1.6s infinite;
+}
+
+.steep-artifact-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-ash-gray);
+  margin-bottom: var(--spacing-12);
+}
+
+.steep-artifact-metric-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-12);
+  margin-bottom: 4px;
+}
+
+.steep-artifact-metric {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-black);
+  font-variant-numeric: tabular-nums;
+}
+
+.steep-artifact-delta {
+  font-size: 14px;
+  color: var(--color-slate-gray);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Floating Region / Category 5-Row Table Artifact */
+.steep-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-8);
+}
+
+.steep-mini-table th {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-ash-gray);
+  text-align: left;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.steep-mini-table th:last-child,
+.steep-mini-table td:last-child {
+  text-align: right;
+}
+
+.steep-mini-table td {
+  font-size: 14px;
+  color: var(--color-ink-black);
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f6;
+  font-variant-numeric: tabular-nums;
+}
+
+.steep-mini-table tr:last-child td {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.steep-mini-bar-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.steep-mini-bar {
+  width: 44px;
+  height: 5px;
+  border-radius: 9999px;
+  background-color: var(--color-mist-gray);
+  overflow: hidden;
+}
+
+.steep-mini-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background-color: var(--color-ink-black);
+}
+
+/* Avatar Presence Bubble + Directional Cursor (Steep Signature Motif) */
+.steep-avatar-presence {
+  position: absolute;
+  z-index: 8;
+  display: inline-flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.steep-avatar-presence.pos-left {
+  top: -16px;
+  right: -14px;
+  animation: steep-cursor-drift-left 6.4s ease-in-out infinite;
+}
+
+.steep-avatar-presence.pos-right {
+  bottom: -16px;
+  left: -14px;
+  animation: steep-cursor-drift-right 7.2s ease-in-out infinite;
+}
+
+.steep-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-blush-peach);
+  color: var(--color-sienna-brown);
+  border: 2px solid var(--color-paper-white);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.steep-avatar-circle.neutral {
+  background-color: var(--color-mist-gray);
+  color: var(--color-ink-black);
+}
+
+.steep-cursor-pointer {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 14px;
+  height: 14px;
+  color: var(--color-ink-black);
+}
+
+/* Center Hero Stack: Live Stat + Interactive AI Composer */
+.steep-center-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+  margin-top: -12px;
+}
+
+/* Steep Interactive AI Composer Artifact */
+.steep-composer-card {
+  background-color: var(--color-paper-white);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-inputs);
+  box-shadow: var(--shadow-artifact);
+  padding: var(--spacing-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.steep-composer-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--color-ash-gray);
+}
+
+.steep-composer-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color-ink-black);
+  resize: none;
+}
+
+.steep-composer-input::placeholder {
+  color: var(--color-smoke-gray);
+}
+
+.steep-composer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8);
+}
+
+.steep-composer-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.steep-ghost-circle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-buttons);
+  border: 1px solid transparent;
+  background-color: transparent;
+  color: var(--color-slate-gray);
+  font-family: var(--font-sohne);
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.steep-ghost-circle-btn:hover {
+  background-color: var(--color-mist-gray);
+  color: var(--color-ink-black);
+}
+
+.steep-composer-preset-chip {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-buttons);
+  border: none;
+  background-color: var(--color-mist-gray);
+  color: var(--color-ink-black);
+  font-family: var(--font-sohne);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.steep-composer-preset-chip:hover {
+  background-color: #e6e6e8;
+}
+
+.steep-send-circle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-buttons);
+  border: none;
+  background-color: var(--color-ink-black);
+  color: var(--color-paper-white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.steep-send-circle-btn:hover {
+  opacity: 0.86;
+  transform: scale(1.03);
+}
+
+/* Right Stack: Gestural Chart + Radial Stat */
+.steep-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-20);
+}
+
+.steep-gestural-svg {
+  width: 100%;
+  height: 68px;
+  display: block;
+  margin-top: var(--spacing-8);
+}
+
+.steep-radial-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16);
+  margin-top: var(--spacing-8);
+}
+
+/* ==========================================================================
+   3. INFINITE MARQUEE ECOSYSTEM STRIP
+   ========================================================================== */
+
+.steep-marquee-band {
+  padding: var(--spacing-40) 0 var(--spacing-64);
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.steep-marquee-caption {
+  text-align: center;
+  font-size: 14px;
+  color: var(--color-ash-gray);
+  margin: 0 0 var(--spacing-24);
+}
+
+.steep-marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 10%, #000 90%, transparent);
+}
+
+.steep-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: steep-carousel-scroll 34s linear infinite;
+}
+
+.steep-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.steep-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--spacing-32);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-slate-gray);
+  white-space: nowrap;
+}
+
+.steep-marquee-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: var(--color-smoke-gray);
+}
+
+/* ==========================================================================
+   4. ALTERNATING SECTIONS (Paper White #ffffff & Section Fog #fafafb)
+   ========================================================================== */
+
+.steep-section {
+  padding: var(--spacing-96) 0;
+  background-color: var(--color-paper-white);
+}
+
+.steep-section.fog {
+  background-color: var(--color-fog-white);
+}
+
+.steep-section-header {
+  max-width: 680px;
+  margin-bottom: var(--spacing-64);
+}
+
+.steep-section-header.centered {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.steep-section-header .steep-subhead {
+  margin-top: var(--spacing-20);
+  font-size: 18px;
+}
+
+/* Neutral Cards Grid (#f2f2f3, 24px radius, ZERO shadow, ZERO border) */
+.steep-neutral-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-24);
+}
+
+.steep-neutral-card {
+  background-color: var(--color-mist-gray);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-32) var(--spacing-28);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 280px;
+}
+
+.steep-neutral-card-title {
+  font-family: var(--font-sohne);
+  font-size: var(--text-body-lg);
+  font-weight: 500;
+  line-height: var(--leading-body-lg);
+  color: var(--color-ink-black);
+  margin: 0 0 var(--spacing-12);
+}
+
+.steep-neutral-card-body {
+  font-size: 16px;
+  line-height: 1.52;
+  color: var(--color-slate-gray);
+  margin: 0;
+}
+
+/* ==========================================================================
+   5. INTERACTIVE TABBED SHOWCASE (Steep "Engage everyone" with progressFill)
+   ========================================================================== */
+
+.steep-tabs-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-8);
+  margin-bottom: var(--spacing-40);
+}
+
+.steep-tab-pill {
+  position: relative;
+  overflow: hidden;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--radius-buttons);
+  border: none;
+  background-color: var(--color-mist-gray);
+  color: var(--color-slate-gray);
+  font-family: var(--font-sohne);
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.steep-tab-pill:hover {
+  color: var(--color-ink-black);
+}
+
+.steep-tab-pill.active {
+  background-color: var(--color-ink-black);
+  color: var(--color-paper-white);
+}
+
+.steep-tab-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background-color: var(--color-blush-peach);
+  animation: steep-progress-fill 6s linear forwards;
+}
+
+.steep-showcase-shell {
+  background-color: var(--color-mist-gray);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-40);
+  display: grid;
+  grid-template-columns: 0.92fr 1.28fr;
+  gap: var(--spacing-40);
+  align-items: center;
+}
+
+.steep-showcase-copy {
+  animation: steep-fade-in-y 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.steep-showcase-title {
+  font-family: var(--font-signifier);
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  color: var(--color-ink-black);
+  margin: 0 0 var(--spacing-16);
+}
+
+.steep-showcase-desc {
+  font-size: 17px;
+  line-height: 1.52;
+  color: var(--color-slate-gray);
+  margin: 0 0 var(--spacing-24);
+}
+
+.steep-showcase-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--spacing-8);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.steep-showcase-bullets li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--color-ink-black);
+}
+
+.steep-showcase-bullet-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 9999px;
+  background-color: var(--color-ink-black);
+  flex-shrink: 0;
+  transform: translateY(-2px);
+}
+
+.steep-showcase-artifact {
+  background-color: var(--color-paper-white);
+  border-radius: var(--radius-elevatedcards);
+  box-shadow: var(--shadow-artifact);
+  padding: var(--spacing-28);
+  animation: steep-fade-in-y 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.steep-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: var(--spacing-16);
+}
+
+.steep-token-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-mist-gray);
+  color: var(--color-ink-black);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.steep-token-pill.warm {
+  background-color: var(--color-blush-peach);
+  color: var(--color-sienna-brown);
+}
+
+.steep-prob-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: var(--spacing-20);
+}
+
+.steep-prob-item-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--color-ink-black);
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.steep-prob-track {
+  width: 100%;
+  height: 7px;
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-mist-gray);
+  overflow: hidden;
+}
+
+.steep-prob-fill {
+  height: 100%;
+  border-radius: var(--radius-buttons);
+  background-color: var(--color-ink-black);
+  transition: width 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   6. SINGLE ACCENT BLUSH PEACH CARD (#fbe1d1 + #5d2a1a Sienna Brown)
+   Strictly ONCE per page on #ffffff canvas, zero shadow, 24px radius
+   ========================================================================== */
+
+.steep-peach-card {
+  background-color: var(--color-blush-peach);
+  color: var(--color-sienna-brown);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-64) var(--spacing-64);
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: var(--spacing-40);
+  align-items: center;
+}
+
+.steep-peach-eyebrow {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-sienna-brown);
+  opacity: 0.82;
+  margin-bottom: var(--spacing-16);
+  display: block;
+}
+
+.steep-peach-quote {
+  font-family: var(--font-signifier);
+  font-weight: 400;
+  font-size: clamp(28px, 3.4vw, var(--text-heading));
+  line-height: 1.24;
+  letter-spacing: var(--tracking-heading);
+  color: var(--color-sienna-brown);
+  margin: 0 0 var(--spacing-24);
+}
+
+.steep-peach-quote em {
+  font-style: italic;
+}
+
+.steep-peach-attribution {
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--color-sienna-brown);
+  margin: 0;
+}
+
+.steep-peach-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--spacing-24);
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: var(--color-sienna-brown);
+  font-family: var(--font-sohne);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.steep-peach-link:hover span:first-child {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.steep-peach-metrics {
+  border-left: 1px solid rgba(93, 42, 26, 0.18);
+  padding-left: var(--spacing-40);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+}
+
+.steep-peach-stat-val {
+  font-family: var(--font-signifier);
+  font-size: 44px;
+  line-height: 1.05;
+  color: var(--color-sienna-brown);
+  font-variant-numeric: tabular-nums;
+}
+
+.steep-peach-stat-lbl {
+  font-size: 14px;
+  color: var(--color-sienna-brown);
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+/* ==========================================================================
+   7. TWO-COLUMN SEMANTIC ARCHITECTURE SECTION ("Ship metrics, not dashboards")
+   ========================================================================== */
+
+.steep-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1.08fr;
+  gap: var(--spacing-64);
+  align-items: center;
+}
+
+.steep-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  margin: var(--spacing-32) 0;
+}
+
+.steep-feature-item {
+  padding-top: var(--spacing-20);
+  border-top: 1px solid var(--color-hairline);
+}
+
+.steep-feature-item-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-ink-black);
+  margin: 0 0 6px;
+}
+
+.steep-feature-item-desc {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-slate-gray);
+  margin: 0;
+}
+
+.steep-stage-mist {
+  background-color: var(--color-mist-gray);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-40);
+}
+
+.steep-bars-chart {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  align-items: end;
+  height: 148px;
+  margin: var(--spacing-24) 0 var(--spacing-16);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--color-hairline);
+}
+
+.steep-bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.steep-bar-rect {
+  width: 100%;
+  max-width: 42px;
+  border-radius: 8px 8px 4px 4px;
+  background-color: var(--color-ink-black);
+  transform-origin: bottom;
+  animation: steep-sweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.steep-bar-rect.muted {
+  background-color: #d6d6da;
+}
+
+.steep-bar-lbl {
+  font-size: 12px;
+  color: var(--color-slate-gray);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   8. CLOSING CTA & EDITORIAL FOOTER
+   ========================================================================== */
+
+.steep-closing-cta {
+  background-color: var(--color-mist-gray);
+  border-radius: var(--radius-cards);
+  padding: var(--spacing-80) var(--spacing-64);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-40);
+  flex-wrap: wrap;
+}
+
+.steep-closing-copy {
+  max-width: 620px;
+}
+
+.steep-closing-copy .steep-subhead {
+  margin-top: var(--spacing-16);
+  font-size: 18px;
+}
+
+.steep-footer {
+  padding: var(--spacing-80) 0 var(--spacing-40);
+  border-top: 1px solid var(--color-hairline);
+}
+
+.steep-footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr repeat(3, 1fr);
+  gap: var(--spacing-40);
+  padding-bottom: var(--spacing-64);
+}
+
+.steep-footer-col-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink-black);
+  margin: 0 0 var(--spacing-16);
+}
+
+.steep-footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.steep-footer-link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: var(--font-sohne);
+  font-size: 15px;
+  color: var(--color-slate-gray);
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.18s ease;
+}
+
+.steep-footer-link:hover {
+  color: var(--color-ink-black);
+}
+
+.steep-footer-bottom {
+  padding-top: var(--spacing-24);
+  border-top: 1px solid var(--color-hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-16);
+  font-size: 14px;
+  color: var(--color-ash-gray);
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS & REDUCED MOTION
+   ========================================================================== */
+
+@media (max-width: 1040px) {
+  .steep-collage-stage {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .steep-center-stack {
+    grid-column: 1 / -1;
+    order: -1;
+    margin-top: 0;
+  }
+
+  .steep-neutral-grid-3 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .steep-showcase-shell,
+  .steep-peach-card,
+  .steep-two-col {
+    grid-template-columns: 1fr;
+    padding: var(--spacing-40) var(--spacing-32);
+  }
+
+  .steep-peach-metrics {
+    border-left: none;
+    border-top: 1px solid rgba(93, 42, 26, 0.18);
+    padding-left: 0;
+    padding-top: var(--spacing-24);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--spacing-32);
+  }
+}
+
+@media (max-width: 760px) {
+  .steep-nav-links {
+    display: none;
+  }
+
+  .steep-hero {
+    padding: var(--spacing-24) 0 var(--spacing-64);
+  }
+
+  .steep-collage-stage,
+  .steep-neutral-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .steep-section {
+    padding: var(--spacing-64) 0;
+  }
+
+  .steep-closing-cta {
+    padding: var(--spacing-40) var(--spacing-28);
+  }
+
+  .steep-footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .steep-avatar-presence.pos-left {
+    right: 8px;
+  }
+
+  .steep-avatar-presence.pos-right {
+    left: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .steep-footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .steep-btn-row {
+    width: 100%;
+  }
+
+  .steep-pill-filled,
+  .steep-pill-ghost {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steep-landing *,
+  .steep-landing *::before,
+  .steep-landing *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .steep-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
