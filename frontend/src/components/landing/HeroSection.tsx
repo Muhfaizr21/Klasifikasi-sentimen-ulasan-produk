@@ -68,35 +68,43 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   // Row 1 (Blue 560x235 at X=286..846 + Gap 22 + Pink 294x235 at X=868..1162): Stage Y = 460 (-420 from 880, top = 260 in window)
   // Row 2 (Gray 294x200 at X=286..580 + Gap 22 + Dist 560x200 at X=602..1162): Stage Y = 717 (-163 from 880, top = 517 in window)
 
+  // Extra horizontal space outside the 1200px stage on each side of the viewport
+  const stageHalfExtra = Math.max(0, (winSize.width / scaleFactor - 1200) / 2);
+
   // Pink Registrations/Accuracy Block (o, 294x235):
+  const pinkStartX = Math.min(1008, Math.max(956, 1200 + stageHalfExtra - 294 - 16));
   const pMoveO = easeOutQuad(invLerp(t, 0, 0.5));
   const pFadeO = easeOutQuad(invLerp(t, 0.7, 0.3));
-  const pinkX = lerp(1100, 868, pMoveO);
-  const pinkY = lerp(-560 + yOffset, -420, pMoveO);
+  const pinkX = lerp(pinkStartX, 868, pMoveO);
+  const pinkY = lerp(-530 + yOffset, -420, pMoveO);
   const pinkShadow = lerp(1, 0, pMoveO);
   const pinkOpacity = lerp(1, 0, pFadeO);
 
-  // Blue Region/Category Block (n, 560x235):
+  // Blue Region/Category Block (n, 336x235 at t=0 -> 560x235 at t=0.5):
+  const blueStartX = -Math.min(104, Math.max(0, stageHalfExtra - 16));
   const pMoveN = easeOutQuad(invLerp(t, 0, 0.5));
   const pFadeN = easeOutQuad(invLerp(t, 0.7, 0.3));
-  const blueX = lerp(-480, 286, pMoveN);
-  const blueY = lerp(-750 + yOffset, -420, pMoveN);
+  const blueX = lerp(blueStartX, 286, pMoveN);
+  const blueY = lerp(-670 + yOffset, -420, pMoveN);
+  const blueWidth = lerp(336, 560, pMoveN);
+  const blueLeftColWidth = Math.round(lerp(116, 190, pMoveN));
+  const blueGap = Math.round(lerp(16, 24, pMoveN));
   const blueShadow = lerp(1, 0, pMoveN);
   const blueOpacity = lerp(1, 0, pFadeN);
 
   // White Activation Line-Chart Block (l, 294x200):
   const pMoveL = easeOutQuad(invLerp(t, 0, 0.5));
   const pFadeL = easeOutQuad(invLerp(t, 0.7, 0.3));
-  const grayX = lerp(-20, 286, pMoveL);
-  const grayY = lerp(-280 + yOffset, -163, pMoveL);
+  const grayX = lerp(52, 286, pMoveL);
+  const grayY = lerp(-260 + yOffset, -163, pMoveL);
   const grayShadow = lerp(1, 0, pMoveL);
   const grayOpacity = lerp(1, 0, pFadeL);
 
   // Left Cursor JB (p, 61x67):
   const pMoveCursorL = easeOutQuad(invLerp(t, 0, 0.5));
   const pFadeCursorL = easeOutQuad(invLerp(t, 0.6, 0.3));
-  const cursorLX = lerp(-70, 240, pMoveCursorL);
-  const cursorLY = lerp(-210 + yOffset, -94, pMoveCursorL);
+  const cursorLX = lerp(4, 240, pMoveCursorL);
+  const cursorLY = lerp(-195 + yOffset, -94, pMoveCursorL);
   const cursorLOpacity = lerp(1, 0, pFadeCursorL);
 
   // Right Cursor AF (f, 56x66) -> Aims at the Send Button on AI Composer (X=1122, Y=-492, well above Row 1 at -420)
@@ -963,7 +971,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             className="steep-floating-block"
             style={
               {
-                width: '560px',
+                width: `${blueWidth}px`,
                 height: '235px',
                 transform: `translate3d(${blueX}px, ${blueY}px, 0)`,
                 opacity: blueOpacity,
@@ -978,10 +986,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 height: '100%',
                 borderRadius: '16px',
                 backgroundColor: '#f1f6fd',
-                padding: '22px 24px',
+                padding: '20px 22px',
                 display: 'grid',
-                gridTemplateColumns: '190px 1fr',
-                gap: '24px',
+                gridTemplateColumns: `${blueLeftColWidth}px 1fr`,
+                gap: `${blueGap}px`,
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -989,12 +997,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <div style={{ fontSize: '30px', fontWeight: 500, color: '#163252', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
                     3 503
                   </div>
-                  <div style={{ fontSize: '12px', color: '#3b628b', marginTop: 4 }}>
+                  <div style={{ fontSize: '11.5px', color: '#3b628b', marginTop: 4, whiteSpace: 'nowrap' }}>
                     ↑ 6,2% vs minggu lalu
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px', height: '104px', paddingTop: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '104px', paddingTop: 12 }}>
                   {[
                     { day: 'S', h: 52 },
                     { day: 'S', h: 78 },
@@ -1005,7 +1013,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flex: 1 }}>
                       <div
                         style={{
-                          width: '10px',
+                          width: '9px',
                           height: `${bar.h}px`,
                           borderRadius: '999px',
                           backgroundColor: '#1d4f82',
@@ -1032,23 +1040,24 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minWidth: 0 }}>
                 <div
                   style={{
-                    fontSize: '14.5px',
+                    fontSize: '14px',
                     fontWeight: 500,
                     color: '#163252',
-                    paddingBottom: '8px',
+                    paddingBottom: '6px',
                     borderBottom: '1px solid rgba(22,50,82,0.08)',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   Kategori Korpus
                 </div>
                 {[
-                  { name: 'Elektronik & Gadget', val: '1 373' },
-                  { name: 'Fashion & Pakaian', val: '930' },
+                  { name: 'Elektronik', val: '1 373' },
+                  { name: 'Fashion', val: '930' },
                   { name: 'Rumah Tangga', val: '745' },
-                  { name: 'Kesehatan & Kecantikan', val: '432' },
+                  { name: 'Kesehatan', val: '432' },
                   { name: 'Lainnya', val: '23' },
                 ].map((row) => (
                   <div
@@ -1057,13 +1066,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      fontSize: '13px',
-                      padding: '4px 0',
+                      fontSize: '12.5px',
+                      padding: '3px 0',
                       borderBottom: '1px solid rgba(22,50,82,0.05)',
+                      gap: '8px',
                     }}
                   >
-                    <span style={{ color: '#587898' }}>{row.name}</span>
-                    <span style={{ color: '#163252', fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>
+                    <span style={{ color: '#587898', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {row.name}
+                    </span>
+                    <span style={{ color: '#163252', fontWeight: 500, fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
                       {row.val}
                     </span>
                   </div>
