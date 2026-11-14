@@ -696,16 +696,288 @@
   }
 
   /* --------------------------------------------------------------------------
-   7. Responsive Adjustments
+   7. Clean Layout & Responsive System (Desktop, Tablet & Mobile)
    -------------------------------------------------------------------------- */
+  .steep-section {
+    padding: 96px 24px 128px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .steep-section-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  .steep-section-container.is-narrow {
+    max-width: 1200px;
+  }
+
+  .steep-breadcrumb {
+    font-size: 13px;
+    font-weight: 450;
+    color: var(--color-ink-black);
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: var(--font-sohne);
+  }
+
+  .steep-breadcrumb.is-dark {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Product Showcase Window */
+  .steep-app-window {
+    width: 100%;
+    max-width: 960px;
+    min-height: 590px;
+    border-radius: 22px;
+    background-color: #ffffff;
+    box-shadow: var(--shadow-window);
+    border: 1px solid rgba(4, 23, 43, 0.06);
+    display: flex;
+    overflow: hidden;
+  }
+
+  .steep-app-sidebar {
+    width: 198px;
+    flex-shrink: 0;
+    background-color: #fbfbfc;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+
+  .steep-app-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+  }
+
+  .steep-app-topbar {
+    height: 46px;
+    padding: 0 22px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    gap: 12px;
+  }
+
+  .steep-app-body {
+    padding: 28px 36px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .steep-win-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .steep-win-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .steep-win-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  /* Semantic Platform Dark Card & 3-Column Architecture Diagram */
+  .steep-dark-showcase-card {
+    width: 100%;
+    max-width: 960px;
+    min-height: 570px;
+    border-radius: 24px;
+    background-color: #19181d;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow: 0 32px 72px rgba(0, 0, 0, 0.45);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 36px 40px;
+  }
+
+  .steep-semantic-diagram-grid {
+    display: grid;
+    grid-template-columns: 185px minmax(250px, 1fr) 175px;
+    gap: 28px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    width: 100%;
+  }
+
+  .steep-semantic-sources-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+  }
+
+  .steep-semantic-outputs-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .steep-semantic-outputs-card {
+    width: 100%;
+    max-width: 175px;
+    border-radius: 18px;
+    background-color: rgba(43, 39, 50, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 18px 20px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .steep-feature-strip-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Customer Story Section */
+  .steep-story-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .steep-story-switcher {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid rgba(93, 42, 26, 0.18);
+    padding-top: 16px;
+    gap: 8px;
+  }
+
+  /* AI Section */
+  .steep-ai-window-body {
+    padding: 28px 36px 32px;
+  }
+
+  .steep-ai-mobile-personas {
+    display: none;
+  }
+
+  .steep-ai-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+
+  /* Mobile Nav Toggle & Drawer */
+  .steep-mobile-menu-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid rgba(23, 25, 28, 0.12);
+    background: transparent;
+    color: var(--color-ink-black);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .steep-nav-header.is-dark-section .steep-mobile-menu-btn {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  .steep-mobile-drawer {
+    display: none;
+  }
+
+  /* Breakpoint <= 1180px: Switch Floating AI Personas to Responsive Grid */
+  @media (max-width: 1180px) {
+    .steep-ai-floating-persona {
+      display: none !important;
+    }
+
+    .steep-ai-mobile-personas {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+  }
+
+  /* Breakpoint <= 1023px: Tablet & Mobile Stacking */
   @media (max-width: 1023px) {
+    .steep-nav {
+      padding: 14px 20px;
+      gap: 12px;
+    }
+
     .steep-nav-links {
       display: none;
+    }
+
+    .steep-mobile-menu-btn {
+      display: inline-flex;
+    }
+
+    .steep-mobile-drawer.is-open {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 16px 20px 20px;
+      background-color: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(23, 25, 28, 0.08);
+    }
+
+    .steep-nav-header.is-dark-section .steep-mobile-drawer.is-open {
+      background-color: rgba(18, 18, 18, 0.96);
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .steep-section {
+      padding: 72px 20px 88px;
     }
 
     .steep-intro-cards-row {
       flex-direction: column;
       transform: none !important;
+      gap: 20px;
     }
 
     .steep-intro-card,
@@ -713,7 +985,7 @@
     .steep-intro-card.is-idle {
       transform: none !important;
       aspect-ratio: auto;
-      min-height: 400px;
+      min-height: 340px;
     }
 
     .steep-showcase-layout {
@@ -725,5 +997,127 @@
       max-width: 100%;
       margin-right: 0;
       margin-bottom: 28px;
+    }
+
+    .steep-semantic-diagram-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .steep-semantic-sources-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .steep-semantic-outputs-col {
+      align-items: stretch;
+    }
+
+    .steep-semantic-outputs-card {
+      max-width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .steep-semantic-outputs-divider {
+      display: none;
+    }
+
+    .steep-feature-strip-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .steep-story-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .steep-ai-cards-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+  }
+
+  /* Breakpoint <= 768px: Mobile Landscape / Compact Tablet */
+  @media (max-width: 768px) {
+    .steep-app-sidebar {
+      display: none;
+    }
+
+    .steep-app-window {
+      min-height: auto;
+    }
+
+    .steep-app-body {
+      padding: 20px 18px;
+    }
+
+    .steep-dark-showcase-card {
+      padding: 24px 18px;
+      min-height: auto;
+    }
+
+    .steep-win-grid-3,
+    .steep-win-grid-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .steep-ai-mobile-personas {
+      grid-template-columns: 1fr;
+    }
+
+    .steep-ai-window-body {
+      padding: 20px 18px 24px;
+    }
+
+    .steep-ai-cards-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Breakpoint <= 600px: Mobile Portrait */
+  @media (max-width: 600px) {
+    .steep-nav {
+      padding: 12px 14px;
+    }
+
+    .steep-nav-text-btn {
+      display: none;
+    }
+
+    .steep-section {
+      padding: 56px 16px 72px;
+    }
+
+    .steep-win-grid-2,
+    .steep-win-grid-3,
+    .steep-win-grid-4 {
+      grid-template-columns: 1fr;
+    }
+
+    .steep-semantic-sources-col {
+      grid-template-columns: 1fr;
+    }
+
+    .steep-semantic-outputs-card {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .steep-feature-strip-4 {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .steep-story-switcher {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .steep-story-switcher-indicator {
+      display: none;
     }
   }

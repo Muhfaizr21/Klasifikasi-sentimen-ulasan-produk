@@ -2494,11 +2494,11 @@ body {
   }
 }
 
-/* Reduced Motion Respect (R-39) */
+/* Reduced Motion Respect for Workspace Shell (R-39) */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  .workspace-shell *,
+  .workspace-shell *::before,
+  .workspace-shell *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
