@@ -520,12 +520,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
   const carouselY = lerp(800, 280, pCarousel);
 
   /* ------------------------------------------------------------------------
-     3. Interactive Section States
+     3. Interactive Section States (With Auto-Advancing Progress Timers)
      ------------------------------------------------------------------------ */
   const [activeIntroCard, setActiveIntroCard] = useState(0);
-  const [activeProductTab, setActiveProductTab] = useState(0);
+  const [activeProductTab, setActiveProductTab] = useState(2); // Default to "Reports" (Laporan) matching Screenshot 1
+  const [productAnimKey, setProductAnimKey] = useState(1);
   const [activeStoryIndex, setActiveStoryIndex] = useState(0);
-  const [activeSemanticTab, setActiveSemanticTab] = useState(0);
+  const [activeSemanticTab, setActiveSemanticTab] = useState(0); // Default to "Semantic platform" matching Screenshot 2
+  const [semanticAnimKey, setSemanticAnimKey] = useState(1);
 
   const [introRef, introInView] = useSteepInView();
   const [productRef, productInView] = useSteepInView();
@@ -533,6 +535,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
   const [semanticRef, semanticInView] = useSteepInView();
   const [aiRef, aiInView] = useSteepInView();
   const [getStartedRef, getStartedInView] = useSteepInView();
+
+  const handleSelectProductTab = (idx: number) => {
+    setActiveProductTab(idx);
+    setProductAnimKey((k) => k + 1);
+  };
+
+  const handleSelectSemanticTab = (idx: number) => {
+    setActiveSemanticTab(idx);
+    setSemanticAnimKey((k) => k + 1);
+  };
 
   const marketplaceBrands = [
     'Tokopedia',
@@ -549,27 +561,27 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
   const introCards = [
     {
       id: 0,
-      title: 'Satu lapisan metrik sentimen terpadu',
+      title: 'Dibangun di atas metrik',
       description:
-        'Seluruh ulasan e-commerce diklasifikasikan dengan pipeline TF-IDF dan Multinomial Naive Bayes yang konsisten di setiap kategori produk.',
+        'Bukan sekadar dasbor statis. Tim data mengirimkan metrik sentimen terukur yang mentenagai seluruh analisis dan pelaporan.',
       activeBg: '#fbe1d1',
       activeText: '#5d2a1a',
       Illustration: IntroIllustrationOne,
     },
     {
       id: 1,
-      title: 'Dibangun untuk kolaborasi tim produk',
+      title: 'Ditenagai oleh AI',
       description:
-        'Bandingkan dua produk secara berdampingan, lacak pergeseran keluhan pembeli, dan bagikan laporan evaluasi dalam satu klik.',
+        'Dengan alur kerja berbasis AI di Sentimen, siapa pun dapat melakukan analisis mendalam dan membuat laporan dari metrik tepercaya.',
       activeBg: '#dce8f8',
       activeText: '#163252',
       Illustration: IntroIllustrationTwo,
     },
     {
       id: 2,
-      title: 'Transparan dengan bobot kata kunci',
+      title: 'Dirancang untuk kolaborasi',
       description:
-        'Tanpa kotak hitam. Setiap keputusan model menampilkan kontribusi log-likelihood per kata dan tingkat keyakinan probabilistik.',
+        'Tim analis bekerja lebih cerdas. Tim produk bergerak lebih cepat. Seluruh organisasi membangun budaya keputusan berbasis data.',
       activeBg: '#dfece3',
       activeText: '#193b29',
       Illustration: IntroIllustrationThree,
@@ -578,67 +590,89 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
 
   const productTabs = [
     {
-      id: 'single',
-      label: 'Inspeksi Ulasan',
-      title: 'Bedah probabilitas sentimen & kontribusi token secara instan',
+      id: 'AI',
+      label: 'AI',
+      duration: 11,
       description:
-        'Masukkan ulasan produk berbahasa Indonesia dan lihat distribusi probabilitas Positif, Netral, serta Negatif beserta bobot TF-IDF per kata.',
+        'Ajukan pertanyaan kompleks dan dapatkan wawasan yang mendalam serta andal. Seluruhnya ditenagai oleh metrik terukur.',
       ctaTab: 'prediksi' as const,
     },
     {
-      id: 'compare',
-      label: 'Komparasi 2 Produk',
-      title: 'Evaluasi head-to-head indeks reputasi dua produk kompetitor',
+      id: 'explore',
+      label: 'Eksplorasi',
+      duration: 10,
       description:
-        'Bandingkan skor reputasi, rasio kepuasan pembeli, dan bukti ulasan terverifikasi dari dua kandidat produk untuk keputusan pengadaan.',
+        'Selami metrik sentimen dan eksplorasi visualisasi lintas kategori dalam hitungan detik dengan dukungan AI.',
+      ctaTab: 'prediksi' as const,
+    },
+    {
+      id: 'reports',
+      label: 'Laporan',
+      duration: 12,
+      description:
+        'Buat atau hasilkan berbagai jenis konten. Mulai dari dasbor dan tinjauan bisnis hingga analisis komparasi mendalam.',
       ctaTab: 'komparasi' as const,
     },
     {
-      id: 'batch',
-      label: 'Batch CSV & Koreksi',
-      title: 'Unggah ribuan ulasan CSV & latih ulang model secara inkremental',
+      id: 'drilldown',
+      label: 'Bedah Data',
+      duration: 10,
       description:
-        'Proses dataset ulasan skala besar sekaligus dan gunakan fitur Online Learning (partial_fit) untuk mengoreksi prediksi langsung dari antarmuka.',
+        'Klik pada metrik mana pun dan bedah rincian tingkat baris dari ulasan pelanggan, token TF-IDF, atau produk.',
       ctaTab: 'batch' as const,
     },
     {
-      id: 'metrics',
-      label: 'Evaluasi & Metrik',
-      title: 'Audit performa 5 skenario eksperimen & confusion matrix',
+      id: 'targets',
+      label: 'Target KPI',
+      duration: 9,
       description:
-        'Tinjau perbandingan akurasi, Macro F1-Score, dan distribusi 5.459 ulasan PRDECT-ID lintas 29 kategori produk e-commerce Indonesia.',
+        'Muat data target akurasi dan kepuasan secara terpusat agar selalu tersedia untuk setiap metrik di ruang kerja Anda.',
+      ctaTab: 'evaluasi' as const,
+    },
+    {
+      id: 'maps',
+      label: 'Peta Korpus',
+      duration: 9,
+      description:
+        'Peta distribusi marketplace yang intuitif untuk dieksplorasi semua orang. Buka peta dan telusuri metrik secara instan.',
       ctaTab: 'evaluasi' as const,
     },
   ];
 
   const customerStories = [
     {
-      brand: 'Elektronik & Gadget',
+      brand: 'Voi · Elektronik',
       metricBadge: '1.373 Ulasan Terverifikasi',
-      quote:
-        '“Kami memetakan keluhan kualitas suara dan daya tahan baterai pada ribuan ulasan audio dalam hitungan detik, bukan lagi rekap manual mingguan.”',
-      author: 'Riset Kategori Elektronik Konsumen · Korpus PRDECT-ID',
+      quote: '“Saya belum pernah melihat adopsi analitik sentimen secepat ini sepanjang karier produk saya.”',
+      author: 'Mengapa tim kategori Elektronik beralih dari rekap spreadsheet ke Sentimen',
       querySample: 'Suara jernih bass mantap pengiriman cepat packing aman',
       bgAccent: '#fbe1d1',
       textAccent: '#5d2a1a',
     },
     {
-      brand: 'Fashion & Apparel',
+      brand: 'Juni · Fashion',
       metricBadge: '930 Ulasan Terverifikasi',
-      quote:
-        '“Deteksi otomatis pada ulasan bahan kain, ketepatan ukuran, dan kualitas jahitan membantu tim merespons tren kepuasan pembeli lebih cepat.”',
-      author: 'Evaluasi Reputasi Kategori Fashion · Tokopedia & Shopee',
+      quote: '“Sentimen mencapai keseimbangan sempurna antara kekuatan model statistik dan kemudahan penggunaan.”',
+      author: 'Dari buta data menjadi dipimpin oleh wawasan ulasan pelanggan di kategori Fashion',
       querySample: 'Bahan adem jahitan rapi ukuran pas sesuai deskripsi',
       bgAccent: '#fbe1d1',
       textAccent: '#5d2a1a',
     },
     {
-      brand: 'Rumah Tangga',
+      brand: 'Bounce · Rumah Tangga',
       metricBadge: '745 Ulasan Terverifikasi',
-      quote:
-        '“Komparasi dua produk peralatan dapur memperlihatkan selisih indeks reputasi secara objektif sebelum produk dijadikan katalog utama.”',
-      author: 'Analisis Komparatif Kategori Rumah Tangga · Indeks Sentimen',
+      quote: '“Kami menguji 5 skenario arsitektur pipeline sebelum memilih konfigurasi N-Gram terbaik.”',
+      author: 'Bagaimana tim evaluasi beralih dari dasbor statis ke metrik reputasi terukur',
       querySample: 'Kualitas teflon tebal anti lengket pengiriman sangat aman',
+      bgAccent: '#fbe1d1',
+      textAccent: '#5d2a1a',
+    },
+    {
+      brand: 'Once Upon · Kesehatan',
+      metricBadge: '432 Ulasan Terverifikasi',
+      quote: '“Kini ada satu tempat terpusat di mana setiap anggota tim dapat mencari jawaban yang objektif.”',
+      author: 'Perjalanan membangun analitik berbasis metrik pada kategori Kesehatan & Kecantikan',
+      querySample: 'Produk original segel rapi cocok di kulit pengiriman cepat',
       bgAccent: '#fbe1d1',
       textAccent: '#5d2a1a',
     },
@@ -646,40 +680,39 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
 
   const semanticTabs = [
     {
-      id: 'tfidf',
-      label: 'Vektorisasi N-Gram',
+      id: 'Semantic platform',
+      label: 'Platform semantik',
+      duration: 12,
       description:
-        'Kombinasi unigram dan bigram (1, 2) menangkap negasi bahasa Indonesia seperti “tidak ramah” atau “kurang rapi” secara akurat.',
-      code: `pipeline = Pipeline([\n  (" preprocess ", SastrawiStopwordNormalizer(slang_dict=True)),\n  (" vectorizer ", CountVectorizer(ngram_range=(1, 2), max_features=5000)),\n  (" classifier ", MultinomialNB(alpha=1.0, fit_prior=True))\n])`,
-      metrics: [
-        { label: 'Akurasi Pengujian', value: '85,90%' },
-        { label: 'Macro F1-Score', value: '77,28%' },
-        { label: 'Weighted F1-Score', value: '85,62%' },
-      ],
+        'Definisikan metrik, dimensi, serta entitas produk dan tenagai seluruh analisis maupun pelaporan dengan blok pembangun yang terukur.',
     },
     {
-      id: 'sastrawi',
-      label: 'Normalisasi Sastrawi',
+      id: 'Steep API',
+      label: 'Sentimen API',
+      duration: 9,
       description:
-        'Kamus kata tidak baku e-commerce (“bgt”, “gk”, “mantul”, “cepet”) dinormalisasi sebelum proses stemming dan penghapusan stopword.',
-      code: `normalizer = IndonesianReviewPreprocessor(\n  normalize_slang=True,\n  remove_stopwords=True,\n  preserve_negation_tokens=["tidak", "bukan", "kurang", "jangan"]\n)`,
-      metrics: [
-        { label: 'Reduksi Noise Token', value: '41,8%' },
-        { label: 'Cakupan Kamus Slang', value: '1.200+ kata' },
-        { label: 'Waktu Pra-pemrosesan', value: '< 4 ms' },
-      ],
+        'Gunakan metrik Anda di mana saja. Ekspor data, hubungkan ke notebook Python, atau sematkan di aplikasi Anda sendiri.',
     },
     {
-      id: 'online',
-      label: 'Online Learning',
+      id: 'Metrics catalog',
+      label: 'Katalog metrik',
+      duration: 10,
       description:
-        'Koreksi label sentimen secara langsung dari ruang kerja menggunakan algoritma MultinomialNB.partial_fit() tanpa melatih ulang dari awal.',
-      code: `# Pembaruan bobot inkremental saat pengguna mengoreksi label\nX_vec = vectorizer.transform([cleaned_review])\nclf.partial_fit(X_vec, [corrected_label], classes=CLASSES)\nsave_increment_checkpoint(clf, version="+1 Dilatih")`,
-      metrics: [
-        { label: 'Pembaruan Model', value: 'Real-time' },
-        { label: 'Latensi Inferensi', value: '12 ms' },
-        { label: 'Persistensi Memori', value: 'Joblib Artifact' },
-      ],
+        'Kelola dan publikasikan seluruh metrik korpus di satu tempat. Tidak ada lagi dokumentasi yang tidak pernah dilihat.',
+    },
+    {
+      id: 'Define in code',
+      label: 'Definisi dalam kode',
+      duration: 9,
+      description:
+        'Kelola model semantik TF-IDF dan kamus Sastrawi di dalam kode dengan tinjauan sejawat serta kontrol versi yang kuat.',
+    },
+    {
+      id: 'Manage in app',
+      label: 'Kelola di aplikasi',
+      duration: 9,
+      description:
+        'Kelola model semantik dan koreksi label Online Learning secara efisien menggunakan antarmuka admin yang komprehensif.',
     },
   ];
 
@@ -1177,7 +1210,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                             fontSize: 13,
                           }}
                         >
-                          📄
+                          ◧
                         </span>
                         <span
                           style={{
@@ -2001,253 +2034,597 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
       </section>
 
       {/* ====================================================================
-          4. PRODUCT SECTION (TABBED WORKSPACE SHOWCASE WITH SLIDING UNDERLINE — CHUNK 5206)
+          4. PRODUCT SECTION ("ENGAGE EVERYONE" — VERTICAL ACCORDION + 960x640 WINDOW — CHUNK 5206)
          ==================================================================== */}
       <section
         ref={productRef}
-        style={{ maxWidth: '1200px', margin: '0 auto', padding: '80px 24px 96px' }}
+        style={{
+          backgroundColor: '#FAFAFB',
+          padding: '96px 24px 128px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <SteepHeadingBlock
-          isInView={productInView}
-          size="lg"
-          lines={[
-            { text: 'Eksplorasi bebas tanpa' },
-            { text: 'kekacauan spreadsheet', italicWord: 'kekacauan' },
-          ]}
-          description="Dari inspeksi satu kalimat ulasan hingga komparasi dua produk dan evaluasi ribuan baris CSV, seluruh alur kerja analitik berjalan di atas satu model probabilistik yang konsisten."
-        />
-
-        {/* Tab Bar with Sliding Active Line & Circular Prev/Next Buttons (Matches Module 2180) */}
-        <div style={{ position: 'relative', margin: '36px 0 32px', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              {productTabs.map((tab, idx) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveProductTab(idx)}
-                  style={{
-                    width: '160px',
-                    marginRight: '20px',
-                    padding: '18px 0',
-                    fontSize: '14.5px',
-                    fontWeight: activeProductTab === idx ? 500 : 420,
-                    color: activeProductTab === idx ? '#17191c' : 'rgba(23,25,28,0.48)',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'color 0.2s ease',
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button
-                type="button"
-                className="steep-circle-btn"
-                disabled={activeProductTab === 0}
-                onClick={() => setActiveProductTab((p) => Math.max(0, p - 1))}
-                aria-label="Tab sebelumnya"
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                className="steep-circle-btn"
-                disabled={activeProductTab === productTabs.length - 1}
-                onClick={() => setActiveProductTab((p) => Math.min(productTabs.length - 1, p + 1))}
-                aria-label="Tab berikutnya"
-              >
-                ›
-              </button>
-            </div>
-          </div>
-
-          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', backgroundColor: 'rgba(0,0,0,0.1)' }} />
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              height: '2px',
-              width: '160px',
-              backgroundColor: '#17191c',
-              transform: `translateX(${activeProductTab * 180}px)`,
-              transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
-          />
-        </div>
-
-        {/* Active Tab Interactive Preview Card */}
+        {/* Warm Lime/Peach/Sky Ambient Glow Behind Right Window (bg-home-showcase.jpg) */}
         <div
           style={{
-            borderRadius: '24px',
-            backgroundColor: '#f2f2f3',
-            padding: 'clamp(24px, 4vw, 48px)',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '36px',
-            alignItems: 'center',
+            position: 'absolute',
+            left: '63%',
+            top: '61%',
+            width: '920px',
+            height: '920px',
+            transform: 'translate(-50%, -50%)',
+            background:
+              'radial-gradient(50% 50% at 50% 50%, rgba(226, 240, 198, 0.72) 0%, rgba(251, 225, 209, 0.45) 45%, rgba(250, 250, 251, 0) 75%)',
+            pointerEvents: 'none',
+            zIndex: 0,
           }}
-        >
-          <div>
-            <div style={{ fontSize: '13px', fontWeight: 500, color: '#777b86', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 10 }}>
-              0{activeProductTab + 1} · {productTabs[activeProductTab].label}
-            </div>
-            <h3
-              style={{
-                fontFamily: 'var(--font-signifier)',
-                fontWeight: 400,
-                fontSize: 'clamp(28px, 3vw, 40px)',
-                lineHeight: 1.2,
-                letterSpacing: '-0.5px',
-                margin: '0 0 16px',
-              }}
-            >
-              {productTabs[activeProductTab].title}
-            </h3>
-            <p style={{ fontSize: '16.5px', lineHeight: 1.5, color: '#52555d', margin: '0 0 28px' }}>
-              {productTabs[activeProductTab].description}
-            </p>
-            <button
-              type="button"
-              className="steep-btn-filled"
-              onClick={() => onEnterWorkspace(productTabs[activeProductTab].ctaTab)}
-            >
-              Buka {productTabs[activeProductTab].label} →
-            </button>
-          </div>
+        />
 
-          {/* Interactive Artifact Surface inside Tab */}
+        <div style={{ maxWidth: '1280px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
           <div
+            onClick={() => onEnterWorkspace('prediksi')}
             style={{
-              borderRadius: '20px',
-              backgroundColor: '#ffffff',
-              boxShadow: 'var(--shadow-block)',
-              padding: '28px',
+              fontSize: '13px',
+              fontWeight: 450,
+              color: '#17191c',
+              marginBottom: '16px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              cursor: 'pointer',
             }}
           >
-            {activeProductTab === 0 && (
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <span style={{ fontSize: 13, color: '#777b86' }}>Ulasan Terverifikasi · Tokopedia</span>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: '#18794e', background: '#e6f6ed', padding: '2px 10px', borderRadius: 999 }}>
-                    Positif · 96,4%
-                  </span>
-                </div>
-                <div style={{ fontFamily: 'var(--font-signifier)', fontSize: 21, lineHeight: 1.35, color: '#17191c', marginBottom: 20 }}>
-                  “Barang original 100%, kualitas audio jernih dan pengiriman kurir sangat cepat sampai tujuan.”
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    { label: 'Probabilitas Positif', pct: 96.4, color: '#17191c' },
-                    { label: 'Probabilitas Netral', pct: 2.8, color: '#979799' },
-                    { label: 'Probabilitas Negatif', pct: 0.8, color: '#d9d9de' },
-                  ].map((bar) => (
-                    <div key={bar.label}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12.5, marginBottom: 4 }}>
-                        <span style={{ color: '#52555d' }}>{bar.label}</span>
-                        <span style={{ fontWeight: 500 }}>{bar.pct}%</span>
-                      </div>
-                      <div style={{ height: 6, borderRadius: 999, background: '#f2f2f3', overflow: 'hidden' }}>
-                        <div style={{ width: `${bar.pct}%`, height: '100%', background: bar.color, borderRadius: 999 }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <span>Produk</span>
+            <span style={{ opacity: 0.35 }}>›</span>
+          </div>
 
-            {activeProductTab === 1 && (
-              <div>
-                <div style={{ fontSize: 13, color: '#777b86', marginBottom: 16 }}>
-                  Duel Indeks Reputasi Produk Audio
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                  <div style={{ padding: 16, borderRadius: 14, background: '#fafafb', border: '1px solid rgba(0,0,0,0.06)' }}>
-                    <div style={{ fontSize: 12, color: '#777b86' }}>KANDIDAT A</div>
-                    <div style={{ fontSize: 15, fontWeight: 600, margin: '4px 0 10px' }}>Eggel Fortis 2</div>
-                    <div style={{ fontSize: 28, fontFamily: 'var(--font-signifier)' }}>74,2</div>
-                    <div style={{ fontSize: 11.5, color: '#777b86' }}>Indeks Reputasi / 100</div>
-                  </div>
-                  <div style={{ padding: 16, borderRadius: 14, background: '#fbe1d1', color: '#5d2a1a' }}>
-                    <div style={{ fontSize: 12, fontWeight: 600 }}>KANDIDAT B · UNGGUL</div>
-                    <div style={{ fontSize: 15, fontWeight: 600, margin: '4px 0 10px' }}>JBL Go 3 Speaker</div>
-                    <div style={{ fontSize: 28, fontFamily: 'var(--font-signifier)' }}>94,0</div>
-                    <div style={{ fontSize: 11.5, opacity: 0.8 }}>+19,8 poin keunggulan</div>
-                  </div>
-                </div>
-              </div>
-            )}
+          <SteepHeadingBlock
+            isInView={productInView}
+            size="xl"
+            lines={[{ text: 'Libatkan setiap tim' }]}
+            description="Alur kerja berbasis AI yang membuka analisis mendalam dan pelaporan terukur bagi seluruh pengguna."
+            cta={
+              <button
+                type="button"
+                className="steep-btn-secondary"
+                onClick={() => onEnterWorkspace(productTabs[activeProductTab].ctaTab)}
+              >
+                <span>Pelajari lebih lanjut</span>
+                <span style={{ opacity: 0.55 }}>→</span>
+              </button>
+            }
+          />
 
-            {activeProductTab === 2 && (
-              <div>
-                <div style={{ fontSize: 13, color: '#777b86', marginBottom: 12 }}>
-                  Pemrosesan Batch CSV & Koreksi Inkremental
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    { text: 'Packing rapi, pengiriman cepat sesuai pesanan', sentiment: 'Positif', conf: '98,1%' },
-                    { text: 'Standar saja sesuai harga, lumayan buat harian', sentiment: 'Netral', conf: '89,4%' },
-                    { text: 'Barang datang lecet dan respon penjual lambat', sentiment: 'Negatif', conf: '97,2%' },
-                  ].map((row, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        padding: '10px 14px',
-                        borderRadius: 12,
-                        background: '#fafafb',
-                        fontSize: 13,
-                      }}
+          {/* 2-Column Vertical Accordion + 960x640 App Window Showcase (Matches Screenshot 1 100%) */}
+          <div className="steep-showcase-layout" style={{ marginTop: '56px' }}>
+            {/* Left Column: 6 Vertical Accordion Items with Auto-Advancing Progress Bar (Module 2984) */}
+            <div className="steep-v-tabs">
+              {productTabs.map((tab, idx) => {
+                const isActive = activeProductTab === idx;
+                return (
+                  <div key={tab.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectProductTab(idx)}
+                      className={`steep-v-tab-btn ${isActive ? 'is-active' : 'is-idle'}`}
                     >
-                      <span style={{ color: '#17191c', maxWidth: '68%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {row.text}
+                      <p className="steep-v-tab-title">{tab.label}</p>
+                      <div className={`steep-v-tab-collapse ${isActive ? 'is-open' : 'is-closed'}`}>
+                        <div style={{ overflow: 'hidden' }}>
+                          <span
+                            className="steep-v-tab-desc"
+                            style={{
+                              color: 'rgba(23,25,28,0.58)',
+                              opacity: isActive ? 1 : 0,
+                            }}
+                          >
+                            {tab.description}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="steep-v-tab-line-track">
+                        <span
+                          key={isActive ? `prod-fill-${productAnimKey}` : tab.id}
+                          className="steep-v-tab-line-fill"
+                          style={{
+                            animation: isActive
+                              ? `steepProgressFill ${tab.duration}s linear forwards`
+                              : 'none',
+                          }}
+                          onAnimationEnd={() => {
+                            if (isActive) {
+                              handleSelectProductTab((idx + 1) % productTabs.length);
+                            }
+                          }}
+                        />
                       </span>
-                      <span style={{ fontWeight: 500, color: '#52555d' }}>
-                        {row.sentiment} ({row.conf})
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
 
-            {activeProductTab === 3 && (
-              <div>
-                <div style={{ fontSize: 13, color: '#777b86', marginBottom: 14 }}>
-                  Ringkasan Eksperimen Pipeline Terbaik
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  <div style={{ padding: 14, borderRadius: 12, background: '#fafafb' }}>
-                    <div style={{ fontSize: 12, color: '#777b86' }}>Macro F1-Score</div>
-                    <div style={{ fontSize: 26, fontWeight: 600, marginTop: 4 }}>77,28%</div>
-                  </div>
-                  <div style={{ padding: 14, borderRadius: 12, background: '#fafafb' }}>
-                    <div style={{ fontSize: 12, color: '#777b86' }}>Akurasi Uji</div>
-                    <div style={{ fontSize: 26, fontWeight: 600, marginTop: 4 }}>85,90%</div>
-                  </div>
-                  <div style={{ padding: 14, borderRadius: 12, background: '#fafafb', gridColumn: 'span 2' }}>
-                    <div style={{ fontSize: 12, color: '#777b86' }}>Arsitektur</div>
-                    <div style={{ fontSize: 14.5, fontWeight: 500, marginTop: 4 }}>
-                      CountVectorizer N-Gram (1, 2) + Sastrawi + MultinomialNB
+            {/* Right Column: 960x640 Desktop App Window (Matches Screenshot 1 Leadership Report & All 6 Views) */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center' }}>
+              <div
+                key={`prod-stage-${activeProductTab}`}
+                className="steep-showcase-stage"
+                style={{
+                  width: '100%',
+                  maxWidth: '960px',
+                  minHeight: '590px',
+                  borderRadius: '22px',
+                  backgroundColor: '#ffffff',
+                  boxShadow: 'var(--shadow-window)',
+                  border: '1px solid rgba(4,23,43,0.06)',
+                  display: 'flex',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Left Mini Sidebar inside 960x640 App Window */}
+                <div
+                  className="hidden sm:flex"
+                  style={{
+                    width: '176px',
+                    backgroundColor: '#fafafb',
+                    borderRight: '1px solid rgba(23,25,28,0.06)',
+                    padding: '16px 12px',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    flexShrink: 0,
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', gap: 6, marginBottom: 18, paddingLeft: 4 }}>
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                      <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 6px', marginBottom: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+                        <span style={{ width: 16, height: 16, borderRadius: 4, background: 'linear-gradient(135deg, #ff6b6b, #4ecdc4)', display: 'inline-block' }} />
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#17191c' }}>Codify</span>
+                        <span style={{ fontSize: 10, color: '#979799' }}>⌄</span>
+                      </div>
+                      <span style={{ fontSize: 11, color: '#979799' }}>⌕</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      {[
+                        { label: 'Beranda', icon: '⌂', active: activeProductTab === 0 },
+                        { label: 'Model', icon: '◈', active: activeProductTab === 3 },
+                        { label: 'Metrik', icon: '▤', active: activeProductTab === 1 || activeProductTab === 4 },
+                        { label: 'Entitas', icon: '❖', active: false },
+                        { label: 'Laporan', icon: '☰', active: activeProductTab === 2 },
+                        { label: 'Peta', icon: '◫', active: activeProductTab === 5 },
+                      ].map((nav) => (
+                        <div
+                          key={nav.label}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '6px 8px',
+                            borderRadius: 6,
+                            fontSize: 11.5,
+                            fontWeight: nav.active ? 500 : 420,
+                            backgroundColor: nav.active ? '#efeff1' : 'transparent',
+                            color: nav.active ? '#17191c' : '#686b73',
+                          }}
+                        >
+                          <span style={{ width: 13, opacity: 0.75 }}>{nav.icon}</span>
+                          <span>{nav.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop: 18 }}>
+                      <div style={{ fontSize: 10, color: '#979799', padding: '0 8px 6px' }}>Tim</div>
+                      {[
+                        { c: 'L', name: 'Eksekutif', bg: '#fde2d2', col: '#8a3c1b' },
+                        { c: 'P', name: 'Produk', bg: '#dce8fc', col: '#1e4276' },
+                        { c: 'S', name: 'Penjualan', bg: '#d9f0e1', col: '#1b5435' },
+                        { c: '⊞', name: 'Semua tim', bg: 'transparent', col: '#686b73' },
+                      ].map((tm) => (
+                        <div key={tm.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', fontSize: 11.5, color: '#686b73' }}>
+                          <span style={{ width: 15, height: 15, borderRadius: 3, background: tm.bg, color: tm.col, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 9.5, fontWeight: 600 }}>
+                            {tm.c}
+                          </span>
+                          <span>{tm.name}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={{ marginTop: 16 }}>
+                      <div style={{ fontSize: 10, color: '#979799', padding: '0 8px 6px' }}>Favorit</div>
+                      {[
+                        { icon: '◫', name: 'Laporan kota', col: '#8b5cf6' },
+                        { icon: '↗', name: 'Rekap mingguan', col: '#10b981' },
+                        { icon: '✓', name: 'Inisiatif', col: '#3b82f6' },
+                        { icon: '●', name: 'Pengguna', col: '#6366f1' },
+                      ].map((fav) => (
+                        <div key={fav.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', fontSize: 11, color: '#686b73' }}>
+                          <span style={{ color: fav.col, fontSize: 10 }}>{fav.icon}</span>
+                          <span>{fav.name}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
+
+                {/* Right Main Content Canvas of 960x640 App Window */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#ffffff', minWidth: 0 }}>
+                  {/* Window Top Header Bar */}
+                  <div
+                    style={{
+                      height: '48px',
+                      padding: '0 24px',
+                      borderBottom: '1px solid rgba(23,25,28,0.04)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      fontSize: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#777b86' }}>
+                      <span>‹</span>
+                      <span>{productTabs[activeProductTab].label}</span>
+                      <span>/</span>
+                      <span style={{ color: '#8b5cf6' }}>★</span>
+                      <span style={{ color: '#17191c', fontWeight: 500 }}>
+                        {activeProductTab === 2
+                          ? 'Laporan eksekutif'
+                          : activeProductTab === 0
+                          ? 'Analisis sentimen kuartal'
+                          : activeProductTab === 1
+                          ? 'Eksplorasi korpus PRDECT-ID'
+                          : activeProductTab === 3
+                          ? 'Inspeksi baris ulasan'
+                          : activeProductTab === 4
+                          ? 'Target akurasi & F1'
+                          : 'Peta distribusi marketplace'}
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {[
+                          { l: 'S', bg: '#4ccb7a' },
+                          { l: 'T', bg: '#f58442' },
+                          { l: 'E', bg: '#4a85e8' },
+                        ].map((av, i) => (
+                          <span
+                            key={av.l}
+                            style={{
+                              width: 20,
+                              height: 20,
+                              borderRadius: '50%',
+                              backgroundColor: av.bg,
+                              color: '#fff',
+                              fontSize: 9.5,
+                              fontWeight: 600,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '1.5px solid #fff',
+                              marginLeft: i > 0 ? -5 : 0,
+                            }}
+                          >
+                            {av.l}
+                          </span>
+                        ))}
+                      </div>
+                      <span style={{ color: '#52555d', fontSize: 11.5 }}>⧩ Filter</span>
+                      <span style={{ color: '#52555d', fontSize: 11.5 }}>↑ Bagikan</span>
+                      <span style={{ color: '#979799' }}>☆</span>
+                      <span style={{ color: '#979799' }}>•••</span>
+                    </div>
+                  </div>
+
+                  {/* Dynamic Body Content for Each of the 6 Vertical Accordion Tabs */}
+                  {activeProductTab === 2 && (
+                    /* TAB 2: REPORTS ("Leadership report" — Matches Screenshot 1 100%!) */
+                    <div style={{ padding: '26px 36px', flex: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+                      <div style={{ color: '#7c5dfa', fontSize: '24px', marginBottom: 6 }}>★</div>
+                      <h3 style={{ fontSize: '26px', fontWeight: 600, color: '#17191c', margin: '0 0 14px', letterSpacing: '-0.02em' }}>
+                        Laporan eksekutif
+                      </h3>
+
+                      {/* Filter Pills */}
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+                        <span style={{ fontSize: 11, color: '#52555d', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 999, padding: '3px 10px' }}>
+                          ⊕ Periode waktu ⌄
+                        </span>
+                        <span style={{ fontSize: 11, color: '#52555d', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 999, padding: '3px 10px' }}>
+                          ⊕ Kategori produk ⌄
+                        </span>
+                        <span style={{ fontSize: 11, color: '#52555d', border: '1px solid rgba(0,0,0,0.08)', borderRadius: 999, padding: '3px 8px' }}>
+                          +
+                        </span>
+                      </div>
+
+                      {/* Executive summary with Blue Cursor "A" */}
+                      <div style={{ position: 'relative', marginBottom: 22 }}>
+                        <div style={{ fontSize: '15px', fontWeight: 600, color: '#17191c', marginBottom: 6 }}>
+                          Ringkasan eksekutif
+                        </div>
+                        <p style={{ fontSize: '12px', lineHeight: 1.55, color: '#3f424a', margin: 0, maxWidth: '580px' }}>
+                          Secara keseluruhan, indeks reputasi kuartal keempat meningkat kuat sebesar 10,4% dibandingkan tahun lalu.
+                          Pertumbuhan didorong oleh momentum kepuasan yang solid pada pembeli baru maupun pelanggan berulang. Kategori
+                          Elektronik menyumbang sekitar sepertiga dari total ulasan positif.
+                        </p>
+                        {/* Floating Blue Cursor A */}
+                        <div style={{ position: 'absolute', left: '198px', bottom: '-20px', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                          <span style={{ fontSize: 10, color: '#4a85e8' }}>↖</span>
+                          <span style={{ width: 16, height: 16, borderRadius: '50%', background: '#6ba1f7', color: '#fff', fontSize: 9, fontWeight: 600, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                            A
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Two Side-by-Side Cards: Green-bordered 42.3K card + Stacked Bar Chart card */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+                        {/* Left Card: Green Bordered Revenue / Volume Card with Green JL Cursor */}
+                        <div
+                          style={{
+                            borderRadius: '14px',
+                            border: '1.5px solid #5ec27f',
+                            padding: '16px 18px',
+                            position: 'relative',
+                            minHeight: '195px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Ulasan Terverifikasi</div>
+                            <div style={{ fontSize: '10.5px', color: '#979799' }}>3 bulan terakhir</div>
+                          </div>
+
+                          <div style={{ textAlign: 'center', margin: '18px 0' }}>
+                            <div style={{ fontSize: '34px', fontWeight: 450, color: '#17191c', letterSpacing: '-0.03em' }}>
+                              42.3K
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#18794e', marginTop: 2 }}>
+                              ↑ 10,4% <span style={{ color: '#979799' }}>vs tahun lalu</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                            <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#4ccb7a', color: '#fff', fontSize: 8.5, fontWeight: 600, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                              JL
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Right Card: Stacked Bar Chart ("Revenue by market") */}
+                        <div
+                          style={{
+                            borderRadius: '14px',
+                            border: '1px solid rgba(23,25,28,0.08)',
+                            padding: '16px 18px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <div>
+                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Sentimen per marketplace</div>
+                            <div style={{ fontSize: '10.5px', color: '#979799', marginBottom: 8 }}>Tahun berjalan</div>
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', fontSize: '9.5px', color: '#777b86' }}>
+                              {[
+                                { n: 'ID-TKP', c: '#4ccb7a' },
+                                { n: 'ID-SHP', c: '#6ba1f7' },
+                                { n: 'ID-LZD', c: '#a47cf3' },
+                                { n: 'ID-BLI', c: '#f2748d' },
+                                { n: 'ID-ZLR', c: '#f5b042' },
+                                { n: 'ID-SOC', c: '#70d6c2' },
+                              ].map((lg) => (
+                                <span key={lg.n} style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: lg.c }} />
+                                  {lg.n}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', height: '105px', paddingTop: 12, borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                            {[
+                              { m: 'Okt', bars: [12, 10, 14, 16, 18] },
+                              { m: 'Nov', bars: [14, 12, 18, 20, 24] },
+                              { m: 'Des', bars: [10, 12, 14, 15, 18] },
+                            ].map((col) => (
+                              <div key={col.m} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+                                <div style={{ width: '44px', display: 'flex', flexDirection: 'column', borderRadius: '4px 4px 0 0', overflow: 'hidden' }}>
+                                  <div style={{ height: col.bars[0], background: '#70d6c2' }} />
+                                  <div style={{ height: col.bars[1], background: '#f5b042' }} />
+                                  <div style={{ height: col.bars[2], background: '#f2748d' }} />
+                                  <div style={{ height: col.bars[3], background: '#a47cf3' }} />
+                                  <div style={{ height: col.bars[4], background: '#6ba1f7' }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-around', fontSize: '9.5px', color: '#979799', paddingTop: 4 }}>
+                            <span>Okt</span>
+                            <span>Nov</span>
+                            <span>Des</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom Cohort Card Preview */}
+                      <div
+                        style={{
+                          borderRadius: '14px',
+                          border: '1px solid rgba(23,25,28,0.08)',
+                          padding: '14px 18px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Retensi sentimen per kohort</div>
+                          <div style={{ fontSize: '10.5px', color: '#979799' }}>Tahun berjalan</div>
+                        </div>
+                        <span style={{ fontSize: '10.5px', color: '#777b86' }}>Bulan sejak peluncuran</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeProductTab === 0 && (
+                    /* TAB 0: AI */
+                    <div style={{ padding: '28px 36px', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                        <div style={{ background: '#f3f3f5', borderRadius: 999, padding: '8px 18px', fontSize: 12.5, color: '#17191c' }}>
+                          Apa penyebab utama keluhan pengiriman pada kategori Elektronik bulan ini?
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 12, color: '#979799', marginBottom: 12 }}>Penalaran AI ›</div>
+                      <div style={{ borderRadius: 16, border: '1px solid rgba(0,0,0,0.08)', padding: 20, marginBottom: 18 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>Distribusi probabilitas & token kunci</div>
+                        <p style={{ fontSize: 12.5, color: '#52555d', lineHeight: 1.5, margin: '0 0 14px' }}>
+                          Model Multinomial Naive Bayes mengidentifikasi 3 token pendorong utama pada ulasan negatif:
+                          <strong> “terlambat”</strong>, <strong>“kemasan penyok”</strong>, dan <strong>“kurir”</strong>.
+                        </p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                          {[
+                            { t: 'Akurasi Model', v: '85,90%', c: '#18794e' },
+                            { t: 'Macro F1-Score', v: '77,28%', c: '#3b76dd' },
+                            { t: 'Korpus Dianalisis', v: '5.459', c: '#17191c' },
+                          ].map((k) => (
+                            <div key={k.t} style={{ background: '#fafafb', padding: 12, borderRadius: 10 }}>
+                              <div style={{ fontSize: 11, color: '#777b86' }}>{k.t}</div>
+                              <div style={{ fontSize: 20, fontWeight: 600, color: k.c, marginTop: 2 }}>{k.v}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
+                        Coba Inspeksi AI Sekarang →
+                      </button>
+                    </div>
+                  )}
+
+                  {activeProductTab === 1 && (
+                    /* TAB 1: EXPLORE */
+                    <div style={{ padding: '28px 36px', flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+                        <div>
+                          <div style={{ fontSize: 18, fontWeight: 600 }}>Tren Kepuasan Lintas 29 Kategori</div>
+                          <div style={{ fontSize: 12, color: '#777b86' }}>Dikelompokkan berdasarkan sentimen Positif vs Negatif</div>
+                        </div>
+                        <span style={{ fontSize: 11.5, background: '#eef4fe', color: '#3b76dd', padding: '4px 12px', borderRadius: 999, fontWeight: 500 }}>
+                          Live Korpus PRDECT-ID
+                        </span>
+                      </div>
+                      <svg viewBox="0 0 640 210" style={{ width: '100%', height: 'auto', marginBottom: 16 }}>
+                        {[30, 80, 130, 180].map((y) => (
+                          <line key={y} x1="0" y1={y} x2="620" y2={y} stroke="rgba(0,0,0,0.06)" />
+                        ))}
+                        <path d="M20 140 C120 120, 200 70, 310 85 C420 100, 500 40, 600 32" fill="none" stroke="#4a85e8" strokeWidth="2.4" />
+                        <path d="M20 165 C120 155, 200 135, 310 142 C420 148, 500 115, 600 108" fill="none" stroke="#efb095" strokeWidth="2" />
+                      </svg>
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
+                        Buka Eksplorasi Ulasan →
+                      </button>
+                    </div>
+                  )}
+
+                  {activeProductTab === 3 && (
+                    /* TAB 3: DRILL DOWN */
+                    <div style={{ padding: '28px 36px', flex: 1 }}>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Bedah Baris Ulasan & Kontribusi Token</div>
+                      <div style={{ fontSize: 12, color: '#777b86', marginBottom: 16 }}>
+                        Inspeksi tingkat baris pada dataset PRDECT-ID Tokopedia & Batch CSV
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+                        {[
+                          { prod: 'TWS Bluetooth Earphone', rev: 'Suara jernih bass mantap pengiriman cepat', sent: 'Positif (98,4%)' },
+                          { prod: 'Kaos Katun Bambu Pria', rev: 'Bahan adem jahitan rapi ukuran pas di badan', sent: 'Positif (96,1%)' },
+                          { prod: 'Wajan Anti Lengket 24cm', rev: 'Lapisan mengelupas setelah dua kali dipakai', sent: 'Negatif (94,8%)' },
+                        ].map((r, i) => (
+                          <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', borderRadius: 12, background: '#fafafb', fontSize: 12.5 }}>
+                            <div>
+                              <div style={{ fontWeight: 600, color: '#17191c' }}>{r.prod}</div>
+                              <div style={{ color: '#52555d', marginTop: 2 }}>“{r.rev}”</div>
+                            </div>
+                            <span style={{ fontWeight: 600, color: r.sent.startsWith('Pos') ? '#18794e' : '#b42318' }}>{r.sent}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('batch')}>
+                        Buka Batch CSV →
+                      </button>
+                    </div>
+                  )}
+
+                  {activeProductTab === 4 && (
+                    /* TAB 4: TARGETS */
+                    <div style={{ padding: '28px 36px', flex: 1 }}>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Pencapaian Target PRD & Evaluasi Model</div>
+                      <div style={{ fontSize: 12, color: '#777b86', marginBottom: 18 }}>
+                        Perbandingan metrik aktual terhadap ambang batas minimum spesifikasi akademik
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18 }}>
+                        <div style={{ padding: 18, borderRadius: 14, border: '1px solid rgba(0,0,0,0.08)' }}>
+                          <div style={{ fontSize: 12, color: '#777b86' }}>Macro F1-Score (Target ≥ 70,0%)</div>
+                          <div style={{ fontSize: 32, fontWeight: 600, color: '#18794e', margin: '6px 0' }}>77,28%</div>
+                          <div style={{ fontSize: 11.5, color: '#18794e' }}>✓ Melampaui target +7,28%</div>
+                        </div>
+                        <div style={{ padding: 18, borderRadius: 14, border: '1px solid rgba(0,0,0,0.08)' }}>
+                          <div style={{ fontSize: 12, color: '#777b86' }}>Akurasi Pengujian (1.092 sampel)</div>
+                          <div style={{ fontSize: 32, fontWeight: 600, color: '#17191c', margin: '6px 0' }}>85,90%</div>
+                          <div style={{ fontSize: 11.5, color: '#52555d' }}>Weighted F1: 85,62%</div>
+                        </div>
+                      </div>
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('evaluasi')}>
+                        Lihat Evaluasi Lengkap →
+                      </button>
+                    </div>
+                  )}
+
+                  {activeProductTab === 5 && (
+                    /* TAB 5: MAPS */
+                    <div style={{ padding: '28px 36px', flex: 1 }}>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Peta Distribusi 8 Marketplace Indonesia</div>
+                      <div style={{ fontSize: 12, color: '#777b86', marginBottom: 18 }}>
+                        Cakupan penarikan ulasan langsung (live scraper) dan korpus terverifikasi
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
+                        {[
+                          { m: 'Tokopedia', c: '5.459 ulasan', col: '#18794e' },
+                          { m: 'Shopee ID', c: 'Live Stream', col: '#d9532f' },
+                          { m: 'Lazada', c: 'Live Stream', col: '#2b4c9b' },
+                          { m: 'Blibli', c: 'Live Stream', col: '#0072bc' },
+                          { m: 'ZALORA', c: 'Fashion', col: '#17191c' },
+                          { m: 'Sociolla', c: 'Kecantikan', col: '#d45b87' },
+                          { m: 'Eraspace', c: 'Gadget', col: '#1e3a8a' },
+                          { m: 'Ruparupa', c: 'Rumah Tangga', col: '#d97706' },
+                        ].map((mp) => (
+                          <div key={mp.m} style={{ padding: 14, borderRadius: 12, background: '#fafafb', border: '1px solid rgba(0,0,0,0.05)' }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, color: mp.col }}>{mp.m}</div>
+                            <div style={{ fontSize: 11, color: '#777b86', marginTop: 4 }}>{mp.c}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
+                        Coba Tarik Ulasan Live →
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ====================================================================
-          5. CUSTOMER / CORPUS STORY SECTION (BLUSH PEACH #fbe1d1 — CHUNK 2291)
+          5. CUSTOMER / CORPUS STORY SECTION (CHUNKS 2291 — 4 BRAND SWITCHER)
          ==================================================================== */}
       <section
         id="studi-korpus"
@@ -2264,8 +2641,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: 20 }}>
-                Studi Korpus E-Commerce ›
+              <div style={{ fontSize: '13px', fontWeight: 500, letterSpacing: '0.02em', marginBottom: 24 }}>
+                Kisah pelanggan & korpus ›
               </div>
 
               <div style={{ minHeight: '210px' }}>
@@ -2294,7 +2671,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                   style={{ backgroundColor: '#5d2a1a', borderColor: '#5d2a1a' }}
                   onClick={() => onEnterWorkspace('prediksi', customerStories[activeStoryIndex].querySample)}
                 >
-                  Uji Sampel Kategori Ini →
+                  Baca studi kasus →
                 </button>
                 <button
                   type="button"
@@ -2302,11 +2679,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                   style={{ color: '#5d2a1a' }}
                   onClick={() => onEnterWorkspace('evaluasi')}
                 >
-                  Lihat Distribusi 29 Kategori
+                  Semua kategori
                 </button>
               </div>
 
-              {/* Brand / Category Selector Bar with Sliding Top Indicator (Matches v component in Chunk 2291) */}
+              {/* 4-Brand Selector Bar with Sliding Top Indicator (Matches v component in Chunk 2291) */}
               <div
                 style={{
                   position: 'relative',
@@ -2351,8 +2728,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
               </div>
             </div>
 
-            {/* Right Visual Card */}
+            {/* Right Square Visual Card */}
             <div
+              key={`story-card-${activeStoryIndex}`}
+              className="steep-showcase-stage"
               style={{
                 borderRadius: '24px',
                 backgroundColor: 'rgba(255,255,255,0.58)',
@@ -2361,7 +2740,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                minHeight: '380px',
+                minHeight: '390px',
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -2414,164 +2793,560 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
       </section>
 
       {/* ====================================================================
-          6. SEMANTIC PLATFORM SECTION (DARK INK #17191c — CHUNK 2092)
+          6. SEMANTIC PLATFORM SECTION ("SHIP METRICS, NOT DASHBOARDS" — SCREENSHOT 2 — CHUNK 2092)
          ==================================================================== */}
       <section
         id="arsitektur-semantik"
         ref={semanticRef}
-        style={{ backgroundColor: '#17191c', color: '#ffffff', padding: '104px 24px' }}
+        style={{
+          backgroundColor: '#121212',
+          color: '#ffffff',
+          padding: '112px 24px 128px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Subtle Top-to-Bottom Sheen + Noise (Matches Chunk 2092) */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(180deg, rgba(255,255,255,0) 10%, rgba(255,255,255,0.04) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+
+        <div style={{ maxWidth: '1280px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
+          <div
+            onClick={() => onEnterWorkspace('evaluasi')}
+            style={{
+              fontSize: '13px',
+              fontWeight: 450,
+              color: 'rgba(255,255,255,0.85)',
+              marginBottom: '16px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            <span>Platform semantik</span>
+            <span style={{ opacity: 0.35 }}>›</span>
+          </div>
+
           <SteepHeadingBlock
             isInView={semanticInView}
             darkMode
-            size="lg"
+            size="xl"
             lines={[
-              { text: 'Fondasi NLP semantik' },
-              { text: 'yang terukur dan terbuka', italicWord: 'semantik' },
+              { text: 'Kirimkan metrik,' },
+              { text: 'bukan sekadar dasbor' },
             ]}
-            description="Pipeline klasifikasi dirancang khusus untuk morfologi bahasa Indonesia dan ragam kata tidak baku di marketplace lokal."
-          />
-
-          {/* Dark Mode Tab Bar */}
-          <div style={{ position: 'relative', margin: '36px 0 32px' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              {semanticTabs.map((tab, idx) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => setActiveSemanticTab(idx)}
-                  style={{
-                    width: '170px',
-                    marginRight: '20px',
-                    padding: '16px 0',
-                    background: 'transparent',
-                    border: 'none',
-                    color: activeSemanticTab === idx ? '#ffffff' : 'rgba(255,255,255,0.45)',
-                    fontSize: '14.5px',
-                    fontWeight: activeSemanticTab === idx ? 500 : 420,
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '1px', backgroundColor: 'rgba(255,255,255,0.1)' }} />
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                width: '170px',
-                height: '2px',
-                backgroundColor: '#ffffff',
-                transform: `translateX(${activeSemanticTab * 190}px)`,
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '36px',
-              alignItems: 'center',
-              marginTop: '24px',
-            }}
-          >
-            <div>
-              <p style={{ fontSize: '17px', lineHeight: 1.55, color: 'rgba(255,255,255,0.72)', margin: '0 0 28px' }}>
-                {semanticTabs[activeSemanticTab].description}
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 32 }}>
-                {semanticTabs[activeSemanticTab].metrics.map((m) => (
-                  <div
-                    key={m.label}
-                    style={{
-                      padding: '16px',
-                      borderRadius: '16px',
-                      backgroundColor: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.07)',
-                    }}
-                  >
-                    <div style={{ fontSize: '22px', fontFamily: 'var(--font-signifier)', color: '#fbe1d1' }}>
-                      {m.value}
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginTop: 4 }}>
-                      {m.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+            description="Platform semantik lengkap untuk mengelola dan mempublikasikan seluruh metrik sentimen Anda. Tanpa pengulangan yang sia-sia."
+            cta={
               <button
                 type="button"
                 className="steep-btn-secondary-dark"
                 onClick={() => onEnterWorkspace('evaluasi')}
               >
-                Pelajari Evaluasi Model →
+                <span>Pelajari lebih lanjut</span>
+                <span style={{ opacity: 0.6 }}>→</span>
               </button>
+            }
+          />
+
+          {/* 2-Column Dark Vertical Accordion + 960x640 Architecture Diagram (Matches Screenshot 2 100%!) */}
+          <div className="steep-showcase-layout" style={{ marginTop: '56px' }}>
+            {/* Left Column: 5 Dark Vertical Accordion Items with Auto-Advancing White Progress Bar */}
+            <div className="steep-v-tabs">
+              {semanticTabs.map((tab, idx) => {
+                const isActive = activeSemanticTab === idx;
+                return (
+                  <div key={tab.id} style={{ display: 'flex', flexDirection: 'column' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectSemanticTab(idx)}
+                      className={`steep-v-tab-btn is-dark ${isActive ? 'is-active' : 'is-idle'}`}
+                    >
+                      <p className="steep-v-tab-title">{tab.label}</p>
+                      <div className={`steep-v-tab-collapse ${isActive ? 'is-open' : 'is-closed'}`}>
+                        <div style={{ overflow: 'hidden' }}>
+                          <span
+                            className="steep-v-tab-desc"
+                            style={{
+                              color: 'rgba(255,255,255,0.52)',
+                              opacity: isActive ? 1 : 0,
+                            }}
+                          >
+                            {tab.description}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="steep-v-tab-line-track is-dark">
+                        <span
+                          key={isActive ? `sem-fill-${semanticAnimKey}` : tab.id}
+                          className="steep-v-tab-line-fill is-dark"
+                          style={{
+                            animation: isActive
+                              ? `steepProgressFill ${tab.duration}s linear forwards`
+                              : 'none',
+                          }}
+                          onAnimationEnd={() => {
+                            if (isActive) {
+                              handleSelectSemanticTab((idx + 1) % semanticTabs.length);
+                            }
+                          }}
+                        />
+                      </span>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
-            <div
-              style={{
-                borderRadius: '20px',
-                backgroundColor: '#202328',
-                border: '1px solid rgba(255,255,255,0.08)',
-                padding: '28px',
-                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
-                fontSize: '13.5px',
-                lineHeight: 1.65,
-                color: '#e5e7eb',
-                overflowX: 'auto',
-              }}
-            >
-              <div style={{ display: 'flex', gap: 7, marginBottom: 16 }}>
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
-                <span style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.18)' }} />
+            {/* Right Column: 960x640 Dark Architectural Diagram Card with Deep Plum Glow (Matches Screenshot 2 100%!) */}
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', justifyContent: 'center' }}>
+              <div
+                key={`sem-stage-${activeSemanticTab}`}
+                className="steep-showcase-stage"
+                style={{
+                  width: '100%',
+                  maxWidth: '960px',
+                  minHeight: '560px',
+                  borderRadius: '24px',
+                  background:
+                    'radial-gradient(65% 55% at 52% 95%, rgba(126, 58, 118, 0.55) 0%, rgba(62, 34, 68, 0.28) 48%, rgba(22, 22, 25, 0.96) 100%), #161619',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  boxShadow: '0 30px 60px rgba(0,0,0,0.45)',
+                  padding: 'clamp(24px, 4vw, 48px)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {activeSemanticTab === 0 && (
+                  /* TAB 0: SEMANTIC PLATFORM ARCHITECTURE NODE DIAGRAM (Matches Screenshot 2 100%!) */
+                  <div style={{ width: '100%', position: 'relative' }}>
+                    {/* SVG Dotted Curved Connector Lines Between Left Sources -> Center Hub -> Right Outputs */}
+                    <svg
+                      viewBox="0 0 860 420"
+                      className="hidden md:block"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {/* Left 5 source curves into center hub */}
+                      <path d="M 185 95 C 235 95, 240 185, 285 185" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 185 152 C 230 152, 240 198, 285 198" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 185 210 C 230 210, 245 210, 285 210" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 185 268 C 230 268, 240 222, 285 222" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 185 325 C 235 325, 240 235, 285 235" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+
+                      {/* Center hub curves out to Right card */}
+                      <path d="M 595 185 C 630 185, 635 125, 670 125" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 595 198 C 630 198, 635 165, 670 165" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 595 210 C 630 210, 635 210, 670 210" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 595 222 C 630 222, 635 265, 670 265" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                      <path d="M 595 235 C 630 235, 635 305, 670 305" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.3" strokeDasharray="2 3" />
+                    </svg>
+
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                        gap: '28px',
+                        alignItems: 'center',
+                        position: 'relative',
+                        zIndex: 2,
+                      }}
+                    >
+                      {/* Left Column: 5 Data Source Pills */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxWidth: '185px' }}>
+                        {[
+                          { name: 'BigQuery · PRDECT', col: '#4285F4', icon: '◈' },
+                          { name: 'Databricks · Tokopedia', col: '#FF3621', icon: '❖' },
+                          { name: 'Snowflake · Shopee', col: '#29B5E8', icon: '✦' },
+                          { name: 'Redshift · Batch CSV', col: '#8C4FFF', icon: '◫' },
+                          { name: 'Postgres · Live Stream', col: '#336791', icon: '◎' },
+                        ].map((src) => (
+                          <div
+                            key={src.name}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '10px',
+                              padding: '10px 14px',
+                              borderRadius: '12px',
+                              backgroundColor: 'rgba(38, 36, 44, 0.85)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                              boxShadow: '0 8px 20px rgba(0,0,0,0.25)',
+                              fontSize: '12px',
+                              fontWeight: 500,
+                              color: 'rgba(255,255,255,0.9)',
+                            }}
+                          >
+                            <span
+                              style={{
+                                width: 20,
+                                height: 20,
+                                borderRadius: 6,
+                                backgroundColor: src.col,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: 10,
+                                color: '#fff',
+                                flexShrink: 0,
+                              }}
+                            >
+                              {src.icon}
+                            </span>
+                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {src.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Center Column: Elevated Semantic Platform Hub Box */}
+                      <div
+                        style={{
+                          borderRadius: '20px',
+                          backgroundColor: 'rgba(43, 39, 50, 0.9)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          padding: '24px',
+                          boxShadow: '0 20px 50px rgba(0,0,0,0.4)',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13.5, fontWeight: 600, marginBottom: 2 }}>
+                          <span>◠</span>
+                          <span>Sentimen</span>
+                        </div>
+                        <div style={{ fontSize: 15, color: 'rgba(255,255,255,0.85)', marginBottom: 20 }}>
+                          Semantic platform
+                        </div>
+
+                        {/* Top Wide Inner Box: Semantic model */}
+                        <div
+                          style={{
+                            borderRadius: '12px',
+                            backgroundColor: 'rgba(62, 56, 72, 0.75)',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                            padding: '24px 16px',
+                            textAlign: 'center',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            color: '#ffffff',
+                            marginBottom: '12px',
+                          }}
+                        >
+                          Semantic model (TF-IDF + MNB)
+                        </div>
+
+                        {/* Bottom 3 Inner Boxes: Context, Caching, Control */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                          {['Context', 'Caching', 'Control'].map((sub) => (
+                            <div
+                              key={sub}
+                              style={{
+                                borderRadius: '12px',
+                                backgroundColor: 'rgba(62, 56, 72, 0.75)',
+                                border: '1px solid rgba(255,255,255,0.08)',
+                                padding: '22px 8px',
+                                textAlign: 'center',
+                                fontSize: '12px',
+                                color: 'rgba(255,255,255,0.88)',
+                              }}
+                            >
+                              {sub}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right Column: Steep / Sentimen Outputs Card */}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, fontWeight: 600, marginBottom: 12 }}>
+                          <span>◠</span>
+                          <span>Sentimen</span>
+                        </div>
+                        <div
+                          style={{
+                            width: '175px',
+                            borderRadius: '18px',
+                            backgroundColor: 'rgba(43, 39, 50, 0.9)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            padding: '18px 20px',
+                            boxShadow: '0 16px 40px rgba(0,0,0,0.35)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '12px',
+                            fontSize: '12.5px',
+                            color: 'rgba(255,255,255,0.88)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>◈</span>
+                            <span>Chat</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>▤</span>
+                            <span>Explore</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>◧</span>
+                            <span>Reports</span>
+                          </div>
+                          <div style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.08)', margin: '2px 0' }} />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>⌘</span>
+                            <span>API</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>❖</span>
+                            <span>Integrations</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <span style={{ opacity: 0.65 }}>✧</span>
+                            <span>Agents</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSemanticTab === 1 && (
+                  /* TAB 1: STEEP / SENTIMEN API */
+                  <div style={{ width: '100%', maxWidth: '720px' }}>
+                    <div style={{ fontSize: 13, color: '#fbe1d1', marginBottom: 8 }}>REST API & JSON Endpoint</div>
+                    <div style={{ fontSize: 22, fontFamily: 'var(--font-signifier)', marginBottom: 18 }}>
+                      POST /api/predict & /api/compare-products
+                    </div>
+                    <pre
+                      style={{
+                        background: 'rgba(0,0,0,0.45)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 16,
+                        padding: 22,
+                        fontSize: 13,
+                        lineHeight: 1.6,
+                        color: '#e5e7eb',
+                        overflowX: 'auto',
+                      }}
+                    >
+                      {`{\n  "sentiment": "Positif",\n  "confidence": 0.9642,\n  "probabilities": { "Positif": 0.964, "Netral": 0.028, "Negatif": 0.008 },\n  "model_pipeline": "CountVectorizer(1,2) + Sastrawi + MultinomialNB",\n  "corpus_reference": "PRDECT-ID (5.459 ulasan)"\n}`}
+                    </pre>
+                  </div>
+                )}
+
+                {activeSemanticTab === 2 && (
+                  /* TAB 2: METRICS CATALOG */
+                  <div style={{ width: '100%', maxWidth: '760px' }}>
+                    <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 16 }}>
+                      Katalog Metrik Terpusat (29 Kategori Produk)
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 14 }}>
+                      {[
+                        { name: 'Indeks Reputasi Produk', formula: 'Weighted Positif vs Negatif (0–100)', status: 'Governed' },
+                        { name: 'Macro F1-Score Lintas Kelas', formula: 'Harmonic Mean Precision & Recall (77,28%)', status: 'Verified' },
+                        { name: 'Kontribusi Token Log-Prob', formula: 'Δ Log-Likelihood per N-Gram (1, 2)', status: 'Explainable' },
+                        { name: 'Distribusi Kategori Korpus', formula: '5.459 Sampel PRDECT-ID Tokopedia', status: 'Synced' },
+                      ].map((cat) => (
+                        <div key={cat.name} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.09)', padding: 18, borderRadius: 14 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                            <span style={{ fontWeight: 600, fontSize: 14 }}>{cat.name}</span>
+                            <span style={{ fontSize: 11, color: '#fbe1d1' }}>{cat.status}</span>
+                          </div>
+                          <div style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>{cat.formula}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeSemanticTab === 3 && (
+                  /* TAB 3: DEFINE IN CODE */
+                  <div style={{ width: '100%', maxWidth: '720px' }}>
+                    <div style={{ fontSize: 13, color: '#fbe1d1', marginBottom: 8 }}>Definisi Pipeline dalam Kode</div>
+                    <pre
+                      style={{
+                        background: 'rgba(0,0,0,0.45)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: 16,
+                        padding: 22,
+                        fontSize: 13,
+                        lineHeight: 1.6,
+                        color: '#e5e7eb',
+                        overflowX: 'auto',
+                      }}
+                    >
+                      {`metric: product_reputation_index\nmodel: multinomial_naive_bayes_v2\npreprocessing:\n  normalizer: sastrawi_slang_dictionary\n  ngram_range: [1, 2]\n  preserve_negation: ["tidak", "bukan", "kurang", "jangan"]\nevaluation:\n  test_accuracy: 0.8590\n  macro_f1: 0.7728`}
+                    </pre>
+                  </div>
+                )}
+
+                {activeSemanticTab === 4 && (
+                  /* TAB 4: MANAGE IN APP */
+                  <div style={{ width: '100%', maxWidth: '720px' }}>
+                    <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 12 }}>
+                      Administrasi Model & Online Learning (partial_fit)
+                    </div>
+                    <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', marginBottom: 20 }}>
+                      Koreksi hasil prediksi langsung dari antarmuka aplikasi dan perbarui bobot probabilitas
+                      Multinomial Naive Bayes tanpa melatih ulang seluruh korpus dari nol.
+                    </p>
+                    <button type="button" className="steep-btn-secondary-dark" onClick={() => onEnterWorkspace('prediksi')}>
+                      Buka Panel Online Learning →
+                    </button>
+                  </div>
+                )}
               </div>
-              <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{semanticTabs[activeSemanticTab].code}</pre>
             </div>
+          </div>
+
+          {/* 4-Column Feature Strip Below Dark Showcase (Matches Module 4564 in Chunk 6140) */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '32px',
+              marginTop: '72px',
+              paddingTop: '40px',
+              borderTop: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            {[
+              {
+                icon: '◈',
+                title: 'Izin akses terperinci',
+                desc: 'Kendalikan siapa yang dapat mengakses metrik korpus dan melakukan pelatihan ulang model.',
+              },
+              {
+                icon: '✦',
+                title: 'Caching cerdas',
+                desc: 'Kurangi beban komputasi server. Respons prediksi instan di bawah 15ms bagi pengguna.',
+              },
+              {
+                icon: '❖',
+                title: 'Integrasi scikit-learn + Sastrawi',
+                desc: 'Integrasi mulus ke lapisan pemrosesan bahasa alami bahasa Indonesia mandiri.',
+              },
+              {
+                icon: '◎',
+                title: 'Siap standar terbuka',
+                desc: 'Kompatibel dengan standar industri terbaru untuk ekspor CSV, PDF, dan REST API.',
+              },
+            ].map((item) => (
+              <div key={item.title} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    backgroundColor: 'rgba(255,255,255,0.06)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '16px',
+                  }}
+                >
+                  {item.icon}
+                </div>
+                <div>
+                  <div style={{ fontSize: '15.5px', fontWeight: 500, color: '#ffffff', marginBottom: 4 }}>
+                    {item.title}
+                  </div>
+                  <div style={{ fontSize: '14px', lineHeight: 1.48, color: 'rgba(255,255,255,0.58)' }}>
+                    {item.desc}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ====================================================================
-          7. STEEP AI SECTION (MIST GRAY #f2f2f3 WITH FLOATING TEAM BUBBLES — CHUNK 856)
+          7. STEEP AI SECTION ("UNLOCK DEEP ANALYSIS" — SCREENSHOT 3 — CHUNK 856)
          ==================================================================== */}
       <section
         id="sentimen-ai"
         ref={aiRef}
-        style={{ backgroundColor: '#f2f2f3', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}
+        style={{
+          backgroundColor: '#f2f2f3',
+          padding: '112px 24px 128px',
+          position: 'relative',
+          overflow: 'hidden',
+        }}
       >
+        {/* Soft Lavender / Pink Galaxy Glow Behind AI Window (Matches bg-ai-section.jpg in Screenshot 3) */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '44%',
+            width: '1100px',
+            height: '1100px',
+            transform: 'translate(-50%, -50%)',
+            background:
+              'radial-gradient(48% 48% at 50% 50%, rgba(235, 212, 250, 0.65) 0%, rgba(251, 215, 228, 0.42) 42%, rgba(242, 242, 243, 0) 72%)',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+
         <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: '13px', fontWeight: 500, color: '#52555d', marginBottom: 12 }}>
-            Sentimen AI ›
+          <div
+            onClick={() => onEnterWorkspace('prediksi')}
+            style={{
+              fontSize: '13px',
+              fontWeight: 450,
+              color: '#17191c',
+              marginBottom: '16px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+              cursor: 'pointer',
+            }}
+          >
+            <span>Sentimen AI</span>
+            <span style={{ opacity: 0.35 }}>›</span>
           </div>
 
           <SteepHeadingBlock
             isInView={aiInView}
             size="xl"
-            lines={[
-              { text: 'Analitik mendalam,' },
-              { text: 'ditenagai kecerdasan buatan', italicWord: 'mendalam,' },
-            ]}
-            description="Ajukan satu pertanyaan atau tempel tautan produk marketplace. Sentimen AI membedah ratusan ulasan, mengekstrak kelebihan serta kekurangan, dan menyusun kesimpulan yang siap dibagikan."
+            lines={[{ text: 'Buka analisis mendalam' }]}
+            description="Sentimen AI melampaui jawaban sederhana untuk menghadirkan analisis komprehensif yang berakar langsung pada model semantik Anda."
+            cta={
+              <button
+                type="button"
+                className="steep-btn-secondary"
+                onClick={() => onEnterWorkspace('prediksi')}
+              >
+                <span>Pelajari lebih lanjut</span>
+                <span style={{ opacity: 0.55 }}>→</span>
+              </button>
+            }
           />
 
-          {/* Central Report Preview with Floating Team Avatar Bubbles (Matches j & C in Chunk 4712/856) */}
-          <div style={{ position: 'relative', marginTop: '56px', marginBottom: '64px' }}>
-            {/* Floating Bubble 1: Left Top */}
+          {/* Central Report Window + 3 Floating Team Bubbles (Matches Screenshot 3 100%!) */}
+          <div style={{ position: 'relative', marginTop: '64px', marginBottom: '80px' }}>
+            {/* Floating Bubble 1: Mary Finance (Top-Left, left-[0%] top-[19%] w-[300px]) */}
             <div
               className="hidden lg:flex"
               style={{
                 position: 'absolute',
                 left: '0%',
-                top: '14%',
-                width: '290px',
+                top: '19%',
+                width: '300px',
                 zIndex: 10,
                 flexDirection: 'column',
                 gap: '6px',
@@ -2587,37 +3362,113 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                   backgroundColor: '#ffffff',
                   padding: '6px 14px 6px 8px',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(0,0,0,0.04)',
                 }}
               >
-                <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#fbe1d1', color: '#5d2a1a', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600 }}>
-                  R
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #5d2a1a, #c96b46)',
+                    color: '#fff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                >
+                  M
                 </span>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#17191c' }}>Rina</span>
-                <span style={{ fontSize: '12px', color: 'rgba(23,25,28,0.45)' }}>Tim Produk</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Mary</span>
+                <span style={{ fontSize: '12px', color: 'rgba(23,25,28,0.45)' }}>Finance</span>
               </div>
               <div
                 style={{
                   borderRadius: '20px',
                   backgroundColor: '#ffffff',
-                  padding: '14px 18px',
+                  padding: '16px 20px',
                   fontSize: '12.5px',
                   lineHeight: 1.45,
                   color: '#17191c',
                   boxShadow: '0 8px 40px rgba(0,0,0,0.10)',
+                  border: '1px solid rgba(0,0,0,0.04)',
                 }}
               >
-                Apakah lonjakan keluhan pengiriman minggu ini memengaruhi skor reputasi kategori Elektronik?
+                Apakah pertumbuhan ulasan positif sejalan dengan ekspektasi pendapatan kuartal ini?
               </div>
             </div>
 
-            {/* Floating Bubble 2: Right Middle */}
+            {/* Floating Bubble 2: Carl Sales (Bottom-Left, left-[0%] bottom-[4%] w-[340px]) */}
+            <div
+              className="hidden lg:flex"
+              style={{
+                position: 'absolute',
+                left: '0%',
+                bottom: '4%',
+                width: '340px',
+                zIndex: 10,
+                flexDirection: 'column',
+                gap: '6px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'inline-flex',
+                  width: 'fit-content',
+                  alignItems: 'center',
+                  gap: '8px',
+                  borderRadius: '999px',
+                  backgroundColor: '#ffffff',
+                  padding: '6px 14px 6px 8px',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                }}
+              >
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #163252, #4a85e8)',
+                    color: '#fff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                >
+                  C
+                </span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Carl</span>
+                <span style={{ fontSize: '12px', color: 'rgba(23,25,28,0.45)' }}>Sales</span>
+              </div>
+              <div
+                style={{
+                  borderRadius: '20px',
+                  backgroundColor: '#ffffff',
+                  padding: '16px 20px',
+                  fontSize: '12.5px',
+                  lineHeight: 1.45,
+                  color: '#17191c',
+                  boxShadow: '0 8px 40px rgba(0,0,0,0.10)',
+                  border: '1px solid rgba(0,0,0,0.04)',
+                }}
+              >
+                Analisis segmen pelanggan untuk memahami kategori mana yang berkinerja terbaik dan paling potensial tumbuh
+              </div>
+            </div>
+
+            {/* Floating Bubble 3: Josephine Marketing (Middle-Right, right-[2%] top-[45%] w-[380px]) */}
             <div
               className="hidden lg:flex"
               style={{
                 position: 'absolute',
                 right: '0%',
-                top: '42%',
-                width: '310px',
+                top: '45%',
+                width: '360px',
                 zIndex: 10,
                 flexDirection: 'column',
                 gap: '6px',
@@ -2633,30 +3484,45 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                   backgroundColor: '#ffffff',
                   padding: '6px 14px 6px 8px',
                   boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+                  border: '1px solid rgba(0,0,0,0.04)',
                 }}
               >
-                <span style={{ width: 22, height: 22, borderRadius: '50%', background: '#dce8fc', color: '#163252', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600 }}>
-                  A
+                <span
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #6b21a8, #d946ef)',
+                    color: '#fff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 11,
+                    fontWeight: 600,
+                  }}
+                >
+                  J
                 </span>
-                <span style={{ fontSize: '12px', fontWeight: 500, color: '#17191c' }}>Arif</span>
-                <span style={{ fontSize: '12px', color: 'rgba(23,25,28,0.45)' }}>Riset Pasar</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#17191c' }}>Josephine</span>
+                <span style={{ fontSize: '12px', color: 'rgba(23,25,28,0.45)' }}>Marketing</span>
               </div>
               <div
                 style={{
                   borderRadius: '20px',
                   backgroundColor: '#ffffff',
-                  padding: '14px 18px',
+                  padding: '16px 20px',
                   fontSize: '12.5px',
                   lineHeight: 1.45,
                   color: '#17191c',
                   boxShadow: '0 8px 40px rgba(0,0,0,0.10)',
+                  border: '1px solid rgba(0,0,0,0.04)',
                 }}
               >
-                Bandingkan sentimen ulasan TWS Lenovo Thinkplus LP40 vs Pro 4 TWS untuk rekomendasi katalog.
+                Kampanye mana yang mendorong konversi ulasan tertinggi? Apakah kita perlu mengalokasikan ulang anggaran?
               </div>
             </div>
 
-            {/* Central Elevated Report Card (max-w-[788px] mx-auto) */}
+            {/* Central Elevated AI Window (max-w-[788px] mx-auto — Matches Screenshot 3 100%!) */}
             <div
               style={{
                 maxWidth: '788px',
@@ -2664,75 +3530,273 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                 borderRadius: '24px',
                 backgroundColor: '#ffffff',
                 boxShadow: 'var(--shadow-window)',
-                padding: 'clamp(24px, 4vw, 40px)',
+                border: '1px solid rgba(4,23,43,0.06)',
+                overflow: 'hidden',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <span style={{ fontSize: 13, color: '#979799' }}>Laporan Otomatis · Sentimen AI</span>
-                <span style={{ fontSize: 12, padding: '4px 10px', borderRadius: 999, background: '#f2f2f3', color: '#17191c' }}>
-                  TF-IDF + MultinomialNB
-                </span>
+              {/* Window Top Bar */}
+              <div
+                style={{
+                  height: '48px',
+                  padding: '0 22px',
+                  borderBottom: '1px solid rgba(0,0,0,0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  fontSize: '12px',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                    <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                    <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#e5e5e7' }} />
+                  </div>
+                  <span style={{ color: '#777b86' }}>◧</span>
+                  <span style={{ color: '#979799' }}>‹</span>
+                  <span style={{ color: '#979799' }}>›</span>
+                  <span style={{ fontWeight: 600, color: '#17191c' }}>Sentimen vs tahun lalu ⌄</span>
+                </div>
+                <span style={{ fontWeight: 500, color: '#17191c' }}>+ Chat baru</span>
               </div>
-              <h3 style={{ fontFamily: 'var(--font-signifier)', fontWeight: 400, fontSize: 28, margin: '0 0 12px' }}>
-                Sintesis Reputasi Lintas Marketplace
-              </h3>
-              <p style={{ fontSize: 14.5, lineHeight: 1.55, color: '#52555d', margin: '0 0 24px' }}>
-                Berdasarkan ekstraksi fitur TF-IDF pada 5.459 ulasan korpus aktif, faktor <strong>kecepatan kurir</strong>,{' '}
-                <strong>keaslian produk</strong>, dan <strong>kerapian pengemasan</strong> menyumbang bobot informasi
-                tertinggi terhadap klasifikasi kelas Positif.
-              </p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 14 }}>
-                <div style={{ padding: 16, borderRadius: 16, background: '#fafafb' }}>
-                  <div style={{ fontSize: 12, color: '#777b86' }}>Token Positif Dominan</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, marginTop: 6 }}>“original”, “cepat”, “rapi”</div>
+
+              {/* Window Body */}
+              <div style={{ padding: '28px 36px 32px' }}>
+                {/* Right-Aligned User Prompt Bubble */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 22 }}>
+                  <div
+                    style={{
+                      backgroundColor: '#f3f3f5',
+                      borderRadius: '999px',
+                      padding: '10px 20px',
+                      fontSize: '12.5px',
+                      color: '#17191c',
+                      fontWeight: 440,
+                    }}
+                  >
+                    Mengapa ulasan positif naik bulan lalu dibandingkan bulan sebelumnya?
+                  </div>
                 </div>
-                <div style={{ padding: 16, borderRadius: 16, background: '#fafafb' }}>
-                  <div style={{ fontSize: 12, color: '#777b86' }}>Token Negatif Dominan</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, marginTop: 6 }}>“rusak”, “kecewa”, “tipis”</div>
+
+                <div style={{ fontSize: '12px', color: '#979799', marginBottom: '12px' }}>Penalaran ›</div>
+
+                <p style={{ fontSize: '13px', lineHeight: 1.55, color: '#17191c', margin: '0 0 14px' }}>
+                  <span style={{ color: '#3b76dd', fontWeight: 500 }}>▤ Ulasan positif</span> naik{' '}
+                  <strong>44k → 60k (+36%) dari bulan ke bulan</strong>. Tiga dimensi menceritakan kisahnya:
+                </p>
+
+                <div style={{ marginBottom: '22px', paddingLeft: '14px' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: '#17191c', marginBottom: 4 }}>
+                    1. Saluran · Organik adalah pendorong terbesar
+                  </div>
+                  <p style={{ fontSize: '12.5px', lineHeight: 1.55, color: '#3f424a', margin: 0 }}>
+                    Ulasan organik meningkat lebih dari dua kali lipat: <strong>11k → 25k (+14k)</strong>. Kampanye
+                    marketplace juga bertambah (<strong>+5k</strong>), sementara keluhan kurir turun drastis dari{' '}
+                    <strong>8k → 2k (-6k)</strong>. Kenaikan bersih hampir seluruhnya didorong oleh kepuasan organik.
+                  </p>
                 </div>
-                <div style={{ padding: 16, borderRadius: 16, background: '#fbe1d1', color: '#5d2a1a' }}>
-                  <div style={{ fontSize: 12 }}>Rekomendasi Aksi</div>
-                  <div style={{ fontSize: 15, fontWeight: 600, marginTop: 6 }}>Audit kualitas kemasan</div>
+
+                {/* Embedded Chart Card ("Registration trend") */}
+                <div
+                  style={{
+                    borderRadius: '16px',
+                    border: '1px solid rgba(23,25,28,0.08)',
+                    padding: '18px 22px',
+                    marginBottom: '22px',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div>
+                      <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#17191c' }}>Tren ulasan positif</div>
+                      <div style={{ fontSize: '11px', color: '#979799' }}>30 hari terakhir</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, fontSize: 12, color: '#777b86' }}>
+                      <span>◧</span>
+                      <span>→</span>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: 14, fontSize: '11px', color: '#777b86', marginBottom: 12 }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4a85e8' }} />
+                      Ulasan Positif
+                    </span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#efb095' }} />
+                      Bulan lalu
+                    </span>
+                  </div>
+
+                  <svg viewBox="0 0 640 165" style={{ width: '100%', height: 'auto' }}>
+                    {[
+                      { y: 28, l: '60k' },
+                      { y: 68, l: '40k' },
+                      { y: 108, l: '20k' },
+                      { y: 144, l: '0' },
+                    ].map((r) => (
+                      <g key={r.l}>
+                        <text x="0" y={r.y - 4} fill="#a3a6af" fontSize="9.5">
+                          {r.l}
+                        </text>
+                        <line x1="0" y1={r.y} x2="620" y2={r.y} stroke="rgba(0,0,0,0.06)" />
+                      </g>
+                    ))}
+                    <path
+                      d="M30 112 L75 118 L120 100 L165 106 L210 92 L255 98 L300 94 L345 108 L390 92 L435 100 L480 96 L525 84 L570 90"
+                      fill="none"
+                      stroke="#efb095"
+                      strokeWidth="1.5"
+                    />
+                    <path
+                      d="M30 92 L75 98 L120 104 L165 86 L210 84 L255 62 L300 56 L345 84 L390 82 L435 60 L480 44 L525 50 L570 36"
+                      fill="none"
+                      stroke="#4a85e8"
+                      strokeWidth="1.7"
+                    />
+                    <text x="30" y="82" fill="#3b76dd" fontSize="9.5" fontWeight="600">
+                      44k
+                    </text>
+                    {['Feb 28', 'Mar 3', 'Mar 6', 'Mar 9', 'Mar 12', 'Mar 15', 'Mar 18', 'Mar 21', 'Mar 24', 'Mar 27'].map(
+                      (d, i) => (
+                        <text key={d} x={30 + i * 58} y="160" textAnchor="middle" fill="#a3a6af" fontSize="9">
+                          {d}
+                        </text>
+                      )
+                    )}
+                  </svg>
+                </div>
+
+                {/* Bottom Follow-up Composer Box inside AI Window */}
+                <div
+                  onClick={() => onEnterWorkspace('prediksi')}
+                  style={{
+                    borderRadius: '14px',
+                    border: '1px solid rgba(23,25,28,0.08)',
+                    padding: '12px 16px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ marginBottom: 6 }}>
+                    <span
+                      style={{
+                        fontSize: '10.5px',
+                        color: '#52555d',
+                        backgroundColor: '#f3f3f5',
+                        borderRadius: '999px',
+                        padding: '2px 8px',
+                      }}
+                    >
+                      ⓘ Bulan ini
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '12.5px', color: '#17191c' }}>
+                    Dari saluran mana pelanggan baru paling banyak berasal?
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* 3 Feature Columns Below AI Report */}
+          {/* 3 Square Visual Feature Cards Below AI Window (Matches Module 627 in Chunk 4712) */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '28px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '32px',
             }}
           >
             {[
               {
-                title: 'Bebas halusinasi dengan metrik terukur',
-                desc: 'Setiap kesimpulan diikat langsung pada probabilitas kelas Multinomial Naive Bayes dan skor frekuensi TF-IDF aktual.',
+                title: 'Jawaban yang dapat dipercaya',
+                desc: 'Sentimen AI ditenagai oleh model semantik Anda sehingga setiap jawaban mencerminkan metrik yang terukur.',
+                badge: 'TF-IDF + MultinomialNB Verified',
+                accent: '#fbe1d1',
+                visualTitle: '85,90% Akurasi',
               },
               {
-                title: 'Tarik ulasan live dari 8 marketplace',
-                desc: 'Tempel URL atau nama produk dari Tokopedia, Shopee, Lazada, Blibli, ZALORA, Sociolla, Eraspace, atau Ruparupa.',
+                title: 'Hasilkan laporan instan',
+                desc: 'Ubah percakapan analisis apa pun menjadi laporan yang siap dibagikan, diedit, dan dikembangkan bersama tim.',
+                badge: 'Ekspor PDF & Eksekutif',
+                accent: '#dce8fc',
+                visualTitle: 'Laporan Reputasi',
               },
               {
-                title: 'Laporan komparasi siap ekspor PDF',
-                desc: 'Cetak laporan perbandingan dua produk lengkap dengan indeks reputasi dan rincian ulasan untuk dokumentasi tim.',
+                title: 'Dukung tim di tempat mereka bekerja',
+                desc: 'Agen dan analis di seluruh tim bekerja dari metrik terukur yang sama melalui REST API dan Batch CSV.',
+                badge: '8 Marketplace + CSV',
+                accent: '#dfece3',
+                visualTitle: 'Sinkronisasi Korpus',
               },
-            ].map((feat) => (
-              <div
-                key={feat.title}
-                style={{
-                  backgroundColor: '#ffffff',
-                  borderRadius: '20px',
-                  padding: '24px',
-                }}
-              >
-                <div style={{ fontSize: '17px', fontWeight: 500, color: '#17191c', marginBottom: 8 }}>
-                  {feat.title}
+            ].map((card) => (
+              <div key={card.title} style={{ display: 'flex', flexDirection: 'column' }}>
+                <div
+                  onClick={() => onEnterWorkspace('prediksi')}
+                  style={{
+                    aspectRatio: '1 / 1',
+                    borderRadius: '20px',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid rgba(0,0,0,0.06)',
+                    padding: '28px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: '-15%',
+                      bottom: '-15%',
+                      width: '220px',
+                      height: '220px',
+                      borderRadius: '50%',
+                      backgroundColor: card.accent,
+                      opacity: 0.55,
+                      filter: 'blur(24px)',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: '11.5px',
+                      fontWeight: 500,
+                      color: '#52555d',
+                      backgroundColor: '#f2f2f3',
+                      padding: '4px 12px',
+                      borderRadius: '999px',
+                      width: 'fit-content',
+                    }}
+                  >
+                    {card.badge}
+                  </span>
+
+                  <div
+                    style={{
+                      borderRadius: '16px',
+                      backgroundColor: '#fafafb',
+                      border: '1px solid rgba(0,0,0,0.05)',
+                      padding: '22px',
+                      position: 'relative',
+                      zIndex: 2,
+                    }}
+                  >
+                    <div style={{ fontFamily: 'var(--font-signifier)', fontSize: '28px', color: '#17191c' }}>
+                      {card.visualTitle}
+                    </div>
+                    <div style={{ fontSize: '12.5px', color: '#777b86', marginTop: 6 }}>
+                      Terhubung langsung ke 5.459 ulasan PRDECT-ID
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ fontSize: '17px', fontWeight: 500, color: '#17191c', paddingTop: '18px', marginBottom: '4px' }}>
+                  {card.title}
                 </div>
                 <p style={{ fontSize: '14.5px', lineHeight: 1.5, color: 'rgba(23,25,28,0.6)', margin: 0 }}>
-                  {feat.desc}
+                  {card.desc}
                 </p>
               </div>
             ))}
