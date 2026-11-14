@@ -319,6 +319,7 @@ def get_dataset_samples() -> Tuple[Response, int]:
                 filtered_df = kw_subset
 
         samples = []
+        review_catalog, category_products = _get_prdect_product_catalog()
         for sentiment_cls in ["positif", "netral", "negatif"]:
             subset = filtered_df[filtered_df["sentiment"] == sentiment_cls]
             if subset.empty:
@@ -326,11 +327,28 @@ def get_dataset_samples() -> Tuple[Response, int]:
             if not subset.empty:
                 sampled_rows = subset.sample(n=min(2, len(subset)), random_state=None)
                 for _, row in sampled_rows.iterrows():
+                    raw_txt = str(row.get("text", "")).strip()
+                    raw_cat = str(row.get("category", "Produk")).strip()
+                    matched_info = review_catalog.get(raw_txt.lower())
+                    if matched_info and matched_info.get("product_name"):
+                        prod_name = matched_info["product_name"]
+                        if matched_info.get("category"):
+                            raw_cat = matched_info["category"]
+                    else:
+                        cat_prod_list = category_products.get(raw_cat, [])
+                        prod_name = (
+                            random.choice(cat_prod_list)
+                            if cat_prod_list
+                            else CATEGORY_DEFAULT_PRODUCT_QUERY.get(raw_cat, f"Produk {CATEGORY_LABELS_ID.get(raw_cat, raw_cat)}")
+                        )
+
                     samples.append({
-                        "text": str(row.get("text", "")),
+                        "text": raw_txt,
                         "sentiment": str(row.get("sentiment", sentiment_cls)),
                         "rating": int(row.get("rating", 0)) if pd.notna(row.get("rating")) else 0,
-                        "category": str(row.get("category", "Produk")),
+                        "category": raw_cat,
+                        "category_label": CATEGORY_LABELS_ID.get(raw_cat, raw_cat),
+                        "product_name": prod_name,
                         "source": str(row.get("source", "PRDECT-ID")),
                     })
 
@@ -654,31 +672,83 @@ def _resolve_ecommerce_query(
 
 
 _PRODUCT_MEDIA_CACHE: Dict[str, List[Dict[str, str]]] = {}
+_PRDECT_REVIEW_CATALOG: Dict[str, Dict[str, str]] = {}
+_PRDECT_CATEGORY_PRODUCTS: Dict[str, List[str]] = {}
+_PRDECT_CATALOG_LOADED: bool = False
+
+PRDECT_RAW_CSV_PATH: Path = RAW_DATA_PATH.parent / "prdect_id_tokopedia.csv"
 
 CATEGORY_DEFAULT_PRODUCT_QUERY: Dict[str, str] = {
     "Elektronik": "Speaker Bluetooth TWS Gadget Elektronik",
     "Electronics": "Speaker Bluetooth TWS Gadget Elektronik",
-    "Computers and Laptops": "Laptop Keyboard Mouse Aksesoris Komputer",
+    "Computers and Laptops": "Laptop Keyboard Mouse SSD Aksesoris Komputer",
     "Phones and Tablets": "Smartphone Handphone Charger Case Original",
-    "Camera": "Kamera Digital Lensa Tripod Original",
-    "Gaming": "Headset Gaming Controller Mouse RGB",
-    "Fashion": "Kemeja Kaos Sepatu Fashion Casual",
-    "Men's Fashion": "Kemeja Kaos Jaket Pria Casual",
-    "Women's Fashion": "Blouse Dress Tas Sepatu Wanita",
-    "Muslim Fashion": "Hijab Gamis Busana Muslim",
-    "Kids and Baby Fashion": "Baju Anak Setelan Pakaian Bayi",
-    "Beauty": "Skincare Serum Facial Wash Kosmetik",
-    "Body Care": "Body Lotion Sabun Mandi Skincare",
-    "Rumah Tangga": "Panci Wajan Lampu Alat Rumah Tangga",
-    "Household": "Peralatan Rumah Tangga Lampu Rak",
-    "Kitchen": "Panci Wajan Anti Lengket Alat Masak Dapur",
-    "Carpentry": "Perkakas Pertukangan Obeng Bor",
-    "Office & Stationery": "Alat Tulis Kantor Buku Pulpen Organizer",
-    "Mother and Baby": "Perlengkapan Bayi Botol Susu Popok",
-    "Food and Drink": "Makanan Minuman Camilan Kemasan",
-    "Movies and Music": "Speaker Audio Musik Headphone",
-    "Semua": "Speaker Bluetooth TWS Gadget Tokopedia",
+    "Camera": "Kamera Mirrorless Lensa Tripod Fotografi",
+    "Gaming": "Headset Gaming Controller Mouse Mechanical RGB",
+    "Fashion": "Kemeja Kaos Pakaian Casual Original",
+    "Men's Fashion": "Kemeja Pria Kaos Polo Piyama Celana Chino",
+    "Women's Fashion": "Blouse Dress Wanita Tas Selempang Cardigan",
+    "Muslim Fashion": "Hijab Pashmina Gamis Mukena Busana Muslim",
+    "Kids and Baby Fashion": "Baju Setelan Anak Pakaian Bayi Katun",
+    "Beauty": "Skincare Serum Wajah Moisturizer Sunscreen",
+    "Body Care": "Body Wash Lotion Sabun Mandi Perawatan Tubuh",
+    "Rumah Tangga": "Peralatan Rumah Tangga Rak Lampu Dispenser",
+    "Household": "Perlengkapan Rumah Sprei Bantal Rak Penyimpanan",
+    "Kitchen": "Panci Wajan Anti Lengket Pisau Alat Masak Dapur",
+    "Carpentry": "Perkakas Pertukangan Bor Obeng Kunci Sok",
+    "Office & Stationery": "Alat Tulis Kantor Buku Catatan Pulpen Map",
+    "Mother and Baby": "Perlengkapan Ibu Bayi Botol Susu Popok",
+    "Food and Drink": "Makanan Minuman Kopi Camilan Kemasan",
+    "Automotive": "Aksesoris Otomotif Motor Mobil Oli Helm Lampu LED",
+    "Sport": "Sepatu Olahraga Jersey Matras Yoga Dumbell",
+    "Books": "Buku Novel Nonfiksi Literatur Original",
+    "Health": "Suplemen Vitamin Masker Medis Alat Kesehatan",
+    "Movies and Music": "Gitar Akustik Alat Musik Audio Vinyl",
+    "Party Supplies and Craft": "Dekorasi Pesta Balon Kertas Kado Kerajinan",
+    "Toys and Hobbies": "Mainan Edukasi Puzzle Action Figure Hobi",
+    "Animal Care": "Makanan Kucing Anjing Vitamin Hewan Peliharaan",
+    "Tour and Travel": "Koper Kabin Tas Travel Bantal Leher",
+    "Precious Metal": "Logam Mulia Emas Batangan Antam",
+    "Property": "Perlengkapan Properti Kunci Pintu Smart Lock",
+    "Other Products": "Produk Kebutuhan Harian Serbaguna Original",
+    "General E-Commerce": "Produk Belanja Online Marketplace Indonesia",
+    "Otomotif & Hobi": "Aksesoris Otomotif Olahraga Hobi Buku",
+    "Semua": "Produk E-Commerce Tokopedia Shopee Indonesia",
 }
+
+
+def _get_prdect_product_catalog() -> Tuple[Dict[str, Dict[str, str]], Dict[str, List[str]]]:
+    """Load exact review -> Product Name mapping and category -> Product Name list from PRDECT-ID dataset."""
+    global _PRDECT_CATALOG_LOADED
+    if _PRDECT_CATALOG_LOADED:
+        return _PRDECT_REVIEW_CATALOG, _PRDECT_CATEGORY_PRODUCTS
+
+    _PRDECT_CATALOG_LOADED = True
+    if not PRDECT_RAW_CSV_PATH.exists():
+        return _PRDECT_REVIEW_CATALOG, _PRDECT_CATEGORY_PRODUCTS
+
+    try:
+        pdf = pd.read_csv(
+            PRDECT_RAW_CSV_PATH,
+            usecols=["Category", "Product Name", "Customer Review"],
+        )
+        for _, row in pdf.iterrows():
+            rev_txt = str(row.get("Customer Review", "")).strip()
+            prod_name = str(row.get("Product Name", "")).strip()
+            cat_name = str(row.get("Category", "")).strip()
+            if rev_txt and prod_name:
+                _PRDECT_REVIEW_CATALOG[rev_txt.lower()] = {
+                    "product_name": prod_name,
+                    "category": cat_name,
+                }
+            if cat_name and prod_name:
+                bucket = _PRDECT_CATEGORY_PRODUCTS.setdefault(cat_name, [])
+                if prod_name not in bucket and len(bucket) < 40:
+                    bucket.append(prod_name)
+    except Exception as exc:
+        logger.warning("Could not load PRDECT-ID product catalog index: %s", exc)
+
+    return _PRDECT_REVIEW_CATALOG, _PRDECT_CATEGORY_PRODUCTS
 
 
 def _fetch_real_product_media(search_query: str, limit: int = 6) -> List[Dict[str, str]]:
@@ -754,45 +824,122 @@ def _fetch_real_product_media(search_query: str, limit: int = 6) -> List[Dict[st
 def _infer_product_context_from_review(
     review_text: str, category_hint: str = "", product_hint: str = "", platform_hint: str = "Tokopedia"
 ) -> Dict[str, Any]:
-    """Infer concrete product query & category from review text or explicit product hint and fetch real photos."""
-    lower_text = review_text.lower()
-    inferred_category = category_hint if category_hint and category_hint != "Semua" else "Elektronik"
-    search_query = product_hint.strip()
+    """Infer concrete product query & category from review text, PRDECT-ID catalog, or explicit hint and fetch real photos."""
+    clean_rev = review_text.strip()
+    lower_text = clean_rev.lower()
+    review_catalog, category_products = _get_prdect_product_catalog()
 
-    if not search_query or search_query.startswith("Link Produk"):
-        if any(w in lower_text for w in ("touch control", "tws", "earbuds", "earphone", "headset")):
-            search_query = "TWS Earphone Bluetooth Touch Control Original"
-            inferred_category = "Elektronik"
-        elif any(w in lower_text for w in ("speaker", "bass", "suara", "audio", "subwoofer", "bluetooth", "volume")):
-            search_query = "Promo Eggel Fortis 2 Portable Party Speaker with RGB Light"
-            inferred_category = "Elektronik"
-        elif any(w in lower_text for w in ("batre", "baterai", "cas", "charger", "fast charging", "powerbank", "kabel")):
-            search_query = "Charger Powerbank Fast Charging Kabel Original"
-            inferred_category = "Elektronik"
-        elif any(w in lower_text for w in ("layar", "monitor", "pixel", "laptop", "keyboard", "mouse", "ssd", "ram")):
-            search_query = "Monitor Laptop Keyboard Gaming Elektronik"
-            inferred_category = "Elektronik"
-        elif any(w in lower_text for w in ("hp", "handphone", "kamera", "sinyal", "casing", "tempered")):
-            search_query = "Smartphone Handphone Android Garansi Resmi"
-            inferred_category = "Elektronik"
-        elif any(w in lower_text for w in ("kulit", "wajah", "muka", "serum", "skincare", "jerawat", "lembab", "sabun", "wangi", "parfum")):
-            search_query = "Skincare Serum Wajah Perawatan Kulit Original"
-            inferred_category = "Fashion"
-        elif any(w in lower_text for w in ("sepatu", "sandal", "sol", "empuk", "kaki")):
-            search_query = "Sepatu Sneakers Casual Original"
-            inferred_category = "Fashion"
-        elif any(w in lower_text for w in ("baju", "kaos", "kemeja", "celana", "jaket", "hoodie", "bahan", "jahitan", "adem", "ukuran", "kain")):
-            search_query = "Kemeja Kaos Pakaian Casual Bahan Adem"
-            inferred_category = "Fashion"
-        elif any(w in lower_text for w in ("panci", "wajan", "masak", "anti lengket", "dapur", "botol", "tumbler")):
-            search_query = "Panci Wajan Anti Lengket Alat Masak Dapur"
-            inferred_category = "Rumah Tangga"
-        elif any(w in lower_text for w in ("lampu", "kipas", "kursi", "meja", "rak", "kasur", "bantal")):
-            search_query = "Lampu Kipas Angin Perlengkapan Rumah Tangga"
-            inferred_category = "Rumah Tangga"
+    # 1. Exact lookup in PRDECT-ID Tokopedia 5,400-review catalog
+    matched_entry = review_catalog.get(lower_text)
+    clean_hint_cat = (category_hint or "").strip()
+    has_specific_cat = bool(clean_hint_cat and clean_hint_cat.lower() not in ("semua", "otomatis", "all"))
+
+    resolved_product_name = (product_hint or "").strip()
+    if resolved_product_name.startswith("Link Produk"):
+        resolved_product_name = ""
+
+    inferred_category = clean_hint_cat if has_specific_cat else ""
+
+    if matched_entry:
+        if not resolved_product_name:
+            resolved_product_name = matched_entry.get("product_name", "")
+        if not inferred_category and matched_entry.get("category"):
+            inferred_category = matched_entry["category"]
+
+    # 2. Keyword-based inference from the review text when product or category is still unknown
+    keyword_query = ""
+    if not resolved_product_name:
+        if any(w in lower_text for w in ("touch control", "tws", "earbuds", "earphone", "headset", "headphone")):
+            keyword_query = "TWS Earphone Bluetooth Touch Control Original"
+            inferred_category = inferred_category or "Electronics"
+        elif any(w in lower_text for w in ("speaker", "bass", "subwoofer", "bluetooth", "volume")):
+            keyword_query = "Speaker Bluetooth Portable Audio Full Bass"
+            inferred_category = inferred_category or "Electronics"
+        elif any(w in lower_text for w in ("batre", "baterai", "cas", "charger", "fast charging", "powerbank", "kabel", "adaptor")):
+            keyword_query = "Charger Powerbank Fast Charging Kabel Original"
+            inferred_category = inferred_category or "Phones and Tablets"
+        elif any(w in lower_text for w in ("layar", "monitor", "pixel", "laptop", "keyboard", "mouse", "ssd", "ram", "flashdisk", "pc")):
+            keyword_query = "SSD Keyboard Mouse Monitor Laptop Komputer"
+            inferred_category = inferred_category or "Computers and Laptops"
+        elif any(w in lower_text for w in ("hp", "handphone", "smartphone", "sinyal", "casing", "tempered")):
+            keyword_query = "Smartphone Handphone Casing Tempered Glass"
+            inferred_category = inferred_category or "Phones and Tablets"
+        elif any(w in lower_text for w in ("kamera", "lensa", "tripod", "dslr", "mirrorless")):
+            keyword_query = "Kamera Mirrorless Lensa Tripod Fotografi"
+            inferred_category = inferred_category or "Camera"
+        elif any(w in lower_text for w in ("kulit", "wajah", "muka", "serum", "skincare", "jerawat", "lembab", "toner", "sunscreen", "lipstik", "bedak")):
+            keyword_query = "Skincare Serum Wajah Moisturizer Original"
+            inferred_category = inferred_category or "Beauty"
+        elif any(w in lower_text for w in ("sabun", "shampo", "shampoo", "lotion", "body", "mandi", "wangi", "parfum", "deodorant", "odol")):
+            keyword_query = "Sabun Mandi Body Lotion Shampoo Perawatan Tubuh"
+            inferred_category = inferred_category or "Body Care"
+        elif any(w in lower_text for w in ("hijab", "jilbab", "kerudung", "gamis", "mukena", "pashmina", "koko", "sarung")):
+            keyword_query = "Hijab Pashmina Gamis Mukena Busana Muslim"
+            inferred_category = inferred_category or "Muslim Fashion"
+        elif any(w in lower_text for w in ("sepatu", "sandal", "sneakers", "sol", "kaos kaki")):
+            keyword_query = "Sepatu Sneakers Casual Sandal Original"
+            inferred_category = inferred_category or "Men's Fashion"
+        elif any(w in lower_text for w in ("luntur", "cuci", "dicuci", "piyama", "baju", "kaos", "kemeja", "celana", "jaket", "hoodie", "bahan", "jahitan", "adem", "ukuran", "kain", "katun", "dress", "blouse", "rok")):
+            keyword_query = "Pakaian Kemeja Kaos Piyama Katun Casual"
+            inferred_category = inferred_category or "Men's Fashion"
+        elif any(w in lower_text for w in ("panci", "wajan", "teflon", "masak", "anti lengket", "dapur", "pisau", "piring", "gelas", "sendok", "botol", "tumbler")):
+            keyword_query = "Panci Wajan Anti Lengket Alat Masak Dapur"
+            inferred_category = inferred_category or "Kitchen"
+        elif any(w in lower_text for w in ("lampu", "kipas", "kursi", "meja", "rak", "kasur", "bantal", "sprei", "handuk", "sapu", "pel")):
+            keyword_query = "Perlengkapan Rumah Tangga Sprei Bantal Lampu Rak"
+            inferred_category = inferred_category or "Household"
+        elif any(w in lower_text for w in ("obeng", "bor", "tang", "palu", "baut", "kunci", "gergaji", "las")):
+            keyword_query = "Perkakas Pertukangan Bor Obeng Lengkap"
+            inferred_category = inferred_category or "Carpentry"
+        elif any(w in lower_text for w in ("oli", "helm", "motor", "mobil", "spion", "kampas", "ban", "aki", "busi")):
+            keyword_query = "Aksesoris Otomotif Motor Mobil Helm Oli"
+            inferred_category = inferred_category or "Automotive"
+        elif any(w in lower_text for w in ("buku", "novel", "baca", "halaman", "cetakan", "komik")):
+            keyword_query = "Buku Novel Bacaan Literatur Original"
+            inferred_category = inferred_category or "Books"
+        elif any(w in lower_text for w in ("kopi", "teh", "coklat", "pedas", "manis", "enak", "rasa", "makanan", "cemilan", "snack", "roti", "susu")):
+            keyword_query = "Makanan Minuman Camilan Kopi Kemasan"
+            inferred_category = inferred_category or "Food and Drink"
+        elif any(w in lower_text for w in ("kucing", "anjing", "kandang", "pasir", "whiskas", "bolt", "pakan")):
+            keyword_query = "Makanan Kucing Anjing Perawatan Hewan"
+            inferred_category = inferred_category or "Animal Care"
+        elif any(w in lower_text for w in ("vitamin", "obat", "masker", "kesehatan", "medis", "kapsul", "madu")):
+            keyword_query = "Vitamin Suplemen Masker Alat Kesehatan"
+            inferred_category = inferred_category or "Health"
+        elif any(w in lower_text for w in ("mainan", "anak", "boneka", "lego", "puzzle")):
+            keyword_query = "Mainan Edukasi Anak Puzzle Original"
+            inferred_category = inferred_category or "Toys and Hobbies"
+        elif any(w in lower_text for w in ("pulpen", "pensil", "kertas", "amplop", "buku tulis", "stiker", "lakban")):
+            keyword_query = "Alat Tulis Kantor Pulpen Buku Kertas"
+            inferred_category = inferred_category or "Office & Stationery"
+
+    if not inferred_category:
+        inferred_category = "General E-Commerce"
+
+    # 3. Determine search query for real product photography
+    if resolved_product_name:
+        search_query = resolved_product_name
+    elif keyword_query:
+        # If category has real products in PRDECT-ID, pick a deterministic product from that category based on review hash
+        cat_candidates = category_products.get(inferred_category, [])
+        if cat_candidates:
+            idx = sum(ord(ch) for ch in lower_text) % len(cat_candidates)
+            resolved_product_name = cat_candidates[idx]
+            search_query = resolved_product_name
+        else:
+            search_query = keyword_query
+    else:
+        cat_candidates = category_products.get(inferred_category, [])
+        if not cat_candidates and inferred_category in CATEGORY_GROUP_MAP:
+            for sub_cat in CATEGORY_GROUP_MAP[inferred_category]:
+                cat_candidates.extend(category_products.get(sub_cat, [])[:5])
+        if cat_candidates:
+            idx = sum(ord(ch) for ch in (lower_text or inferred_category)) % len(cat_candidates)
+            resolved_product_name = cat_candidates[idx]
+            search_query = resolved_product_name
         else:
             search_query = CATEGORY_DEFAULT_PRODUCT_QUERY.get(
-                category_hint, CATEGORY_DEFAULT_PRODUCT_QUERY["Semua"]
+                inferred_category, CATEGORY_DEFAULT_PRODUCT_QUERY["Semua"]
             )
 
     media_list = _fetch_real_product_media(search_query, limit=4)
@@ -800,15 +947,17 @@ def _infer_product_context_from_review(
         "image_url": "",
         "thumbnail_url": "",
         "product_url": "",
-        "title": search_query,
+        "title": resolved_product_name or search_query,
     }
 
-    display_title = product_hint.strip() if (product_hint and not product_hint.startswith("Link Produk")) else primary.get("title") or search_query
+    display_title = resolved_product_name or primary.get("title") or search_query
+    display_category = CATEGORY_LABELS_ID.get(inferred_category, inferred_category)
 
     return {
         "title": display_title,
         "query_used": search_query,
-        "category": inferred_category,
+        "category": display_category,
+        "raw_category": inferred_category,
         "platform": platform_hint or "Tokopedia",
         "image_url": primary.get("image_url", ""),
         "thumbnail_url": primary.get("thumbnail_url", ""),

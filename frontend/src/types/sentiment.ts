@@ -5,6 +5,8 @@ export interface DatasetSample {
   sentiment: SentimentClass
   rating: number
   category: string
+  category_label?: string
+  product_name?: string
   source: string
 }
 

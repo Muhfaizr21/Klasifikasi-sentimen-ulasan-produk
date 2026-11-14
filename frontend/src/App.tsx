@@ -29,21 +29,27 @@ const DEFAULT_SAMPLES: DatasetSample[] = [
   {
     sentiment: 'positif',
     rating: 5,
-    category: 'Elektronik',
+    category: 'Electronics',
+    category_label: 'Elektronik Konsumen',
+    product_name: 'TWS Bluetooth Earphone Wireless Headset Tokopedia',
     source: 'PRDECT-ID (Tokopedia)',
     text: 'Barang original 100%, pengemasan super rapi pakai bubble wrap tebal dan pengiriman cepet bgt! Sangat puas belanja di toko ini, recommended seller!',
   },
   {
     sentiment: 'netral',
     rating: 3,
-    category: 'Fashion',
+    category: "Men's Fashion",
+    category_label: 'Fashion Pria',
+    product_name: 'Kaos Pria Katun Combed 30s Polos Reguler Fit',
     source: 'HuggingFace E-Commerce',
     text: 'Lumayan, tapi jangan expect banyak. Kualitas standar sesuai harga lah.',
   },
   {
     sentiment: 'negatif',
     rating: 1,
-    category: 'Rumah Tangga',
+    category: 'Kitchen',
+    category_label: 'Peralatan Dapur',
+    product_name: 'Wajan Penggorengan Teflon Anti Lengket Panci Dapur',
     source: 'PRDECT-ID (Tokopedia)',
     text: 'Kecewa berat! Barang rusak parah pas sampe, paking ancur dan penjual tidak responsif saat dikomplain. Nyesel beli disini!',
   },
@@ -55,21 +61,27 @@ const CATEGORY_PRESETS: Record<string, DatasetSample[]> = {
     {
       sentiment: 'positif',
       rating: 5,
-      category: 'Elektronik',
+      category: 'Audio',
+      category_label: 'Perangkat Audio & Speaker',
+      product_name: 'Headset Bluetooth Bass Earphone Wireless',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Suara headset jernih, bass mantap dan baterai awet seharian. Pengiriman cepat dan segel resmi.',
     },
     {
       sentiment: 'netral',
       rating: 3,
-      category: 'Elektronik',
+      category: 'Phones and Tablets',
+      category_label: 'Ponsel & Tablet',
+      product_name: 'Kabel Charger USB Type C Fast Charging Smartphone',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Kabel charger berfungsi normal, cuma bahannya agak tipis sesuai harga murah.',
     },
     {
       sentiment: 'negatif',
       rating: 1,
-      category: 'Elektronik',
+      category: 'Electronics',
+      category_label: 'Elektronik Konsumen',
+      product_name: 'TWS Mini Bluetooth Speaker Portable Audio',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Baru dipakai dua hari sudah mati total, dikomplain malah disuruh servis sendiri. Mengecewakan!',
     },
@@ -78,21 +90,27 @@ const CATEGORY_PRESETS: Record<string, DatasetSample[]> = {
     {
       sentiment: 'positif',
       rating: 5,
-      category: 'Fashion',
+      category: "Men's Fashion",
+      category_label: 'Fashion Pria',
+      product_name: 'Kemeja Pria Lengan Pendek Katun Oxford Casual',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Bahannya adem, jahitan sangat rapi dan ukuran pas di badan. Bakal langganan di toko ini.',
     },
     {
       sentiment: 'netral',
       rating: 3,
-      category: 'Fashion',
+      category: "Women's Fashion",
+      category_label: 'Fashion Wanita',
+      product_name: 'Blouse Wanita Lengan Panjang Casual Korea',
       source: 'HuggingFace E-Commerce',
       text: 'Model bajunya sesuai foto, tapi warnanya agak sedikit lebih gelap dari ekspektasi.',
     },
     {
       sentiment: 'negatif',
       rating: 1,
-      category: 'Fashion',
+      category: 'Muslim Fashion',
+      category_label: 'Busana Muslim',
+      product_name: 'Hijab Pashmina Ceruty Babydoll Premium',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Bahan tipis menerawang dan jahitan banyak yang lepas. Sangat tidak sesuai deskripsi.',
     },
@@ -101,21 +119,27 @@ const CATEGORY_PRESETS: Record<string, DatasetSample[]> = {
     {
       sentiment: 'positif',
       rating: 5,
-      category: 'Rumah Tangga',
+      category: 'Kitchen',
+      category_label: 'Peralatan Dapur',
+      product_name: 'Wajan Anti Lengket Granite Frying Pan Dapur',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Wajan anti lengket beneran bagus, panas merata dan mudah dibersihkan. Packing kayu aman.',
     },
     {
       sentiment: 'netral',
       rating: 3,
-      category: 'Rumah Tangga',
+      category: 'Household',
+      category_label: 'Perlengkapan Rumah Tangga',
+      product_name: 'Kotak Penyimpanan Kontainer Plastik Serbaguna',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Kotak penyimpanan lumayan kokoh, hanya saja tutupnya agak seret saat dipasang.',
     },
     {
       sentiment: 'negatif',
       rating: 1,
-      category: 'Rumah Tangga',
+      category: 'Household',
+      category_label: 'Perlengkapan Rumah Tangga',
+      product_name: 'Toples Kaca Kedap Udara Penyimpanan Dapur',
       source: 'PRDECT-ID (Tokopedia)',
       text: 'Barang pecah saat sampai karena cuma dibungkus plastik tipis tanpa bubble wrap.',
     },
@@ -231,7 +255,7 @@ export default function App() {
 
       try {
         const prediction = await requestSentimentPrediction(trimmed, {
-          productHint: options?.productHint ?? liveResolvedQuery,
+          productHint: options?.productHint ?? '',
           category: options?.category ?? selectedCategory,
           platform:
             options?.platform ??
@@ -251,7 +275,7 @@ export default function App() {
         setLoading(false)
       }
     },
-    [liveResolvedQuery, selectedCategory, selectedPlatform]
+    [selectedCategory, selectedPlatform]
   )
 
   const handleLearnRealtime = useCallback(
@@ -393,7 +417,10 @@ export default function App() {
           if (randomItem) {
             setActiveTab('prediksi')
             setText(randomItem.text)
-            void handlePredict(randomItem.text)
+            void handlePredict(randomItem.text, {
+              productHint: randomItem.product_name,
+              category: randomItem.category,
+            })
           }
         }
       })
@@ -401,7 +428,10 @@ export default function App() {
         const fallback = samples[Math.floor(Math.random() * samples.length)] || DEFAULT_SAMPLES[0]
         setActiveTab('prediksi')
         setText(fallback.text)
-        void handlePredict(fallback.text)
+        void handlePredict(fallback.text, {
+          productHint: fallback.product_name,
+          category: fallback.category,
+        })
       })
       .finally(() => setSamplesLoading(false))
   }, [handlePredict, samples, selectedCategory])
@@ -1039,13 +1069,23 @@ export default function App() {
                             key={idx}
                             type="button"
                             className="sample-pill-btn"
+                            title={
+                              sample.product_name
+                                ? `${sample.product_name} (${sample.category_label || sample.category})`
+                                : sample.text
+                            }
                             onClick={() => {
                               setText(sample.text)
-                              void handlePredict(sample.text)
+                              void handlePredict(sample.text, {
+                                productHint: sample.product_name,
+                                category: sample.category,
+                              })
                             }}
                           >
                             <span>{SENTIMENT_LABEL[sample.sentiment]}</span>
-                            <span style={{ color: 'var(--color-ash)' }}>· {sample.category}</span>
+                            <span style={{ color: 'var(--color-ash)' }}>
+                              · {sample.category_label || sample.category}
+                            </span>
                           </button>
                         ))}
                       </div>
