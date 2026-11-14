@@ -1,7 +1,7 @@
 <div align="center">
 
 # Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia
-### End-to-End Indonesian NLP Pipeline, Online Learning (`partial_fit`), & Analytical Web Workspace
+### End-to-End Indonesian NLP Pipeline, Online Learning (`partial_fit`), Multi-Dimensional Corpus Intelligence & Analytical Web Workspace
 
 [![CI Pipeline](https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk/actions/workflows/ci.yml/badge.svg)](https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -28,36 +28,48 @@
 
 Sistem ini mengimplementasikan pipeline **Natural Language Processing (NLP)** *end-to-end* untuk mengklasifikasikan ulasan pembeli e-commerce berbahasa Indonesia ke dalam tiga kelas sentimen: **Positif**, **Netral**, dan **Negatif**.
 
-Dirancang dengan arsitektur *Single Source of Truth*, seluruh tahapan mulai dari akuisisi korpus publik (**PRDECT-ID Tokopedia** & **Hugging Face Indonesian E-Commerce**), pembersihan teks, normalisasi kosakata tidak baku (*slang*), *stopword removal* berbasis **PySastrawi** dengan preservasi kata negasi, penalaran pragmatik konteks kalimat, ekstraksi fitur **N-Gram (1, 2)**, hingga inferensi **Multinomial & Complement Naive Bayes** terintegrasi langsung dengan ruang kerja analitik berbasis **React 19 + TypeScript + Flask**.
+Dirancang dengan arsitektur *Single Source of Truth*, seluruh tahapan mulai dari akuisisi korpus publik (**PRDECT-ID Tokopedia** & **Hugging Face Indonesian E-Commerce**), pembersihan teks, normalisasi kosakata tidak baku (*slang*), *stopword removal* berbasis **PySastrawi** dengan preservasi kata negasi, penalaran pragmatik konteks kalimat, ekstraksi fitur **N-Gram (1, 2)**, hingga inferensi **Multinomial & Complement Naive Bayes** terintegrasi langsung dengan ruang kerja analitik multi-halaman berbasis **React 19 + TypeScript + Flask**.
 
 ---
 
 ## Kapabilitas Sistem
 
+### 1. Mesin Inferensi NLP & Explainable AI (XAI)
 - **Analisis Sentimen Kontekstual & Explainability (`POST /api/predict`)**
   Menghasilkan prediksi kelas sentimen, distribusi probabilitas 3 kelas, waktu inferensi rata-rata 15-30 ms, rincian kontribusi *log-likelihood* Naive Bayes ($\log P(w|c)$) per token, serta deteksi nuansa pragmatik bahasa Indonesia (seperti pembalikan ekspektasi *"saya kira..."*, negasi langsung, dan negasi ganda).
-- **Matriks Komparasi Reputasi 2 Produk (`POST /api/compare`)**
-  Membandingkan dua produk e-commerce secara berdampingan (*split-ledger matrix*) mencakup indeks reputasi (`0-100`), distribusi sentimen agregat, sintesis aspek apresiasi utama (*pros*), catatan keluhan pembeli (*cons*), dan bukti kutipan ulasan terverifikasi.
-- **Filter Dinamis 30 Kategori Korpus (`GET /api/categories`)**
-  Membaca seluruh 30 subkategori produk dan 4 kelompok utama langsung dari korpus aktif beserta jumlah sampel secara *real-time* tanpa daftar kategori statis (*zero hardcode*), dilengkapi mode deteksi kategori otomatis dari kata kunci produk.
-- **Tarikan Ulasan E-Commerce Live & Visual Katalog (`POST /api/realtime/fetch`)**
-  Menarik umpan ulasan pelanggan dari platform e-commerce Indonesia (Tokopedia, Shopee, Lazada, Blibli, ZALORA, Sociolla, Eraspace, Ruparupa) maupun tautan produk langsung, lengkap dengan foto produk katalog dan kartu sintesis eksekutif (`ProductSummaryCard`).
 - **Online Learning Inkremental (`POST /api/learn`)**
-  Memungkinkan koreksi dan pelatihan ulang model secara instan di memori maupun di disk menggunakan `partial_fit` pada `MultinomialNB` tanpa harus melatih ulang dari awal.
-- **Eksplorasi Bobot Leksikal & Word Cloud (`GET /api/top-words`)**
-  Menampilkan kata kunci paling berpengaruh untuk masing-masing kelas sentimen berdasarkan selisih *log-likelihood* antar kelas.
+  Memungkinkan koreksi dan pelatihan ulang model secara instan di memori maupun di disk menggunakan `partial_fit` pada `MultinomialNB` tanpa harus melatih ulang seluruh korpus dari nol.
 - **Pemrosesan Batch CSV (`POST /api/predict/batch`) & Mode Cetak PDF**
   Mendukung unggah berkas CSV untuk klasifikasi massal beserta unduhan laporan hasil CSV dan tata letak cetak PDF standar akademik (`@media print`).
+
+### 2. Komparasi Produk & Live Stream E-Commerce
+- **Matriks Komparasi Reputasi 2 Produk (`POST /api/compare`)**
+  Membandingkan dua produk e-commerce secara berdampingan (*split-ledger matrix*) mencakup indeks reputasi (`0-100`), distribusi sentimen agregat, sintesis aspek apresiasi utama (*pros*), catatan keluhan pembeli (*cons*), dan bukti kutipan ulasan terverifikasi.
+- **Tarikan Ulasan E-Commerce Live & Visual Katalog (`POST /api/realtime/fetch`)**
+  Menarik umpan ulasan pelanggan dari platform e-commerce Indonesia (Tokopedia, Shopee, Lazada, Blibli, ZALORA, Sociolla, Eraspace, Ruparupa) maupun tautan produk langsung, lengkap dengan foto produk katalog dan kartu sintesis eksekutif (`ProductSummaryCard`).
+
+### 3. Lima Halaman Mandiri Intelijen Korpus & Platform Semantik
+Seluruh modul analitik halaman pengantar (*Landing Page*) terhubung penuh (*deep-linked*) ke 5 halaman mandiri di dalam aplikasi:
+- **Asisten Analitik Korpus / Sentimen AI Chat (`POST /api/ai-analyst`)**
+  Mode tanya-jawab analitik dalam bahasa alami untuk menginvestigasi penyebab keluhan pengiriman, kerusakan kemasan, harga, originalitas produk, maupun psikografi emosi pelanggan lintas kategori beserta sintesis eksekutif, grafik proporsi, atribusi token Naive Bayes, dan bukti ulasan empiris.
+- **Peta Persebaran Sentimen 30 Kategori Produk (`GET /api/corpus-analytics`)**
+  Pemetaan visual rasio Positif vs Netral vs Negatif, *Net Sentiment Score* (NSS), rata-rata rating bintang, serta emosi dominan di setiap kategori e-commerce dengan fitur pencarian instan, penyaringan grup makro, dan pengurutan metrik melalui komponen dropdown kustom (`CustomSelect`).
+- **Pelacak Target KPI & Net Sentiment Score (`target-kpi`)**
+  Pemantauan terukur atas 5 indikator kinerja utama: *Net Sentiment Score* ($\text{NSS} = \frac{\text{Positif} - \text{Negatif}}{\text{Total}}$), *Macro F1-Score* ($\ge 70\%$), *Akurasi Uji* ($\ge 80\%$), *Rata-rata Rating Bintang* ($\ge 3.50$), dan *Batas Rasio Keluhan Kritis* ($\le 45\%$), dilengkapi matriks komparasi *Top 5 Kategori NSS Tertinggi* vs *5 Kategori Prioritas Perbaikan*.
+- **Bedah Data Multi-Dimensi / Drill-Down Explorer (`bedah-data`)**
+  Eksplorasi silang atribut asli dataset PRDECT-ID yang membedah distribusi ulasan berdasarkan **Kategori Produk**, **Psikografi Emosi Pelanggan** (*Happy, Love, Sadness, Fear, Anger*), **Rating Bintang (★1 s.d. ★5)**, **Kelas Sentimen**, serta **Lokasi Toko/Kota Teratas** dengan pintasan satu klik ke inspeksi XAI.
+- **Katalog Metrik Semantik & REST API Playground (`katalog-api`)**
+  Dokumentasi spesifikasi *Governed Metrics Catalog*, penampil kode pipeline Scikit-Learn siap salin, serta terminal *REST API Playground* interaktif untuk menguji endpoint `/api/predict`, `/api/ai-analyst`, dan `/api/corpus-analytics` langsung dari antarmuka web.
 
 ---
 
 ## Dataset Publik & Aturan Pelabelan
 
-Proyek ini menggunakan gabungan dataset publik terverifikasi untuk ulasan e-commerce bahasa Indonesia dengan total **5.459 ulasan unik** yang mencakup **30 kategori produk**:
+Proyek ini menggunakan gabungan dataset publik terverifikasi untuk ulasan e-commerce bahasa Indonesia dengan total **5.459 ulasan unik** yang mencakup **30 kategori produk** beserta atribut metadata asli (**Emosi Pelanggan**, **Rating Bintang 1-5**, **Lokasi Kota**, dan **Harga Produk**):
 
 1. **PRDECT-ID (*Indonesian Product Reviews Dataset*) - Tokopedia**
    - **Sumber:** [rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset](https://github.com/rhiosutoyo/PRDECT-ID-Indonesian-Product-Reviews-Dataset) / Mendeley Data (`DOI: 10.17632/574v66hf2v.1`).
-   - **Cakupan:** Ulasan pembeli terverifikasi dari 29 kategori produk Tokopedia (Elektronik, Komputer & Laptop, Ponsel & Tablet, Kamera, Fashion Pria/Wanita/Muslim/Anak, Kecantikan, Perlengkapan Rumah, Dapur, Otomotif, Olahraga, Buku, Kesehatan, dll.).
+   - **Cakupan:** Ulasan pembeli terverifikasi dari 29 kategori produk Tokopedia (Elektronik, Komputer & Laptop, Ponsel & Tablet, Kamera, Fashion Pria/Wanita/Muslim/Anak, Kecantikan, Perlengkapan Rumah, Dapur, Otomotif, Olahraga, Buku, Kesehatan, dll.) lengkap dengan anotasi 5 emosi dasar (*Happy, Love, Sadness, Fear, Anger*).
 2. **Hugging Face Indonesian E-Commerce Sentiment**
    - **Sumber:** [`AIbnuHibban/e-commerce-sentiment-bahasa-indonesia`](https://huggingface.co/datasets/AIbnuHibban/e-commerce-sentiment-bahasa-indonesia).
    - **Cakupan:** Digunakan untuk memperkaya representasi kalimat pada kelas minoritas (`netral`).
@@ -80,19 +92,19 @@ Sistem memisahkan **Offline Training Pipeline** dan **Online Web Inference**, na
 ```mermaid
 flowchart TB
     subgraph Offline["1. Offline Training & Experimentation (src/train.py)"]
-        A[("Dataset Publik\nPRDECT-ID & HuggingFace\n(5.459 Ulasan, 30 Kategori)")] --> B["src/preprocess.py\nClean + Slang Dict + Sastrawi Stopwords"]
+        A[("Dataset Publik\nPRDECT-ID & HuggingFace\n(5.459 Ulasan, 30 Kategori, 5 Emosi)")] --> B["src/preprocess.py\nClean + Slang Dict + Sastrawi Stopwords"]
         B --> C["Stratified Train/Test Split (80:20)\nTrain: 4.367 | Test: 1.092"]
         C --> D["Suite 5 Eksperimen Pipeline\n(CountVec vs TF-IDF | MultinomialNB vs ComplementNB)"]
         D --> E[("Artefak Model Terbaik\nmodels/model_sentimen.pkl")]
         D --> F[("Laporan Evaluasi Lengkap\nmodels/metrics.json")]
     end
 
-    subgraph Online["2. Online Web Inference & Incremental Learning (Flask + React TS)"]
-        U["Ruang Kerja Analitik\n(React 19 + TypeScript + Vite :5173)"] <-->|"/api/predict, /api/compare, /api/categories, /api/learn"| API["Flask REST API\n(backend/app/main.py :5000)"]
+    subgraph Online["2. Online Web Inference, Corpus Intelligence & Incremental Learning"]
+        U["Ruang Kerja Analitik & 5 Halaman Intelijen\n(React 19 + TypeScript + Vite :5173)"] <-->|"/api/predict, /api/compare, /api/corpus-analytics, /api/ai-analyst"| API["Flask REST API\n(backend/app/main.py :5000)"]
         API --> P["src/predict.py\n(SentimentPredictor + Pragmatic Context + partial_fit)"]
         P --> B
         E -.->|"Dimuat saat startup & diperbarui saat online learning"| P
-        F -.->|"Disajikan melalui /api/metrics"| API
+        F -.->|"Disajikan melalui /api/metrics & /api/corpus-analytics"| API
     end
 ```
 
@@ -135,24 +147,28 @@ Klasifikasi-sentimen-ulasan-produk/
 │   ├── requirements.txt
 │   └── app/
 │       ├── __init__.py
-│       └── main.py                      # Endpoint REST API, resolver produk e-commerce, & SPA server
+│       └── main.py                      # Endpoint REST API, analitik korpus, AI analyst, & SPA server
 │
 └── frontend/                            # Frontend Analitik (React 19 + TypeScript + Vite)
     ├── package.json
     ├── vite.config.ts                   # Konfigurasi dev server & proxy API (:5173 -> :5000)
     └── src/
-        ├── App.tsx                      # Ruang kerja utama, filter kategori dinamis, & live stream
-        ├── index.css                    # Sistem token desain sesuai DESIGN.md
+        ├── App.tsx                      # Router ruang kerja utama & navigasi 9 modul
+        ├── index.css                    # Sistem token desain & komponen dropdown kustom
+        ├── styles/steep-landing.css     # Stylesheet modular halaman pengantar responsif
         ├── types/sentiment.ts           # Kontrak tipe data TypeScript
         ├── services/sentimentApi.ts     # Klien HTTP REST API
         └── components/
+            ├── LandingPage.tsx          # Orkestrator halaman pengantar (Landing Page)
+            ├── CorpusIntelligenceHub.tsx# 5 halaman mandiri intelijen korpus & CustomSelect
             ├── PredictionResultCard.tsx # Thread hasil analisis AI, jejak penalaran, & online learning
             ├── ProductSummaryCard.tsx   # Kartu sintesis eksekutif reputasi produk (pros/cons)
             ├── ProductComparisonView.tsx# Matriks komparasi berdampingan 2 produk (split ledger)
             ├── EvaluationDashboard.tsx  # Dashboard metrik akademik, Confusion Matrix, & Word Cloud
             ├── BatchUploadCard.tsx      # Modul klasifikasi massal CSV & unduh hasil
             ├── ProbabilityBar.tsx       # Visualisasi distribusi probabilitas kelas
-            └── HistoryDrawer.tsx        # Penyimpanan riwayat analisis lokal
+            ├── HistoryDrawer.tsx        # Penyimpanan riwayat analisis lokal
+            └── landing/                 # Sub-komponen modular Landing Page (Navbar, Hero, Showcase, dll.)
 ```
 
 ---
@@ -240,6 +256,8 @@ Buka ruang kerja analitik di **`http://localhost:5173`**.
 | `POST` | `/api/predict` | Klasifikasi sentimen ulasan tunggal, atribusi kata kunci, analisis pragmatik, dan pencocokan media produk. |
 | `POST` | `/api/predict/batch` | Klasifikasi sentimen massal melalui unggahan berkas CSV (`multipart/form-data`) atau payload JSON array. |
 | `POST` | `/api/compare` | Komparasi reputasi *head-to-head* antara 2 produk e-commerce beserta sintesis kelebihan dan keluhan. |
+| `GET` | `/api/corpus-analytics` | Analitik korpus komprehensif: peta sentimen 30 kategori, pelacak Target KPI & NSS, bedah data multi-dimensi (Rating ★1-★5, Emosi PRDECT-ID, Kota), serta katalog metrik semantik. |
+| `POST` | `/api/ai-analyst` | Mesin tanya-jawab analitik korpus (*Sentimen AI*) yang menyintesis narasi eksekutif, distribusi aspek, token Naive Bayes, dan sampel bukti ulasan berdasarkan pertanyaan bahasa alami. |
 | `GET` | `/api/categories` | Daftar dinamis 30 kategori dataset PRDECT-ID dan kelompok utama beserta jumlah sampel aktif. |
 | `POST` | `/api/realtime/fetch` | Tarikan ulasan langsung dari platform e-commerce Indonesia atau URL produk beserta ringkasan eksekutif. |
 | `POST` | `/api/learn` | Pelatihan inkremental secara *real-time* (`partial_fit`) untuk memperbarui bobot model Naive Bayes. |
