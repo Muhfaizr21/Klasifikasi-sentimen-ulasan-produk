@@ -45,74 +45,77 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const headingScale = lerp(1, 0.9, pHeading);
   const headingOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0, 0.25)));
 
-  // Main 1200x880 Desktop App Window
-  const pWinMove = easeOutQuad(invLerp(t, 0.05, 0.5));
-  const windowY = lerp(300, 110, pWinMove);
-  const windowScale = lerp(0.5, 1, pWinMove);
-  const windowOpacity = lerp(0, 1, easeOutQuad(invLerp(t, 0.05, 0.3)));
-  const homeStartOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.3)));
+  // Main 1200x880 Desktop App Window (reaches 100% scale by t=0.35, docks at t=0.45)
+  const pDock = easeOutQuad(invLerp(t, 0, 0.45));
+  const pWinScale = easeOutQuad(invLerp(t, 0.02, 0.33));
+  const windowY = lerp(280, 110, pDock);
+  const windowScale = lerp(0.68, 1, pWinScale);
+  const windowOpacity = lerp(0, 1, easeOutQuad(invLerp(t, 0.03, 0.25)));
+  const homeContentFadeIn = easeOutQuad(invLerp(t, 0.24, 0.16));
+  const homeStartOpacity = homeContentFadeIn * lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
+  const homeStartY = t <= 0.55 ? 0 : lerp(0, -204, easeOutQuad(invLerp(t, 0.6, 0.4)));
 
   // Final AI Reasoning & Chart Report View
   const reportY = lerp(200, 84, easeOutQuad(invLerp(t, 0.65, 0.45)));
   const reportOpacity = lerp(0, 1, easeOutQuad(invLerp(t, 0.65, 0.35)));
 
-  // Floating Block 1: Pink/Peach Registrations Card (294x235)
-  const pinkStartX = isTallViewport ? 1020 : 1080;
-  const pinkStartY = isTallViewport ? -520 : -500;
-  const pPinkMove = easeOutQuad(invLerp(t, 0, 0.5));
-  const pinkX = lerp(pinkStartX, 286, pPinkMove);
-  const pinkY =
-    t <= 0.5
-      ? lerp(pinkStartY, -545, pPinkMove)
-      : lerp(-545, -750, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const pinkShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.45, 0.05)));
-  const pinkOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.25)));
+  // Bento Grid Constants inside 1200x880 Window (Sidebar = 248px, Padding = 38px -> X: 286..1162, Width: 876px)
+  // Row 0 (AI Composer): Y = 224 (top: 114 in window, -656 from 880), H = 76 (bottom = 300)
+  // Row 1 (Pink 294 + Gap 22 + Blue 560 = 876): Y = 344 (top: 234 in window, -536 from 880), H = 235 (bottom = 579)
+  // Row 2 (Gray 294 + Gap 22 + Dist 560 = 876): Y = 601 (top: 491 in window, -279 from 880), H = 200 (bottom = 801)
 
-  // Floating Block 2: Blue Region/Category Card (600x235)
-  const blueStartX = isTallViewport ? -140 : -200;
+  // Floating Block 1: Pink/Peach Registrations Card (294x235)
+  const pinkStartX = isTallViewport ? 980 : 1020;
+  const pinkStartY = isTallViewport ? -520 : -500;
+  const pinkX = lerp(pinkStartX, 286, pDock);
+  const pinkY =
+    t <= 0.55
+      ? lerp(pinkStartY, -536, pDock)
+      : lerp(-536, -740, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  const pinkShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
+  const pinkOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
+
+  // Floating Block 2: Blue Region/Category Card (560x235)
+  const blueStartX = isTallViewport ? -120 : -160;
   const blueStartY = isTallViewport ? -700 : -680;
-  const pBlueMove = easeOutQuad(invLerp(t, 0, 0.5));
-  const blueX = lerp(blueStartX, 606, pBlueMove);
+  const blueX = lerp(blueStartX, 602, pDock);
   const blueY =
-    t <= 0.5
-      ? lerp(blueStartY, -545, pBlueMove)
-      : lerp(-545, -750, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const blueShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.45, 0.05)));
-  const blueOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.25)));
+    t <= 0.55
+      ? lerp(blueStartY, -536, pDock)
+      : lerp(-536, -740, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  const blueShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
+  const blueOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
 
   // Floating Block 3: White Activation Card (294x200)
   const grayStartX = isTallViewport ? 60 : 20;
   const grayStartY = isTallViewport ? -240 : -250;
-  const pGrayMove = easeOutQuad(invLerp(t, 0, 0.5));
-  const grayX = lerp(grayStartX, 286, pGrayMove);
+  const grayX = lerp(grayStartX, 286, pDock);
   const grayY =
-    t <= 0.5
-      ? lerp(grayStartY, -284, pGrayMove)
-      : lerp(-284, -490, easeOutQuad(invLerp(t, 0.6, 0.4)));
-  const grayShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.45, 0.05)));
-  const grayOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.25)));
+    t <= 0.55
+      ? lerp(grayStartY, -279, pDock)
+      : lerp(-279, -483, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  const grayShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
+  const grayOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.58, 0.22)));
 
   // Left Cursor Bubble (Green JB)
   const curLStartX = isTallViewport ? -50 : -110;
   const curLStartY = isTallViewport ? -500 : -480;
-  const pCurL = easeOutQuad(invLerp(t, 0, 0.5));
-  const cursorLX = lerp(curLStartX, 650, pCurL);
-  const cursorLY = lerp(curLStartY, -240, pCurL);
+  const cursorLX = lerp(curLStartX, 650, pDock);
+  const cursorLY = lerp(curLStartY, -240, pDock);
   const cursorLOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.2, 0.25)));
 
-  // Right Cursor Bubble (Blue AF)
-  const curRStartX = isTallViewport ? 720 : 770;
+  // Right Cursor Bubble (Blue AF) -> Aims cleanly at the Send Button (X=1122, Y=-608) above Row 1
+  const curRStartX = isTallViewport ? 720 : 760;
   const curRStartY = isTallViewport ? -140 : -160;
   let cursorRX = curRStartX;
   let cursorRY = curRStartY;
-  if (t <= 0.5) {
-    const p1 = easeOutQuad(invLerp(t, 0, 0.5));
-    cursorRX = lerp(curRStartX, 690, p1);
-    cursorRY = lerp(curRStartY, -595, p1);
+  if (t <= 0.45) {
+    cursorRX = lerp(curRStartX, 1060, pDock);
+    cursorRY = lerp(curRStartY, -604, pDock);
   } else {
-    const p2 = easeOutQuad(invLerp(t, 0.5, 0.12));
-    cursorRX = lerp(690, 998, p2);
-    cursorRY = lerp(-595, -596, p2);
+    const p2 = easeOutQuad(invLerp(t, 0.45, 0.1));
+    cursorRX = lerp(1060, 1122, p2);
+    cursorRY = lerp(-604, -608, p2);
   }
   let cursorRScale = 1;
   if (t >= 0.52 && t <= 0.56) {
@@ -120,28 +123,27 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   } else if (t > 0.56 && t <= 0.6) {
     cursorRScale = lerp(0.88, 1, easeOutQuad(invLerp(t, 0.56, 0.04)));
   }
-  const cursorROpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.65, 0.25)));
+  const cursorROpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0.6, 0.2)));
 
-  // AI Composer Bar -> Morphs into User Prompt Pill
-  const aiStartX = isTallViewport ? 620 : 670;
+  // AI Composer Bar (876px wide when docked at X=286..1162) -> Morphs into User Prompt Pill
+  const aiStartX = isTallViewport ? 620 : 660;
   const aiStartY = isTallViewport ? -210 : -230;
   let aiX = aiStartX;
   let aiY = aiStartY;
-  let aiWidth = 400;
-  if (t <= 0.5) {
-    const p1 = easeOutQuad(invLerp(t, 0, 0.5));
-    aiX = lerp(aiStartX, 286, p1);
-    aiY = lerp(aiStartY, -660, p1);
-    aiWidth = lerp(400, 740, p1);
+  let aiWidth = 420;
+  if (t <= 0.55) {
+    aiX = lerp(aiStartX, 286, pDock);
+    aiY = lerp(aiStartY, -656, pDock);
+    aiWidth = lerp(420, 876, pDock);
   } else {
-    const p2 = easeOutQuad(invLerp(t, 0.6, 0.4));
-    aiX = lerp(286, 560, p2);
-    aiY = lerp(-660, -730, p2);
-    aiWidth = lerp(740, 540, p2);
+    const p2 = easeOutQuad(invLerp(t, 0.6, 0.38));
+    aiX = lerp(286, 622, p2);
+    aiY = lerp(-656, -730, p2);
+    aiWidth = lerp(876, 540, p2);
   }
-  const aiHeight = lerp(80, 44, easeOutQuad(invLerp(t, 0.6, 0.4)));
+  const aiHeight = lerp(76, 44, easeOutQuad(invLerp(t, 0.6, 0.38)));
   const aiBgColor = lerpColorHex('#fdf1eb', '#f3f3f5', easeOutQuad(invLerp(t, 0.6, 0.3)));
-  const aiShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.45, 0.05)));
+  const aiShadow = lerp(1, 0, easeOutQuad(invLerp(t, 0.4, 0.06)));
   const aiPlaceholderOpacity = lerp(1, 0, easeOutQuad(invLerp(t, 0, 0.1)));
   const aiTypedWidthPct = clamp(invLerp(t, 0.04, 0.35) * 100, 0, 100);
   const aiTypedY = lerp(0, -1, easeOutQuad(invLerp(t, 0.6, 0.4)));
@@ -445,6 +447,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               borderRadius: '24px',
               backgroundColor: '#ffffff',
               boxShadow: 'var(--shadow-window)',
+              transformOrigin: 'top center',
               transform: `translate3d(0, ${windowY}px, 0) scale(${windowScale})`,
               opacity: windowOpacity,
             }}
@@ -599,7 +602,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 <div
                   style={{
                     height: '56px',
-                    padding: '0 28px',
+                    padding: '0 38px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -629,34 +632,40 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               </div>
             </div>
 
-            {/* Initial Dashboard View */}
+            {/* Initial Dashboard View (aligned to the exact 876px bento grid: X = 286..1162) */}
             <div
               style={{
                 position: 'absolute',
-                top: '88px',
-                left: '248px',
-                width: '906px',
-                height: '790px',
-                padding: '0 28px',
+                inset: 0,
                 opacity: homeStartOpacity,
+                transform: `translate3d(0, ${homeStartY}px, 0)`,
                 pointerEvents: 'none',
               }}
             >
-              <div style={{ fontSize: 22, fontFamily: 'var(--font-signifier)', color: '#17191c', marginBottom: 8 }}>
-                Selamat datang kembali, Tim Analitik
-              </div>
-              <div style={{ fontSize: 13.5, color: '#777b86', marginBottom: 140 }}>
-                Tanyakan apa saja ke Sentimen AI atau pantau metrik korpus utama di bawah ini.
-              </div>
               <div
                 style={{
-                  marginTop: '245px',
-                  marginLeft: '306px',
-                  width: '544px',
+                  position: 'absolute',
+                  top: '72px',
+                  left: '286px',
+                  fontSize: 22,
+                  fontFamily: 'var(--font-signifier)',
+                  color: '#17191c',
+                  lineHeight: 1.25,
+                }}
+              >
+                Selamat datang kembali, Tim Analitik
+              </div>
+
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '491px',
+                  left: '602px',
+                  width: '560px',
                   height: '200px',
                   borderRadius: '16px',
                   backgroundColor: '#fafafb',
-                  border: '1px solid rgba(23,25,28,0.05)',
+                  border: '1px solid rgba(23,25,28,0.06)',
                   padding: '20px 24px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -694,8 +703,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               style={{
                 position: 'absolute',
                 top: '28px',
-                left: '300px',
-                width: '800px',
+                left: '286px',
+                width: '876px',
                 height: '790px',
                 transform: `translate3d(0, ${reportY}px, 0)`,
                 opacity: reportOpacity,
@@ -979,7 +988,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             className="steep-floating-block"
             style={
               {
-                width: '600px',
+                width: '560px',
                 height: '235px',
                 transform: `translate3d(${blueX}px, ${blueY}px, 0)`,
                 opacity: blueOpacity,
@@ -994,10 +1003,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 height: '100%',
                 borderRadius: '16px',
                 backgroundColor: '#f1f6fd',
-                padding: '22px 26px',
+                padding: '22px 24px',
                 display: 'grid',
-                gridTemplateColumns: '210px 1fr',
-                gap: '28px',
+                gridTemplateColumns: '190px 1fr',
+                gap: '24px',
               }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -1108,6 +1117,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 height: '100%',
                 borderRadius: '16px',
                 backgroundColor: '#ffffff',
+                border: '1px solid rgba(23,25,28,0.06)',
                 padding: '18px 20px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -1284,18 +1294,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               position: 'absolute',
               top: '880px',
               left: 0,
-              width: '60px',
-              height: '76px',
+              width: '56px',
+              height: '66px',
               transform: `translate3d(${cursorRX}px, ${cursorRY}px, 0) scale(${cursorRScale})`,
               opacity: cursorROpacity,
               pointerEvents: 'none',
               zIndex: 26,
             }}
           >
-            <svg width="60" height="76" viewBox="0 0 60 76" fill="none">
-              <path d="M12 6L28 16L18 20L15 30L12 6Z" fill="#17191c" />
-              <circle cx="34" cy="48" r="20" fill="#cce0ff" stroke="#17191c" strokeWidth="1.3" />
-              <text x="34" y="52.5" textAnchor="middle" fill="#17191c" fontSize="13" fontWeight="500">
+            <svg width="56" height="66" viewBox="0 0 56 66" fill="none">
+              <path d="M10 5L25 14L16 18L13 27L10 5Z" fill="#17191c" />
+              <circle cx="31" cy="43" r="17.5" fill="#cce0ff" stroke="#17191c" strokeWidth="1.3" />
+              <text x="31" y="47.5" textAnchor="middle" fill="#17191c" fontSize="12" fontWeight="500">
                 AF
               </text>
             </svg>
