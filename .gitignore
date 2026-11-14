@@ -7,11 +7,15 @@ venv/
 
 # ML artifacts
 models/*.pkl
+models/realtime_memory.json
 data/
 
 # Editor & Build
 .vscode/
 .idea/
 .DS_Store
+.agents/
+.claude/
+skills-lock.json
 frontend/dist/
 frontend/node_modules/

@@ -68,6 +68,37 @@ class TestPredictor:
         predictor = get_predictor()
         assert predictor.is_loaded is True
 
+    def test_get_top_feature_words(self):
+        predictor = get_predictor()
+        top_words = predictor.get_top_feature_words(limit=10)
+        assert "positif" in top_words
+        assert "netral" in top_words
+        assert "negatif" in top_words
+        assert len(top_words["positif"]) > 0
+        assert len(top_words["negatif"]) > 0
+        assert "score" in top_words["positif"][0]
+
+    def test_synthesize_product_summary(self):
+        predictor = get_predictor()
+        mock_reviews = [
+            {"text": "Bagus banget suaranya jernih mantap", "label": "positif", "rating": 5},
+            {"text": "Bagus kualitasnya original", "label": "positif", "rating": 5},
+            {"text": "Standar sesuai harga", "label": "netral", "rating": 3},
+            {"text": "Pengiriman agak lama dan bungkus tipis", "label": "negatif", "rating": 2},
+        ]
+        summary = predictor.synthesize_product_summary(mock_reviews, "Speaker Portable Bluetooth")
+        assert summary["product_title"] == "Speaker Portable Bluetooth"
+        assert 0 <= summary["reputation_score"] <= 100
+        assert summary["recommendation_badge"] in [
+            "Sangat Direkomendasikan",
+            "Layak Beli",
+            "Cukup Layak Dipertimbangkan",
+            "Perlu Pertimbangan Ulang",
+            "Data Masih Terbatas",
+        ]
+        assert len(summary["pros"]) > 0
+        assert "executive_narrative" in summary
+
     def test_predict_positive_review(self):
         predictor = get_predictor()
         res = predictor.predict("Barang original 100%, pengiriman super cepat dan packing rapi!")
@@ -84,6 +115,23 @@ class TestPredictor:
         assert res["label"] == "negatif"
         assert res["probabilities"]["negatif"] > 50.0
         assert len(res["explanation"]) > 0
+        assert "analysis" in res
+        assert len(res["analysis"]["paragraphs"]) >= 2
+
+    def test_predict_expectation_reversal_pragmatics(self):
+        """Phrases like 'saya kira barang nya bagus' imply unmet expectation in Indonesian reviews."""
+        predictor = get_predictor()
+        res = predictor.predict("saya kira barang nya bagus")
+        assert res["label"] == "negatif"
+        assert res["analysis"]["pragmatic_note"]["type"] == "expectation_reversal"
+        assert len(res["analysis"]["reasoning_steps"]) == 3
+
+    def test_predict_negation_inversion(self):
+        """Negated positive phrases like 'barang tidak bagus' should be classified as negatif."""
+        predictor = get_predictor()
+        res = predictor.predict("barangnya tidak bagus dan tidak membantu")
+        assert res["label"] == "negatif"
+        assert res["analysis"]["pragmatic_note"]["type"] == "negation_inversion"
 
     def test_predict_batch(self):
         predictor = get_predictor()
@@ -174,3 +222,79 @@ class TestAPIEndpoints:
         data = res.get_json()
         assert data["success"] is True
         assert data["total"] == 2
+
+    def test_samples_dynamic_category_and_query(self, api_client):
+        res = api_client.get("/api/samples?category=Elektronik&q=bagus")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert data["category"] == "Elektronik"
+        assert data["corpus_total"] >= 5459
+        assert len(data["samples"]) > 0
+
+    def test_realtime_learn_endpoint(self, api_client):
+        payload = {
+            "teks": "Kualitas jahitan rapi dan bahan sangat nyaman dipakai seharian",
+            "label": "positif",
+            "category": "Fashion",
+            "persist": False,
+        }
+        res = api_client.post("/api/learn", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert data["learned_label"] == "positif"
+        assert data["prediction"]["label"] == "positif"
+        assert data["corpus_total"] >= 5459
+
+    def test_realtime_fetch_stream_endpoint(self, api_client):
+        payload = {"query": "barang", "category": "Elektronik", "limit": 4}
+        res = api_client.post("/api/realtime/fetch", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert len(data["items"]) > 0
+        assert "label" in data["items"][0]
+        assert "confidence" in data["items"][0]
+
+    def test_top_words_endpoint(self, api_client):
+        res = api_client.get("/api/top-words?limit=15")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert "words" in data
+        assert len(data["words"]["positif"]) <= 15
+        assert len(data["words"]["negatif"]) <= 15
+
+    def test_compare_endpoint(self, api_client):
+        payload = {
+            "product_a": "Eggel Fortis 2 Speaker",
+            "product_b": "JBL Go 3 Portable Speaker",
+            "category": "Elektronik",
+            "platform": "Tokopedia"
+        }
+        res = api_client.post("/api/compare", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert "winner" in data
+        assert data["winner"] in ["A", "B", "TIE"]
+        assert "product_a" in data
+        assert "product_b" in data
+        assert "reputation_score" in data["product_a"]["summary"]
+
+    def test_categories_dynamic_endpoint(self, api_client):
+        res = api_client.get("/api/categories")
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert data["total_categories"] >= 25
+        assert len(data["groups"]) >= 4
+        assert len(data["categories"]) >= 25
+        # Verify granular category filtering works in /api/samples
+        sub_res = api_client.get("/api/samples?category=Computers+and+Laptops")
+        assert sub_res.status_code == 200
+        sub_data = sub_res.get_json()
+        assert sub_data["success"] is True
+        assert len(sub_data["samples"]) > 0
+

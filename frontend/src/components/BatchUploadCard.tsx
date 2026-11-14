@@ -3,9 +3,9 @@ import { requestBatchPrediction } from '../services/sentimentApi'
 import type { BatchPredictionResponse, SentimentClass } from '../types/sentiment'
 
 const BADGE_MAP: Record<SentimentClass, string> = {
-  positif: '😊 Positif',
-  netral: '😐 Netral',
-  negatif: '😠 Negatif',
+  positif: 'Positif',
+  netral: 'Netral',
+  negatif: 'Negatif',
 }
 
 export function BatchUploadCard() {
@@ -79,64 +79,59 @@ export function BatchUploadCard() {
   }
 
   return (
-    <section className="card">
+    <section className="card" aria-label="Analisis Batch CSV">
       <div className="card-header">
         <div>
-          <h3 className="card-title">📁 Batch Prediction (Upload CSV Ulasan)</h3>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Klasifikasikan hingga 500 ulasan produk sekaligus secara otomatis
+          <h2 className="card-title">Analisis Batch Ulasan Produk (CSV)</h2>
+          <span className="card-subtitle">
+            Klasifikasikan hingga 500 baris ulasan pelanggan sekaligus dan unduh rekapitulasi CSV
           </span>
         </div>
         <button
           type="button"
           className="btn-secondary"
           onClick={downloadSampleTemplate}
-          style={{ fontSize: '0.82rem', padding: '8px 14px' }}
         >
-          📄 Unduh Template CSV
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Unduh Contoh CSV
         </button>
       </div>
 
-      <div
-        style={{
-          border: '2px dashed var(--border-strong)',
-          borderRadius: 'var(--radius-md)',
-          padding: '24px',
-          textAlign: 'center',
-          background: 'var(--surface-muted)',
-          marginBottom: '16px',
-        }}
-      >
+      <div className="upload-zone">
         <input
           type="file"
           accept=".csv"
           id="batch-file-input"
-          style={{ display: 'none' }}
+          className="sr-only"
           onChange={handleFileChange}
         />
         <label
           htmlFor="batch-file-input"
-          style={{ cursor: 'pointer', display: 'inline-block' }}
+          style={{ cursor: 'pointer', display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
         >
-          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>📤</div>
-          <span style={{ fontWeight: 600, color: 'var(--primary)', textDecoration: 'underline' }}>
-            {file ? file.name : 'Klik untuk memilih file CSV ulasan'}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-graphite)" strokeWidth="1.5" aria-hidden="true">
+            <path d="M9 17v-6m0 0L6 14m3-3l3 3m3-10H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9l-5-5z" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span style={{ fontWeight: 500, color: 'var(--color-deep-teal)', textDecoration: 'underline' }}>
+            {file ? file.name : 'Pilih file CSV ulasan dari perangkat Anda'}
           </span>
-          <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Kolom didukung: <code>text</code>, <code>ulasan</code>, <code>review</code>, atau kolom teks pertama.
-          </p>
+          <span className="card-subtitle">
+            Kolom yang dikenali otomatis: <code>ulasan</code>, <code>text</code>, <code>review</code>, atau kolom teks pertama.
+          </span>
         </label>
       </div>
 
       {file && (
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
           <button
             type="button"
             className="btn-primary"
             onClick={handleUpload}
             disabled={loading}
           >
-            {loading ? 'Memproses Batch Ulasan...' : `Analisis ${file.name}`}
+            {loading ? 'Memproses Batch Ulasan...' : `Proses File ${file.name}`}
           </button>
           <button
             type="button"
@@ -148,99 +143,99 @@ export function BatchUploadCard() {
             }}
             disabled={loading}
           >
-            Batal
+            Batalkan Pilihan
           </button>
         </div>
       )}
 
-      {error && <div className="error-banner">⚠️ {error}</div>}
+      {error && (
+        <div className="error-banner" role="alert">
+          <span>{error}</span>
+        </div>
+      )}
 
       {result && (
-        <div style={{ marginTop: '20px' }}>
-          {/* Summary KPIs */}
-          <div className="kpi-grid" style={{ marginBottom: '18px' }}>
+        <div style={{ marginTop: '18px' }}>
+          <div className="kpi-grid">
             <div className="kpi-card">
-              <div className="kpi-label">Total Diproses</div>
+              <div className="kpi-label">Total Ulasan Diproses</div>
               <div className="kpi-value">{result.total}</div>
-              <div className="kpi-sub">Baris ulasan berhasil dianalisis</div>
+              <div className="kpi-sub">Baris data valid</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Ulasan Positif</div>
-              <div className="kpi-value" style={{ color: 'var(--pos-bar)' }}>
+              <div className="kpi-label">Sentimen Positif</div>
+              <div className="kpi-value" style={{ color: 'var(--pos-text)' }}>
                 {result.distribution.positif}
               </div>
               <div className="kpi-sub">{result.percentages.positif}% dari total</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Ulasan Netral</div>
-              <div className="kpi-value" style={{ color: 'var(--neu-bar)' }}>
+              <div className="kpi-label">Sentimen Netral</div>
+              <div className="kpi-value" style={{ color: 'var(--neu-text)' }}>
                 {result.distribution.netral}
               </div>
               <div className="kpi-sub">{result.percentages.netral}% dari total</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Ulasan Negatif</div>
-              <div className="kpi-value" style={{ color: 'var(--neg-bar)' }}>
+              <div className="kpi-label">Sentimen Negatif</div>
+              <div className="kpi-value" style={{ color: 'var(--neg-text)' }}>
                 {result.distribution.negatif}
               </div>
               <div className="kpi-sub">{result.percentages.negatif}% dari total</div>
             </div>
           </div>
 
-          {/* Action to download results */}
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
               marginBottom: '12px',
+              flexWrap: 'wrap',
+              gap: '8px',
             }}
           >
-            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>
-              Pratinjau Hasil Prediksi ({result.results.length} ulasan)
-            </h4>
+            <h3 className="card-title" style={{ fontSize: '0.9rem' }}>
+              Tabel Hasil Prediksi ({result.results.length} Ulasan)
+            </h3>
             <button
               type="button"
               className="btn-primary"
               onClick={downloadResultsCSV}
-              style={{ fontSize: '0.82rem', padding: '8px 16px', width: 'auto' }}
             >
-              ⬇️ Unduh Hasil Lengkap (.CSV)
+              Ekspor Laporan Hasil (.CSV)
             </button>
           </div>
 
-          {/* Table of results */}
-          <div className="table-responsive" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+          <div className="table-responsive" style={{ maxHeight: '360px', overflowY: 'auto' }}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ width: '50px' }}>No</th>
+                  <th style={{ width: '48px' }}>No</th>
                   <th>Teks Ulasan</th>
-                  <th style={{ width: '110px' }}>Prediksi</th>
-                  <th style={{ width: '100px' }}>Keyakinan</th>
+                  <th style={{ width: '110px' }}>Sentimen</th>
+                  <th style={{ width: '96px' }}>Keyakinan</th>
                 </tr>
               </thead>
               <tbody>
                 {result.results.slice(0, 50).map((row, idx) => (
                   <tr key={idx}>
                     <td>{idx + 1}</td>
-                    <td style={{ fontSize: '0.86rem' }}>{row.text}</td>
+                    <td>{row.text}</td>
                     <td>
-                      <span className={`sentiment-badge ${row.label}`} style={{ fontSize: '0.74rem' }}>
+                      <span className={`sentiment-badge ${row.label}`}>
                         {BADGE_MAP[row.label]}
                       </span>
                     </td>
-                    <td style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-                      {row.confidence.toFixed(1)}%
-                    </td>
+                    <td>{row.confidence.toFixed(1)}%</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           {result.results.length > 50 && (
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', marginTop: '6px' }}>
-              *Menampilkan 50 baris pertama. Unduh file CSV untuk melihat seluruh {result.results.length} ulasan.
+            <p className="card-subtitle" style={{ textAlign: 'center', marginTop: '8px' }}>
+              Menampilkan 50 baris pertama. Ekspor laporan CSV untuk memeriksa seluruh {result.results.length} baris.
             </p>
           )}
         </div>
