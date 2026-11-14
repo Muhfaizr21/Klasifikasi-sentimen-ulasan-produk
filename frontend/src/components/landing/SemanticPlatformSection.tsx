@@ -57,7 +57,7 @@ export const SemanticPlatformSection: React.FC<SemanticPlatformSectionProps> = (
         <button
           type="button"
           className="steep-breadcrumb is-dark"
-          onClick={() => onEnterWorkspace('evaluasi')}
+          onClick={() => onEnterWorkspace('katalog-api')}
         >
           <span>Platform semantik</span>
           <span style={{ opacity: 0.35 }}>›</span>
@@ -76,9 +76,9 @@ export const SemanticPlatformSection: React.FC<SemanticPlatformSectionProps> = (
             <button
               type="button"
               className="steep-btn-secondary-dark"
-              onClick={() => onEnterWorkspace('evaluasi')}
+              onClick={() => onEnterWorkspace('katalog-api')}
             >
-              <span>Pelajari lebih lanjut</span>
+              <span>Buka Katalog & Playground API</span>
               <span style={{ opacity: 0.6 }}>→</span>
             </button>
           }
@@ -310,6 +310,16 @@ export const SemanticPlatformSection: React.FC<SemanticPlatformSectionProps> = (
                   >
                     {`{\n  "sentiment": "Positif",\n  "confidence": 0.9642,\n  "probabilities": { "Positif": 0.964, "Netral": 0.028, "Negatif": 0.008 },\n  "model_pipeline": "CountVectorizer(1,2) + Sastrawi + MultinomialNB",\n  "corpus_reference": "PRDECT-ID (5.459 ulasan)"\n}`}
                   </pre>
+                  <div style={{ marginTop: 16 }}>
+                    <button
+                      type="button"
+                      className="steep-btn-secondary-dark"
+                      onClick={() => onEnterWorkspace('katalog-api')}
+                    >
+                      <span>Uji di Live API Playground</span>
+                      <span style={{ opacity: 0.6 }}>→</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -338,6 +348,16 @@ export const SemanticPlatformSection: React.FC<SemanticPlatformSectionProps> = (
                       </div>
                     ))}
                   </div>
+                  <div style={{ marginTop: 18 }}>
+                    <button
+                      type="button"
+                      className="steep-btn-secondary-dark"
+                      onClick={() => onEnterWorkspace('katalog-api')}
+                    >
+                      <span>Buka Katalog Metrik Terkelola</span>
+                      <span style={{ opacity: 0.6 }}>→</span>
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -359,6 +379,16 @@ export const SemanticPlatformSection: React.FC<SemanticPlatformSectionProps> = (
                   >
                     {`metric: product_reputation_index\nmodel: multinomial_naive_bayes_v2\npreprocessing:\n  normalizer: sastrawi_slang_dictionary\n  ngram_range: [1, 2]\n  preserve_negation: ["tidak", "bukan", "kurang", "jangan"]\nevaluation:\n  test_accuracy: 0.8590\n  macro_f1: 0.7728`}
                   </pre>
+                  <div style={{ marginTop: 16 }}>
+                    <button
+                      type="button"
+                      className="steep-btn-secondary-dark"
+                      onClick={() => onEnterWorkspace('katalog-api')}
+                    >
+                      <span>Lihat Kode Pipeline Scikit-Learn</span>
+                      <span style={{ opacity: 0.6 }}>→</span>
+                    </button>
+                  </div>
                 </div>
               )}
 

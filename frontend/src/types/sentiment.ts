@@ -258,3 +258,189 @@ export interface CategoriesResponse {
   timestamp?: string
 }
 
+export interface CategoryMapItem {
+  id: string
+  label: string
+  group: string
+  total: number
+  positif: number
+  netral: number
+  negatif: number
+  positif_pct: number
+  netral_pct: number
+  negatif_pct: number
+  nss: number
+  avg_rating: number
+  top_emotion: string
+  top_emotion_label: string
+  emotions: Record<string, number>
+}
+
+export interface KpiTargetItem {
+  id: string
+  label: string
+  current_value: number
+  target_value: number
+  unit: string
+  formula: string
+  status: string
+  achieved: boolean
+  delta: number
+}
+
+export interface KpiSummaryData {
+  overall_nss: number
+  satisfaction_index: number
+  complaint_ratio: number
+  accuracy: number
+  f1_macro: number
+  vocabulary_size: number
+  total_samples: number
+  positif_total: number
+  netral_total: number
+  negatif_total: number
+  kpi_targets: KpiTargetItem[]
+  top_nss_categories: CategoryMapItem[]
+  critical_nss_categories: CategoryMapItem[]
+}
+
+export interface DrilldownRatingItem {
+  rating: number
+  label: string
+  count: number
+  percentage: number
+  positif: number
+  netral: number
+  negatif: number
+}
+
+export interface DrilldownEmotionItem {
+  emotion: string
+  label: string
+  count: number
+  percentage: number
+  avg_rating: number
+  dominant_sentiment: SentimentClass
+}
+
+export interface DrilldownLocationItem {
+  location: string
+  count: number
+  percentage: number
+  positif_pct: number
+  negatif_pct: number
+}
+
+export interface DrilldownSampleItem {
+  text: string
+  sentiment: SentimentClass
+  rating: number
+  emotion: string
+  emotion_label: string
+  category: string
+  category_label: string
+  location: string
+  product_name: string
+  price: number
+  number_sold: number
+}
+
+export interface DrilldownData {
+  active_filters: {
+    category: string
+    emotion: string
+    rating: string
+    sentiment: string
+  }
+  filtered_total: number
+  filtered_positif: number
+  filtered_netral: number
+  filtered_negatif: number
+  filtered_avg_rating: number
+  ratings: DrilldownRatingItem[]
+  emotions: DrilldownEmotionItem[]
+  locations: DrilldownLocationItem[]
+  samples: DrilldownSampleItem[]
+}
+
+export interface GovernedMetricItem {
+  id: string
+  name: string
+  title: string
+  formula: string
+  current_value: string
+  dimension: string
+  owner: string
+}
+
+export interface ApiEndpointDocItem {
+  method: string
+  path: string
+  title: string
+  description: string
+  sample_payload: Record<string, string>
+}
+
+export interface SemanticCatalogData {
+  metrics_catalog: GovernedMetricItem[]
+  api_endpoints: ApiEndpointDocItem[]
+  pipeline_code: string
+}
+
+export interface CorpusAnalyticsResponse {
+  success: boolean
+  category_map: CategoryMapItem[]
+  kpi_summary: KpiSummaryData
+  drilldown: DrilldownData
+  semantic_catalog: SemanticCatalogData
+  timestamp?: string
+}
+
+export interface AiAnalystChartBar {
+  label: string
+  count: number
+  positif_pct: number
+  negatif_pct: number
+  value_label: string
+}
+
+export interface AiAnalystEvidenceReview {
+  text: string
+  sentiment: SentimentClass
+  rating: number
+  emotion: string
+  emotion_label: string
+  category_label: string
+  product_name: string
+  location: string
+}
+
+export interface AiAnalystResponse {
+  success: boolean
+  question: string
+  matched_category: string
+  matched_category_label: string
+  matched_aspect: string
+  headline: string
+  narrative: string
+  key_findings: string[]
+  metrics_highlight: {
+    total_analyzed: number
+    positif_pct: number
+    netral_pct: number
+    negatif_pct: number
+    nss: number
+    avg_rating: number
+    anger_count: number
+  }
+  chart_title: string
+  chart_bars: AiAnalystChartBar[]
+  top_tokens: {
+    positif: TopFeatureWord[]
+    negatif: TopFeatureWord[]
+  }
+  evidence_reviews: AiAnalystEvidenceReview[]
+  timestamp?: string
+}
+
+

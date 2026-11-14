@@ -408,8 +408,17 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                           ))}
                         </div>
                       </div>
-                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
-                        Coba Inspeksi AI Sekarang →
+                      <button
+                        type="button"
+                        className="steep-btn-filled is-sm"
+                        onClick={() =>
+                          onEnterWorkspace(
+                            'ai-chat',
+                            'Apa penyebab utama keluhan pengiriman pada kategori Elektronik bulan ini?'
+                          )
+                        }
+                      >
+                        Buka Tanya Jawab Sentimen AI →
                       </button>
                     </div>
                   )}
@@ -433,8 +442,8 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                         <path d="M20 140 C120 120, 200 70, 310 85 C420 100, 500 40, 600 32" fill="none" stroke="#4a85e8" strokeWidth="2.4" />
                         <path d="M20 165 C120 155, 200 135, 310 142 C420 148, 500 115, 600 108" fill="none" stroke="#efb095" strokeWidth="2" />
                       </svg>
-                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
-                        Buka Eksplorasi Ulasan →
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('bedah-data')}>
+                        Buka Eksplorasi Multi-Dimensi →
                       </button>
                     </div>
                   )}
@@ -442,9 +451,9 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                   {activeProductTab === 3 && (
                     /* TAB 3: DRILL DOWN */
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Bedah Baris Ulasan & Kontribusi Token</div>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Bedah Baris Ulasan, Emosi & Rating ★1–★5</div>
                       <div style={{ fontSize: 12, color: '#777b86', marginBottom: 16 }}>
-                        Inspeksi tingkat baris pada dataset PRDECT-ID Tokopedia & Batch CSV
+                        Inspeksi tingkat baris berdasarkan Rating Bintang, 5 Emosi Pelanggan PRDECT-ID, dan Lokasi Kota
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
                         {[
@@ -461,8 +470,8 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                           </div>
                         ))}
                       </div>
-                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('batch')}>
-                        Buka Batch CSV →
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('bedah-data')}>
+                        Buka Bedah Data (Drill-Down) →
                       </button>
                     </div>
                   )}
@@ -470,9 +479,9 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                   {activeProductTab === 4 && (
                     /* TAB 4: TARGETS */
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Pencapaian Target PRD & Evaluasi Model</div>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Pelacak Target KPI & Net Sentiment Score (NSS)</div>
                       <div style={{ fontSize: 12, color: '#777b86', marginBottom: 18 }}>
-                        Perbandingan metrik aktual terhadap ambang batas minimum spesifikasi akademik
+                        Perbandingan metrik aktual terhadap ambang batas minimum spesifikasi akademik & bisnis
                       </div>
                       <div className="steep-win-grid-2" style={{ marginBottom: 18 }}>
                         <div style={{ padding: 18, borderRadius: 14, border: '1px solid rgba(0,0,0,0.08)' }}>
@@ -486,8 +495,8 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                           <div style={{ fontSize: 11.5, color: '#52555d' }}>Weighted F1: 85,62%</div>
                         </div>
                       </div>
-                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('evaluasi')}>
-                        Lihat Evaluasi Lengkap →
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('target-kpi')}>
+                        Buka Panel Target KPI & NSS →
                       </button>
                     </div>
                   )}
@@ -495,9 +504,9 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                   {activeProductTab === 5 && (
                     /* TAB 5: MAPS */
                     <div>
-                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Peta Distribusi 8 Marketplace Indonesia</div>
+                      <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Peta Persebaran Sentimen 29 Kategori & Marketplace</div>
                       <div style={{ fontSize: 12, color: '#777b86', marginBottom: 18 }}>
-                        Cakupan penarikan ulasan langsung (live scraper) dan korpus terverifikasi
+                        Rasio Positif vs Negatif, Net Sentiment Score (NSS), dan rata-rata rating per kategori produk
                       </div>
                       <div className="steep-win-grid-4" style={{ marginBottom: 20 }}>
                         {[
@@ -516,8 +525,8 @@ export const ProductShowcaseSection: React.FC<ProductShowcaseSectionProps> = ({
                           </div>
                         ))}
                       </div>
-                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('prediksi')}>
-                        Coba Tarik Ulasan Live →
+                      <button type="button" className="steep-btn-filled is-sm" onClick={() => onEnterWorkspace('peta-korpus')}>
+                        Buka Peta Korpus 29 Kategori →
                       </button>
                     </div>
                   )}

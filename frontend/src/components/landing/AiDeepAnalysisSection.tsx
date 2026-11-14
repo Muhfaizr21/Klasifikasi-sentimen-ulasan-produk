@@ -39,7 +39,7 @@ export const AiDeepAnalysisSection: React.FC<AiDeepAnalysisSectionProps> = ({
         <button
           type="button"
           className="steep-breadcrumb"
-          onClick={() => onEnterWorkspace('prediksi')}
+          onClick={() => onEnterWorkspace('ai-chat')}
         >
           <span>Sentimen AI</span>
           <span style={{ opacity: 0.35 }}>›</span>
@@ -54,9 +54,14 @@ export const AiDeepAnalysisSection: React.FC<AiDeepAnalysisSectionProps> = ({
             <button
               type="button"
               className="steep-btn-secondary"
-              onClick={() => onEnterWorkspace('prediksi')}
+              onClick={() =>
+                onEnterWorkspace(
+                  'ai-chat',
+                  'Mengapa ulasan positif naik bulan lalu dibandingkan bulan sebelumnya?'
+                )
+              }
             >
-              <span>Pelajari lebih lanjut</span>
+              <span>Buka Sentimen AI Chat</span>
               <span style={{ opacity: 0.55 }}>→</span>
             </button>
           }
@@ -307,7 +312,12 @@ export const AiDeepAnalysisSection: React.FC<AiDeepAnalysisSectionProps> = ({
 
               {/* Bottom Follow-up Composer Box */}
               <div
-                onClick={() => onEnterWorkspace('prediksi')}
+                onClick={() =>
+                  onEnterWorkspace(
+                    'ai-chat',
+                    'Bagaimana distribusi emosi pelanggan Marah (Anger) dan Senang (Happy) di korpus?'
+                  )
+                }
                 style={{
                   borderRadius: '14px',
                   border: '1px solid rgba(23,25,28,0.08)',
@@ -338,10 +348,14 @@ export const AiDeepAnalysisSection: React.FC<AiDeepAnalysisSectionProps> = ({
 
         {/* 3 Square Visual Feature Cards Below AI Window */}
         <div className="steep-ai-cards-grid">
-          {AI_FEATURE_CARDS.map((card) => (
+          {AI_FEATURE_CARDS.map((card, idx) => (
             <div key={card.title} style={{ display: 'flex', flexDirection: 'column' }}>
               <div
-                onClick={() => onEnterWorkspace('prediksi')}
+                onClick={() =>
+                  onEnterWorkspace(
+                    idx === 0 ? 'ai-chat' : idx === 1 ? 'target-kpi' : 'bedah-data'
+                  )
+                }
                 style={{
                   minHeight: '280px',
                   borderRadius: '20px',

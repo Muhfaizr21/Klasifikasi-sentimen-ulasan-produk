@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BatchUploadCard } from './components/BatchUploadCard'
+import { CorpusIntelligenceHub, type IntelligenceSubTab } from './components/CorpusIntelligenceHub'
 import { EvaluationDashboard } from './components/EvaluationDashboard'
 import { HistoryDrawer } from './components/HistoryDrawer'
 import { LandingPage, type WorkspaceTabTarget } from './components/LandingPage'
@@ -162,7 +163,8 @@ export default function App() {
     }
     return true
   })
-  const [activeTab, setActiveTab] = useState<'prediksi' | 'batch' | 'evaluasi' | 'komparasi'>('prediksi')
+  const [activeTab, setActiveTab] = useState<WorkspaceTabTarget>('prediksi')
+  const [initialAiQuestion, setInitialAiQuestion] = useState<string | undefined>(undefined)
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth <= 860
@@ -572,6 +574,12 @@ export default function App() {
     }
     setShowLanding(false)
     setActiveTab(targetTab)
+    if (targetTab === 'ai-chat') {
+      if (initialReviewText && initialReviewText.trim().length > 0) {
+        setInitialAiQuestion(initialReviewText.trim())
+      }
+      return
+    }
     if (initialReviewText && initialReviewText.trim().length > 0) {
       setText(initialReviewText)
       void handlePredict(initialReviewText)
@@ -736,6 +744,81 @@ export default function App() {
                 <path d="M4 19h16M7 15V9m5 6V5m5 10v-4" strokeLinecap="round" />
               </svg>
               <span className="sidebar-label-text">Evaluasi Model</span>
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activeTab === 'ai-chat' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('ai-chat')
+                closeSidebarOnMobile()
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="sidebar-label-text">Sentimen AI Chat</span>
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activeTab === 'peta-korpus' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('peta-korpus')
+                closeSidebarOnMobile()
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+              <span className="sidebar-label-text">Peta Korpus (29)</span>
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activeTab === 'target-kpi' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('target-kpi')
+                closeSidebarOnMobile()
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <circle cx="12" cy="12" r="5" />
+                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+              </svg>
+              <span className="sidebar-label-text">Target KPI &amp; NSS</span>
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activeTab === 'bedah-data' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('bedah-data')
+                closeSidebarOnMobile()
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <path d="M4 6h16M7 12h10M10 18h4" strokeLinecap="round" />
+              </svg>
+              <span className="sidebar-label-text">Bedah Data (Emosi)</span>
+            </button>
+
+            <button
+              type="button"
+              className={`sidebar-nav-item ${activeTab === 'katalog-api' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('katalog-api')
+                closeSidebarOnMobile()
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="sidebar-label-text">Katalog &amp; API</span>
             </button>
 
             <button
@@ -995,9 +1078,55 @@ export default function App() {
             >
               Akademik &amp; Metrik
             </button>
+            <button
+              type="button"
+              className={`category-link ${activeTab === 'ai-chat' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ai-chat')}
+            >
+              Sentimen AI Chat
+            </button>
+            <button
+              type="button"
+              className={`category-link ${activeTab === 'peta-korpus' ? 'active' : ''}`}
+              onClick={() => setActiveTab('peta-korpus')}
+            >
+              Peta 29 Kategori
+            </button>
+            <button
+              type="button"
+              className={`category-link ${activeTab === 'target-kpi' ? 'active' : ''}`}
+              onClick={() => setActiveTab('target-kpi')}
+            >
+              Target KPI &amp; NSS
+            </button>
+            <button
+              type="button"
+              className={`category-link ${activeTab === 'bedah-data' ? 'active' : ''}`}
+              onClick={() => setActiveTab('bedah-data')}
+            >
+              Bedah Data
+            </button>
+            <button
+              type="button"
+              className={`category-link ${activeTab === 'katalog-api' ? 'active' : ''}`}
+              onClick={() => setActiveTab('katalog-api')}
+            >
+              Katalog &amp; API
+            </button>
           </header>
 
-          <main className={`content-column ${activeTab === 'komparasi' ? 'is-compare-view' : ''}`}>
+          <main
+            className={`content-column ${
+              activeTab === 'komparasi' ||
+              activeTab === 'ai-chat' ||
+              activeTab === 'peta-korpus' ||
+              activeTab === 'target-kpi' ||
+              activeTab === 'bedah-data' ||
+              activeTab === 'katalog-api'
+                ? 'is-compare-view'
+                : ''
+            }`}
+          >
             {/* Non-Prediksi Tabs Header (kecuali tab komparasi yang memiliki hero tersendiri) */}
             {activeTab !== 'prediksi' && activeTab !== 'komparasi' && (
               <div className="hero-workspace compact">
@@ -1494,15 +1623,48 @@ export default function App() {
             )}
 
             {activeTab === 'evaluasi' && (
-              <EvaluationDashboard
-                metrics={metrics}
-                loading={metricsLoading}
-                error={metricsError}
-                onRefresh={loadMetrics}
-                onSelectWord={word => {
+              <>
+                <EvaluationDashboard
+                  metrics={metrics}
+                  loading={metricsLoading}
+                  error={metricsError}
+                  onRefresh={loadMetrics}
+                  onSelectWord={word => {
+                    setActiveTab('prediksi')
+                    setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                />
+                <div className="mt-10">
+                  <CorpusIntelligenceHub
+                    activeSubTab="peta-korpus"
+                    onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
+                    initialAiQuestion={initialAiQuestion}
+                    onInspectReview={(revText, cat) => {
+                      if (cat) setSelectedCategory(cat)
+                      setActiveTab('prediksi')
+                      setText(revText)
+                      void handlePredict(revText, { category: cat })
+                    }}
+                  />
+                </div>
+              </>
+            )}
+
+            {(activeTab === 'ai-chat' ||
+              activeTab === 'peta-korpus' ||
+              activeTab === 'target-kpi' ||
+              activeTab === 'bedah-data' ||
+              activeTab === 'katalog-api') && (
+              <CorpusIntelligenceHub
+                activeSubTab={activeTab}
+                onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
+                initialAiQuestion={initialAiQuestion}
+                onInspectReview={(revText, cat) => {
+                  if (cat) setSelectedCategory(cat)
                   setActiveTab('prediksi')
-                  setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                  setText(revText)
+                  void handlePredict(revText, { category: cat })
                 }}
               />
             )}

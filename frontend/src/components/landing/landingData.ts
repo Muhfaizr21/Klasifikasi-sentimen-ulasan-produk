@@ -1,4 +1,13 @@
-export type WorkspaceTabTarget = 'prediksi' | 'batch' | 'komparasi' | 'evaluasi';
+export type WorkspaceTabTarget =
+  | 'prediksi'
+  | 'batch'
+  | 'komparasi'
+  | 'evaluasi'
+  | 'ai-chat'
+  | 'peta-korpus'
+  | 'target-kpi'
+  | 'bedah-data'
+  | 'katalog-api';
 
 export interface LandingPageProps {
   corpusTotal?: number;
@@ -81,14 +90,14 @@ export const PRODUCT_TABS: ProductTabItem[] = [
     label: 'AI',
     description:
       'Ajukan pertanyaan kompleks dan dapatkan wawasan yang mendalam serta andal. Seluruhnya ditenagai oleh metrik terukur.',
-    ctaTab: 'prediksi',
+    ctaTab: 'ai-chat',
   },
   {
     id: 'explore',
     label: 'Eksplorasi',
     description:
       'Selami metrik sentimen dan eksplorasi visualisasi lintas kategori dalam hitungan detik dengan dukungan AI.',
-    ctaTab: 'prediksi',
+    ctaTab: 'bedah-data',
   },
   {
     id: 'reports',
@@ -102,21 +111,21 @@ export const PRODUCT_TABS: ProductTabItem[] = [
     label: 'Bedah Data',
     description:
       'Klik pada metrik mana pun dan bedah rincian tingkat baris dari ulasan pelanggan, token TF-IDF, atau produk.',
-    ctaTab: 'batch',
+    ctaTab: 'bedah-data',
   },
   {
     id: 'targets',
     label: 'Target KPI',
     description:
       'Muat data target akurasi dan kepuasan secara terpusat agar selalu tersedia untuk setiap metrik di ruang kerja Anda.',
-    ctaTab: 'evaluasi',
+    ctaTab: 'target-kpi',
   },
   {
     id: 'maps',
     label: 'Peta Korpus',
     description:
       'Peta distribusi marketplace yang intuitif untuk dieksplorasi semua orang. Buka peta dan telusuri metrik secara instan.',
-    ctaTab: 'evaluasi',
+    ctaTab: 'peta-korpus',
   },
 ];
 

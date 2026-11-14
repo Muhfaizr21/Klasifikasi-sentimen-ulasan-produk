@@ -1,6 +1,8 @@
 import type {
+  AiAnalystResponse,
   BatchPredictionResponse,
   CategoriesResponse,
+  CorpusAnalyticsResponse,
   DatasetSample,
   HealthStatus,
   LiveStreamResponse,
@@ -241,4 +243,42 @@ export async function fetchCategories(): Promise<CategoriesResponse> {
   }
   return payload as CategoriesResponse
 }
+
+export async function fetchCorpusAnalytics(params?: {
+  category?: string
+  emotion?: string
+  rating?: string
+  sentiment?: string
+}): Promise<CorpusAnalyticsResponse> {
+  const qs = new URLSearchParams()
+  if (params?.category) qs.set('category', params.category)
+  if (params?.emotion) qs.set('emotion', params.emotion)
+  if (params?.rating) qs.set('rating', params.rating)
+  if (params?.sentiment) qs.set('sentiment', params.sentiment)
+
+  const queryStr = qs.toString()
+  const response = await fetch(`/api/corpus-analytics${queryStr ? `?${queryStr}` : ''}`)
+  const payload = await response.json()
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.message || payload.error || 'Gagal memuat analitik korpus.')
+  }
+  return payload as CorpusAnalyticsResponse
+}
+
+export async function requestAiAnalyst(
+  question: string,
+  category: string = 'Semua'
+): Promise<AiAnalystResponse> {
+  const response = await fetch('/api/ai-analyst', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question, category }),
+  })
+  const payload = await response.json()
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.message || payload.error || 'Gagal memproses pertanyaan analitik AI.')
+  }
+  return payload as AiAnalystResponse
+}
+
 

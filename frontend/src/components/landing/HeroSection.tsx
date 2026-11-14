@@ -1198,7 +1198,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             }
           >
             <div
-              onClick={() => onEnterWorkspace('prediksi', 'Kualitas barang sangat bagus pengiriman super cepat')}
+              onClick={() =>
+                onEnterWorkspace(
+                  'ai-chat',
+                  'Bagaimana dampak peluncuran kampanye terhadap sentimen ulasan bulan ini?'
+                )
+              }
               style={{
                 position: 'relative',
                 backgroundColor: aiBgColor,
