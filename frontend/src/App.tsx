@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { EvaluationDashboard } from './components/EvaluationDashboard'
+import { HistoryDrawer } from './components/HistoryDrawer'
 import { PredictionResultCard } from './components/PredictionResultCard'
 import {
   fetchBackendHealth,
@@ -44,12 +45,23 @@ const CHIP_EMOJI: Record<SentimentClass, string> = {
   negatif: '⚠️ Negatif',
 }
 
+const STORAGE_KEY = 'sentiment_review_history_v1'
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<'prediksi' | 'evaluasi'>('prediksi')
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<PredictionResult | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const [history, setHistory] = useState<PredictionResult[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
 
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null)
   const [samples, setSamples] = useState<DatasetSample[]>(DEFAULT_SAMPLES)
@@ -58,6 +70,27 @@ export default function App() {
   const [metrics, setMetrics] = useState<MetricsReport | null>(null)
   const [metricsLoading, setMetricsLoading] = useState(true)
   const [metricsError, setMetricsError] = useState<string | null>(null)
+
+  const saveHistory = (newItem: PredictionResult) => {
+    setHistory(prev => {
+      const updated = [newItem, ...prev.filter(x => x.inputText !== newItem.inputText)].slice(0, 5)
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      } catch {
+        // Ignore
+      }
+      return updated
+    })
+  }
+
+  const clearHistory = () => {
+    setHistory([])
+    try {
+      localStorage.removeItem(STORAGE_KEY)
+    } catch {
+      // Ignore
+    }
+  }
 
   const loadMetrics = useCallback(() => {
     setMetricsLoading(true)
@@ -73,7 +106,6 @@ export default function App() {
     fetchDatasetSamples()
       .then(data => {
         if (data.length > 0) {
-          // Ambil 1 positif, 1 netral, 1 negatif agar seimbang di chip contoh
           const picked: DatasetSample[] = []
           for (const cls of ['positif', 'netral', 'negatif'] as SentimentClass[]) {
             const match = data.find(item => item.sentiment === cls)
@@ -82,9 +114,7 @@ export default function App() {
           setSamples(picked.length > 0 ? picked : data.slice(0, 3))
         }
       })
-      .catch(() => {
-        // Fallback ke DEFAULT_SAMPLES jika gagal
-      })
+      .catch(() => {})
       .finally(() => setSamplesLoading(false))
   }, [])
 
@@ -145,6 +175,7 @@ export default function App() {
     try {
       const prediction = await requestSentimentPrediction(trimmed)
       setResult(prediction)
+      saveHistory(prediction)
       setBackendOnline(true)
     } catch (err) {
       setError(
@@ -305,6 +336,15 @@ export default function App() {
 
           {error && <div className="error-banner">⚠️ {error}</div>}
           {result && <PredictionResultCard result={result} />}
+
+          <HistoryDrawer
+            history={history}
+            onSelect={item => {
+              setText(item.inputText)
+              setResult(item)
+            }}
+            onClear={clearHistory}
+          />
         </main>
       ) : (
         <EvaluationDashboard
