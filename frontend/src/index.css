@@ -89,6 +89,16 @@ body {
   color: var(--color-ink);
 }
 
+/* Backdrop Overlay for Off-Canvas Responsive Drawer */
+.sidebar-backdrop {
+  display: none;
+}
+
+/* Responsive Top Header Bar (Hidden on wide desktop) */
+.responsive-topbar {
+  display: none;
+}
+
 /* Left Sidebar Navigation */
 .sidebar {
   width: var(--sidebar-width);
@@ -103,12 +113,21 @@ body {
   top: 0;
   height: 100dvh;
   overflow-y: auto;
-  transition: width 0.2s ease, padding 0.2s ease;
+  transition: width 0.2s ease, padding 0.2s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sidebar.collapsed {
   width: 60px;
   padding: 14px 8px;
+}
+
+.sidebar.collapsed .brand-mark-text,
+.sidebar.collapsed .sidebar-label-text,
+.sidebar.collapsed .sidebar-subnav,
+.sidebar.collapsed .sidebar-history,
+.sidebar.collapsed .sidebar-label-block,
+.sidebar.collapsed .sidebar-label-icon {
+  display: none;
 }
 
 .sidebar-top {
@@ -174,32 +193,34 @@ body {
   color: var(--color-ink);
 }
 
-/* "+ Baru" Action Button */
+/* "+ Analisis Baru" Pill Action Button (DeepSeek Pattern) */
 .new-session-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
-  padding: 9px 12px;
-  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-subtle);
-  background-color: rgba(39, 37, 30, 0.045);
+  background-color: rgba(39, 37, 30, 0.055);
   color: var(--color-ink);
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .new-session-btn:hover {
-  background-color: rgba(39, 37, 30, 0.08);
+  background-color: rgba(39, 37, 30, 0.09);
   border-color: var(--color-warm-mist);
 }
 
 .sidebar.collapsed .new-session-btn {
   justify-content: center;
   padding: 9px 0;
+  border-radius: var(--radius-md);
 }
 
 /* Primary Sidebar Nav List */
@@ -2234,7 +2255,7 @@ body {
   border-top: 1px solid var(--color-border-subtle);
 }
 
-/* Responsive Breakpoints (R-03) */
+/* Responsive Breakpoints (R-03: DeepSeek Off-Canvas Vertical Drawer Architecture) */
 @media (max-width: 1080px) {
   .main-pane {
     padding: 16px 20px 36px;
@@ -2245,53 +2266,165 @@ body {
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 860px) {
   .workspace-shell {
-    flex-direction: column;
+    position: relative;
+    overflow-x: hidden;
   }
 
+  /* Dimmed backdrop behind open off-canvas drawer */
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(20, 19, 16, 0.42);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 110;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+
+  .sidebar-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Full-height vertical slide-over sidebar drawer (DeepSeek Responsive Pattern) */
   .sidebar,
   .sidebar.collapsed {
-    width: 100%;
-    height: auto;
-    position: static;
-    border-right: none;
-    border-bottom: 1px solid var(--color-border-subtle);
-    padding: 12px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(268px, 82vw);
+    height: 100dvh;
+    z-index: 120;
+    padding: 16px 14px;
+    border-right: 1px solid var(--color-border-subtle);
+    border-bottom: none;
+    box-shadow: 16px 0 42px rgba(0, 0, 0, 0.22);
+    transform: translateX(0);
   }
 
-  .sidebar-subnav,
-  .sidebar-history {
+  .sidebar.collapsed {
+    transform: translateX(-105%);
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  /* Inside the mobile drawer, always show full vertical items when open */
+  .sidebar .brand-mark-text,
+  .sidebar .sidebar-label-text,
+  .sidebar .sidebar-label-block,
+  .sidebar .sidebar-label-icon {
+    display: inline-flex;
+  }
+
+  .sidebar .sidebar-subnav,
+  .sidebar .sidebar-history {
+    display: flex;
+  }
+
+  .sidebar .sidebar-nav {
+    flex-direction: column;
+    overflow-x: visible;
+    gap: 3px;
+  }
+
+  .sidebar .sidebar-nav-item {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 9px 11px;
+  }
+
+  .sidebar .new-session-btn {
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* Compact Sticky Top Header Bar on Main Pane */
+  .responsive-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 2px 12px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  .responsive-topbar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-graphite);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .responsive-topbar-btn:hover {
+    background-color: var(--color-surface-hover);
+    color: var(--color-ink);
+  }
+
+  .responsive-topbar-brand {
+    border: none;
+    background: transparent;
+    font-family: var(--font-pplxsans);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: var(--radius-xs);
+  }
+
+  /* Single-line horizontal scroll for category strip on narrow viewports */
+  .top-category-bar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 4px 0 14px;
+    gap: 6px;
+  }
+
+  .top-category-bar::-webkit-scrollbar {
     display: none;
   }
 
-  .sidebar-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 2px;
-  }
-
-  .sidebar-nav-item {
-    width: auto;
+  .category-link,
+  .top-category-select-wrap {
+    flex-shrink: 0;
     white-space: nowrap;
   }
 
   .main-pane {
-    padding: 14px 16px 32px;
+    width: 100%;
+    padding: 10px 16px 32px;
   }
 
   .hero-workspace {
-    margin: 20px auto 20px;
+    margin: 22px auto 20px;
   }
 
   .query-box {
-    padding: 15px 16px 12px;
-    border-radius: var(--radius-lg);
+    padding: 16px 18px 13px;
+    border-radius: var(--radius-xl);
   }
 
   .query-textarea {
-    min-height: 76px;
-    font-size: 0.975rem;
+    min-height: 78px;
+    font-size: 0.985rem;
   }
 
   .suggestion-grid,
@@ -3884,6 +4017,8 @@ body {
 
   /* Hide screen-only interactive controls */
   .sidebar,
+  .sidebar-backdrop,
+  .responsive-topbar,
   .top-category-bar,
   .hero-workspace,
   .search-box-card,

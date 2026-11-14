@@ -499,12 +499,19 @@ export default function App() {
     }
   }, [])
 
+  const closeSidebarOnMobile = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 860) {
+      setSidebarCollapsed(true)
+    }
+  }
+
   const startNewSession = () => {
     setActiveTab('prediksi')
     setText('')
     setResult(null)
     setError(null)
     setLearnedSuccessNote(null)
+    closeSidebarOnMobile()
     setTimeout(() => {
       textareaRef.current?.focus()
     }, 20)
@@ -512,6 +519,7 @@ export default function App() {
 
   const navigateToSection = (sectionId: string) => {
     setActiveTab('evaluasi')
+    closeSidebarOnMobile()
     setTimeout(() => {
       const el = document.getElementById(sectionId)
       el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -529,9 +537,16 @@ export default function App() {
 
   return (
     <div className="workspace-shell">
+      {/* Backdrop Overlay for Responsive Off-Canvas Sidebar (DeepSeek Pattern) */}
+      <div
+        className={`sidebar-backdrop ${!sidebarCollapsed ? 'is-open' : ''}`}
+        onClick={() => setSidebarCollapsed(true)}
+        aria-hidden="true"
+      />
+
       {/* Left Navigation Sidebar */}
       <aside
-        className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}
+        className={`sidebar ${sidebarCollapsed ? 'collapsed' : 'is-open'}`}
         aria-label="Navigasi Ruang Kerja"
       >
         <div className="sidebar-top">
@@ -556,7 +571,7 @@ export default function App() {
                 />
                 <circle cx="12" cy="12" r="3.2" fill="var(--color-sidebar)" stroke="currentColor" strokeWidth="1.65" />
               </svg>
-              {!sidebarCollapsed && <span className="brand-mark-text">sentimen</span>}
+              <span className="brand-mark-text">sentimen</span>
             </button>
 
             <button
@@ -582,155 +597,170 @@ export default function App() {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
               <path d="M12 5v14M5 12h14" strokeLinecap="round" />
             </svg>
-            {!sidebarCollapsed && <span>Baru</span>}
+            <span className="sidebar-label-text">Analisis Baru</span>
           </button>
 
           <nav className="sidebar-nav" aria-label="Menu Utama">
             <button
               type="button"
               className={`sidebar-nav-item ${activeTab === 'prediksi' ? 'active' : ''}`}
-              onClick={() => setActiveTab('prediksi')}
+              onClick={() => {
+                setActiveTab('prediksi')
+                closeSidebarOnMobile()
+              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
                 <circle cx="11" cy="11" r="7" />
                 <path d="M20 20l-3.8-3.8" strokeLinecap="round" />
               </svg>
-              {!sidebarCollapsed && <span>Analisis Ulasan</span>}
+              <span className="sidebar-label-text">Analisis Ulasan</span>
             </button>
 
             <button
               type="button"
               className={`sidebar-nav-item ${activeTab === 'batch' ? 'active' : ''}`}
-              onClick={() => setActiveTab('batch')}
+              onClick={() => {
+                setActiveTab('batch')
+                closeSidebarOnMobile()
+              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="12" rx="2" />
                 <path d="M2 20h20M8 16v4m8-4v4" strokeLinecap="round" />
               </svg>
-              {!sidebarCollapsed && <span>Batch CSV</span>}
+              <span className="sidebar-label-text">Batch CSV</span>
             </button>
 
             <button
               type="button"
               className={`sidebar-nav-item ${activeTab === 'komparasi' ? 'active' : ''}`}
-              onClick={() => setActiveTab('komparasi')}
+              onClick={() => {
+                setActiveTab('komparasi')
+                closeSidebarOnMobile()
+              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
                 <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              {!sidebarCollapsed && <span>Komparasi 2 Produk</span>}
+              <span className="sidebar-label-text">Komparasi 2 Produk</span>
             </button>
 
             <button
               type="button"
               className={`sidebar-nav-item ${activeTab === 'evaluasi' ? 'active' : ''}`}
-              onClick={() => setActiveTab('evaluasi')}
+              onClick={() => {
+                setActiveTab('evaluasi')
+                closeSidebarOnMobile()
+              }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
                 <path d="M4 19h16M7 15V9m5 6V5m5 10v-4" strokeLinecap="round" />
               </svg>
-              {!sidebarCollapsed && <span>Evaluasi Model</span>}
+              <span className="sidebar-label-text">Evaluasi Model</span>
             </button>
 
             <button
               type="button"
               className="sidebar-nav-item"
-              onClick={loadRandomSampleIntoInput}
+              onClick={() => {
+                loadRandomSampleIntoInput()
+                closeSidebarOnMobile()
+              }}
               disabled={samplesLoading}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
                 <circle cx="12" cy="12" r="8" />
                 <circle cx="12" cy="12" r="2.5" />
               </svg>
-              {!sidebarCollapsed && (
-                <span>{samplesLoading ? 'Memuat Sampel...' : 'Uji Sampel Acak'}</span>
-              )}
+              <span className="sidebar-label-text">
+                {samplesLoading ? 'Memuat Sampel...' : 'Uji Sampel Acak'}
+              </span>
             </button>
           </nav>
 
-          {!sidebarCollapsed && (
-            <div className="sidebar-subnav" aria-label="Pintasan Spesifikasi">
+          <div className="sidebar-subnav" aria-label="Pintasan Spesifikasi">
+            <button
+              type="button"
+              className="sidebar-sublink"
+              onClick={() => navigateToSection('pipeline-comparison')}
+            >
+              <span>Pipeline TF-IDF</span>
+              <span>5 Eksperimen</span>
+            </button>
+            <button
+              type="button"
+              className="sidebar-sublink"
+              onClick={() => navigateToSection('confusion-matrix')}
+            >
+              <span>Confusion Matrix</span>
+              <span>{f1BadgeText}</span>
+            </button>
+            <button
+              type="button"
+              className="sidebar-sublink"
+              onClick={() => navigateToSection('dataset-distribution')}
+            >
+              <span>Korpus PRDECT-ID</span>
+              <span>{corpusTotal.toLocaleString('id-ID')} Data</span>
+            </button>
+            {realtimeLearnedCount > 0 && (
               <button
                 type="button"
                 className="sidebar-sublink"
-                onClick={() => navigateToSection('pipeline-comparison')}
+                onClick={() => {
+                  setActiveTab('prediksi')
+                  closeSidebarOnMobile()
+                }}
               >
-                <span>Pipeline TF-IDF</span>
-                <span>5 Eksperimen</span>
+                <span>Online Learning</span>
+                <span>+{realtimeLearnedCount} Dilatih</span>
               </button>
-              <button
-                type="button"
-                className="sidebar-sublink"
-                onClick={() => navigateToSection('confusion-matrix')}
-              >
-                <span>Confusion Matrix</span>
-                <span>{f1BadgeText}</span>
-              </button>
-              <button
-                type="button"
-                className="sidebar-sublink"
-                onClick={() => navigateToSection('dataset-distribution')}
-              >
-                <span>Korpus PRDECT-ID</span>
-                <span>{corpusTotal.toLocaleString('id-ID')} Data</span>
-              </button>
-              {realtimeLearnedCount > 0 && (
+            )}
+          </div>
+
+          <div className="sidebar-history" aria-label="Riwayat Sesi">
+            <div className="sidebar-section-header">
+              <span className="sidebar-section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
+                  <circle cx="12" cy="12" r="8.5" />
+                  <path d="M12 7.5V12l3 1.8" strokeLinecap="round" />
+                </svg>
+                Riwayat
+              </span>
+              {history.length > 0 && (
                 <button
                   type="button"
-                  className="sidebar-sublink"
-                  onClick={() => setActiveTab('prediksi')}
+                  className="sidebar-clear-btn"
+                  onClick={clearHistory}
                 >
-                  <span>Online Learning</span>
-                  <span>+{realtimeLearnedCount} Dilatih</span>
+                  Hapus
                 </button>
               )}
             </div>
-          )}
 
-          {!sidebarCollapsed && (
-            <div className="sidebar-history" aria-label="Riwayat Sesi">
-              <div className="sidebar-section-header">
-                <span className="sidebar-section-title">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
-                    <circle cx="12" cy="12" r="8.5" />
-                    <path d="M12 7.5V12l3 1.8" strokeLinecap="round" />
-                  </svg>
-                  Riwayat
-                </span>
-                {history.length > 0 && (
+            {history.length === 0 ? (
+              <p className="sidebar-empty-note">Belum ada sesi analisis</p>
+            ) : (
+              <div className="sidebar-history-list">
+                {history.map((item, idx) => (
                   <button
+                    key={idx}
                     type="button"
-                    className="sidebar-clear-btn"
-                    onClick={clearHistory}
+                    className="sidebar-history-item"
+                    onClick={() => {
+                      setActiveTab('prediksi')
+                      setText(item.inputText)
+                      setResult(item)
+                      closeSidebarOnMobile()
+                    }}
                   >
-                    Hapus
+                    <span className={`sidebar-history-dot ${item.label}`} aria-hidden="true" />
+                    <span className="sidebar-history-text">{item.inputText}</span>
                   </button>
-                )}
+                ))}
               </div>
-
-              {history.length === 0 ? (
-                <p className="sidebar-empty-note">Belum ada sesi analisis</p>
-              ) : (
-                <div className="sidebar-history-list">
-                  {history.map((item, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      className="sidebar-history-item"
-                      onClick={() => {
-                        setActiveTab('prediksi')
-                        setText(item.inputText)
-                        setResult(item)
-                      }}
-                    >
-                      <span className={`sidebar-history-dot ${item.label}`} aria-hidden="true" />
-                      <span className="sidebar-history-text">{item.inputText}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Bottom Status Identity */}
@@ -738,7 +768,10 @@ export default function App() {
           <button
             type="button"
             className="sidebar-status-btn"
-            onClick={() => setActiveTab('evaluasi')}
+            onClick={() => {
+              setActiveTab('evaluasi')
+              closeSidebarOnMobile()
+            }}
             title="Lihat status model dan evaluasi lengkap"
           >
             <span className="status-avatar" aria-hidden="true">
@@ -747,23 +780,19 @@ export default function App() {
                 <path d="M5 19c1.5-3 4-4.5 7-4.5s5.5 1.5 7 4.5" strokeLinecap="round" />
               </svg>
             </span>
-            {!sidebarCollapsed && (
-              <>
-                <span className="status-meta">
-                  <span className="status-primary">
-                    {backendOnline === null
-                      ? 'Memeriksa API...'
-                      : backendOnline
-                        ? 'Model Naive Bayes Aktif'
-                        : 'API Backend Offline'}
-                  </span>
-                  <span className="status-secondary">Politeknik Negeri Indramayu</span>
-                </span>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ash)" strokeWidth="1.6" aria-hidden="true">
-                  <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </>
-            )}
+            <span className="status-meta sidebar-label-block">
+              <span className="status-primary">
+                {backendOnline === null
+                  ? 'Memeriksa API...'
+                  : backendOnline
+                    ? 'Model Naive Bayes Aktif'
+                    : 'API Backend Offline'}
+              </span>
+              <span className="status-secondary">Politeknik Negeri Indramayu</span>
+            </span>
+            <svg className="sidebar-label-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-ash)" strokeWidth="1.6" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
         </div>
       </aside>
@@ -771,6 +800,42 @@ export default function App() {
       {/* Main Content Area */}
       <div className="main-pane">
         <div>
+          {/* Responsive Top Header Bar (DeepSeek Off-Canvas Toggle + Quick New Session) */}
+          <div className="responsive-topbar">
+            <button
+              type="button"
+              className="responsive-topbar-btn"
+              onClick={() => setSidebarCollapsed(prev => !prev)}
+              aria-label={sidebarCollapsed ? 'Buka navigasi samping' : 'Tutup navigasi samping'}
+              title="Navigasi samping"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="16" rx="2.5" />
+                <path d="M9 4v16" />
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              className="responsive-topbar-brand"
+              onClick={startNewSession}
+            >
+              <span>sentimen</span>
+            </button>
+
+            <button
+              type="button"
+              className="responsive-topbar-btn"
+              onClick={startNewSession}
+              aria-label="Mulai sesi analisis baru"
+              title="Analisis baru"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 8v8M8 12h8" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
           {/* Top Category Filter Bar (Dynamic from Corpus) */}
           <header className="top-category-bar" aria-label="Kategori Sampel dan Modul">
             <button
