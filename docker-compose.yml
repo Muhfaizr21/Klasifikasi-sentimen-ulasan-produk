@@ -1,0 +1,11 @@
+services:
+  sentiment-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentiment_review_classifier
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1

@@ -14,11 +14,16 @@ export interface HealthStatus {
   timestamp: string
 }
 
-
 export interface ClassProbabilities {
   positif: number
   netral: number
   negatif: number
+}
+
+export interface WordExplanation {
+  word: string
+  polarity: SentimentClass | 'oov'
+  score: number
 }
 
 export interface PredictionResult {
@@ -28,6 +33,22 @@ export interface PredictionResult {
   inputText: string
   cleanText: string
   latencyMs: number
+  explanation?: WordExplanation[]
+}
+
+export interface BatchItem {
+  text: string
+  label: SentimentClass
+  confidence: number
+  probabilities: ClassProbabilities
+  clean_text: string
+}
+
+export interface BatchPredictionResponse {
+  total: number
+  distribution: Record<SentimentClass, number>
+  percentages: Record<SentimentClass, number>
+  results: BatchItem[]
 }
 
 export interface ClassMetric {
@@ -65,4 +86,3 @@ export interface MetricsReport {
   }
   experiments?: ExperimentSummary[]
 }
-

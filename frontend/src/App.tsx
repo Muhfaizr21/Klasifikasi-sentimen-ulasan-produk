@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { BatchUploadCard } from './components/BatchUploadCard'
 import { EvaluationDashboard } from './components/EvaluationDashboard'
 import { HistoryDrawer } from './components/HistoryDrawer'
 import { PredictionResultCard } from './components/PredictionResultCard'
@@ -48,7 +49,7 @@ const CHIP_EMOJI: Record<SentimentClass, string> = {
 const STORAGE_KEY = 'sentiment_review_history_v1'
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'prediksi' | 'evaluasi'>('prediksi')
+  const [activeTab, setActiveTab] = useState<'prediksi' | 'batch' | 'evaluasi'>('prediksi')
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<PredictionResult | null>(null)
@@ -219,7 +220,14 @@ export default function App() {
             className={`nav-tab ${activeTab === 'prediksi' ? 'active' : ''}`}
             onClick={() => setActiveTab('prediksi')}
           >
-            🔍 Demo Prediksi
+            🔍 Prediksi Tunggal
+          </button>
+          <button
+            type="button"
+            className={`nav-tab ${activeTab === 'batch' ? 'active' : ''}`}
+            onClick={() => setActiveTab('batch')}
+          >
+            📁 Batch CSV
           </button>
           <button
             type="button"
@@ -236,18 +244,21 @@ export default function App() {
           ⚡ Naive Bayes Pipeline • Dataset PRDECT-ID Tokopedia & Hugging Face (5.459 Ulasan)
         </span>
         <h1>
-          {activeTab === 'prediksi'
-            ? 'Analisis Sentimen Ulasan Produk'
-            : 'Evaluasi Performa Model Naive Bayes'}
+          {activeTab === 'prediksi' && 'Analisis Sentimen Ulasan Produk'}
+          {activeTab === 'batch' && 'Analisis Massal Ulasan Toko (Batch CSV)'}
+          {activeTab === 'evaluasi' && 'Evaluasi Performa Model Naive Bayes'}
         </h1>
         <p>
-          {activeTab === 'prediksi'
-            ? 'Klasifikasi otomatis ulasan marketplace (Tokopedia / Shopee) ke dalam sentimen Positif, Netral, atau Negatif lengkap dengan distribusi probabilitas kelas.'
-            : 'Transparansi metrik pengujian pada data uji asli (stratified 80:20), Confusion Matrix, dan perbandingan 5 konfigurasi eksperimen.'}
+          {activeTab === 'prediksi' &&
+            'Klasifikasi otomatis ulasan produk ke dalam sentimen Positif, Netral, atau Negatif lengkap dengan visualisasi kata kunci berpengaruh (explainability).'}
+          {activeTab === 'batch' &&
+            'Unggah file CSV berisi ulasan produk pelanggan untuk menganalisis reputasi toko dan mengunduh laporan sentimen secara lengkap.'}
+          {activeTab === 'evaluasi' &&
+            'Transparansi metrik pengujian pada data uji asli (stratified 80:20), Confusion Matrix, dan perbandingan 5 konfigurasi eksperimen.'}
         </p>
       </header>
 
-      {activeTab === 'prediksi' ? (
+      {activeTab === 'prediksi' && (
         <main>
           <section className="card">
             <div className="card-header">
@@ -346,7 +357,15 @@ export default function App() {
             onClear={clearHistory}
           />
         </main>
-      ) : (
+      )}
+
+      {activeTab === 'batch' && (
+        <main>
+          <BatchUploadCard />
+        </main>
+      )}
+
+      {activeTab === 'evaluasi' && (
         <EvaluationDashboard
           metrics={metrics}
           loading={metricsLoading}

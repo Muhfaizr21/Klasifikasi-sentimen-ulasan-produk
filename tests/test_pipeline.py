@@ -1,7 +1,8 @@
 """Automated test suite for Text Preprocessing, Naive Bayes Pipeline, and REST API."""
 
-import pytest
+import io
 import json
+import pytest
 from pathlib import Path
 from src.constants import MAX_TEXT_LENGTH
 from src.preprocess import DataPreprocessor
@@ -74,12 +75,27 @@ class TestPredictor:
         assert res["label"] == "positif"
         assert res["confidence"] > 50.0
         assert "positif" in res["probabilities"]
+        assert "explanation" in res
+        assert isinstance(res["explanation"], list)
 
     def test_predict_negative_review(self):
         predictor = get_predictor()
         res = predictor.predict("Barang rusak parah, penjual penipu dan packing hancur lebur!")
         assert res["label"] == "negatif"
         assert res["probabilities"]["negatif"] > 50.0
+        assert len(res["explanation"]) > 0
+
+    def test_predict_batch(self):
+        predictor = get_predictor()
+        texts = [
+            "Barang original dan bagus sekali!",
+            "Rusak parah dan sangat mengecewakan",
+            "Biasa saja standar sesuai harga",
+        ]
+        batch_res = predictor.predict_batch(texts)
+        assert batch_res["total"] == 3
+        assert "distribution" in batch_res
+        assert len(batch_res["results"]) == 3
 
 
 class TestAPIEndpoints:
@@ -115,6 +131,7 @@ class TestAPIEndpoints:
         assert data["success"] is True
         assert data["label"] == "positif"
         assert "probabilitas" in data
+        assert "explanation" in data
 
     def test_predict_empty_text_error(self, api_client):
         res = api_client.post("/api/predict", json={"teks": "   "})
@@ -128,3 +145,32 @@ class TestAPIEndpoints:
         assert res.status_code == 400
         data = res.get_json()
         assert data["success"] is False
+
+    def test_predict_batch_json(self, api_client):
+        payload = {
+            "reviews": [
+                "Bagus sekali recommended!",
+                "Jelek banget barang rusak",
+            ]
+        }
+        res = api_client.post("/api/predict/batch", json=payload)
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert data["total"] == 2
+        assert "distribution" in data
+
+    def test_predict_batch_csv(self, api_client):
+        csv_content = "review\nBagus mantap\nRusak parah kecewa\n"
+        data = {
+            "file": (io.BytesIO(csv_content.encode("utf-8")), "test_reviews.csv")
+        }
+        res = api_client.post(
+            "/api/predict/batch",
+            data=data,
+            content_type="multipart/form-data"
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["success"] is True
+        assert data["total"] == 2

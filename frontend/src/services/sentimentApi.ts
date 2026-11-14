@@ -1,4 +1,5 @@
 import type {
+  BatchPredictionResponse,
   DatasetSample,
   HealthStatus,
   MetricsReport,
@@ -45,7 +46,25 @@ export async function requestSentimentPrediction(reviewText: string): Promise<Pr
     inputText: payload.text || reviewText,
     cleanText: payload.teks_bersih || reviewText,
     latencyMs,
+    explanation: payload.explanation || [],
   }
+}
+
+export async function requestBatchPrediction(file: File): Promise<BatchPredictionResponse> {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch('/api/predict/batch', {
+    method: 'POST',
+    body: formData,
+  })
+
+  const payload = await response.json()
+  if (!response.ok || !payload.success) {
+    throw new Error(payload.message || payload.error || 'Gagal memproses batch CSV.')
+  }
+
+  return payload as BatchPredictionResponse
 }
 
 export async function fetchEvaluationMetrics(): Promise<MetricsReport> {
