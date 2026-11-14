@@ -36,6 +36,10 @@
     color: var(--color-sienna-brown);
   }
 
+  .steep-page section[id] {
+    scroll-margin-top: 84px;
+  }
+
   /* --------------------------------------------------------------------------
    1. Fixed Editorial Navigation Bar (Whisper-Quiet)
    -------------------------------------------------------------------------- */
@@ -54,6 +58,42 @@
     backdrop-filter: saturate(180%) blur(16px);
     -webkit-backdrop-filter: saturate(180%) blur(16px);
     border-bottom-color: rgba(23, 25, 28, 0.05);
+  }
+
+  .steep-nav-header.is-dark-section.is-scrolled {
+    background-color: rgba(18, 18, 18, 0.88);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .steep-nav-header.is-dark-section .steep-brand span {
+    color: #ffffff;
+  }
+
+  .steep-nav-header.is-dark-section .steep-brand-mark svg path {
+    stroke: #ffffff;
+  }
+
+  .steep-nav-header.is-dark-section .steep-brand-mark svg circle {
+    fill: #ffffff;
+  }
+
+  .steep-nav-header.is-dark-section .steep-nav-link {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .steep-nav-header.is-dark-section .steep-nav-link:hover {
+    color: #ffffff;
+  }
+
+  .steep-nav-header.is-dark-section .steep-nav-text-btn {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .steep-nav-header.is-dark-section .steep-btn-filled {
+    background-color: #ffffff;
+    color: #17191c;
   }
 
   .steep-nav {
@@ -538,24 +578,34 @@
   }
 
   .steep-v-tab-collapse {
-    display: grid;
-    transition: grid-template-rows 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.4s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.3s ease;
   }
 
   .steep-v-tab-collapse.is-open {
-    grid-template-rows: 1fr;
+    max-height: 200px;
+    opacity: 1;
   }
 
   .steep-v-tab-collapse.is-closed {
-    grid-template-rows: 0fr;
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .steep-v-tab-desc {
     display: block;
     padding-top: 6px;
+    padding-bottom: 2px;
     font-size: 15.5px;
-    line-height: 1.42;
-    transition: opacity 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) 0.08s;
+    line-height: 1.45;
+    color: rgba(23, 25, 28, 0.65);
+  }
+
+  .steep-v-tab-btn.is-dark .steep-v-tab-desc {
+    color: rgba(255, 255, 255, 0.6);
   }
 
   .steep-v-tab-line-track {
@@ -579,6 +629,11 @@
     background-color: var(--color-ink-black);
     transform: translateY(-0.5px);
     width: 0%;
+    transition: width 0.32s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  .steep-v-tab-btn.is-active .steep-v-tab-line-fill {
+    width: 100%;
   }
 
   .steep-v-tab-line-fill.is-dark {

@@ -524,10 +524,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
      ------------------------------------------------------------------------ */
   const [activeIntroCard, setActiveIntroCard] = useState(0);
   const [activeProductTab, setActiveProductTab] = useState(2); // Default to "Reports" (Laporan) matching Screenshot 1
-  const [productAnimKey, setProductAnimKey] = useState(1);
   const [activeStoryIndex, setActiveStoryIndex] = useState(0);
   const [activeSemanticTab, setActiveSemanticTab] = useState(0); // Default to "Semantic platform" matching Screenshot 2
-  const [semanticAnimKey, setSemanticAnimKey] = useState(1);
 
   const [introRef, introInView] = useSteepInView();
   const [productRef, productInView] = useSteepInView();
@@ -538,12 +536,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
 
   const handleSelectProductTab = (idx: number) => {
     setActiveProductTab(idx);
-    setProductAnimKey((k) => k + 1);
   };
 
   const handleSelectSemanticTab = (idx: number) => {
     setActiveSemanticTab(idx);
-    setSemanticAnimKey((k) => k + 1);
   };
 
   const marketplaceBrands = [
@@ -721,7 +717,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
       {/* ====================================================================
           1. FIXED WHISPER-QUIET TOP NAVIGATION
          ==================================================================== */}
-      <header className={`steep-nav-header ${isNavScrolled ? 'is-scrolled' : ''}`}>
+      <header
+        className={`steep-nav-header ${isNavScrolled ? 'is-scrolled' : ''} ${
+          semanticInView ? 'is-dark-section' : ''
+        }`}
+      >
         <nav className="steep-nav" aria-label="Navigasi Utama">
           <button
             type="button"
@@ -2098,7 +2098,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
 
           {/* 2-Column Vertical Accordion + 960x640 App Window Showcase (Matches Screenshot 1 100%) */}
           <div className="steep-showcase-layout" style={{ marginTop: '56px' }}>
-            {/* Left Column: 6 Vertical Accordion Items with Auto-Advancing Progress Bar (Module 2984) */}
+            {/* Left Column: 6 Vertical Accordion Items */}
             <div className="steep-v-tabs">
               {productTabs.map((tab, idx) => {
                 const isActive = activeProductTab === idx;
@@ -2111,33 +2111,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                     >
                       <p className="steep-v-tab-title">{tab.label}</p>
                       <div className={`steep-v-tab-collapse ${isActive ? 'is-open' : 'is-closed'}`}>
-                        <div style={{ overflow: 'hidden' }}>
-                          <span
-                            className="steep-v-tab-desc"
-                            style={{
-                              color: 'rgba(23,25,28,0.58)',
-                              opacity: isActive ? 1 : 0,
-                            }}
-                          >
-                            {tab.description}
-                          </span>
-                        </div>
+                        <span className="steep-v-tab-desc">
+                          {tab.description}
+                        </span>
                       </div>
                       <span className="steep-v-tab-line-track">
-                        <span
-                          key={isActive ? `prod-fill-${productAnimKey}` : tab.id}
-                          className="steep-v-tab-line-fill"
-                          style={{
-                            animation: isActive
-                              ? `steepProgressFill ${tab.duration}s linear forwards`
-                              : 'none',
-                          }}
-                          onAnimationEnd={() => {
-                            if (isActive) {
-                              handleSelectProductTab((idx + 1) % productTabs.length);
-                            }
-                          }}
-                        />
+                        <span className="steep-v-tab-line-fill" />
                       </span>
                     </button>
                   </div>
@@ -2857,7 +2836,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
 
           {/* 2-Column Dark Vertical Accordion + 960x640 Architecture Diagram (Matches Screenshot 2 100%!) */}
           <div className="steep-showcase-layout" style={{ marginTop: '56px' }}>
-            {/* Left Column: 5 Dark Vertical Accordion Items with Auto-Advancing White Progress Bar */}
+            {/* Left Column: 5 Dark Vertical Accordion Items */}
             <div className="steep-v-tabs">
               {semanticTabs.map((tab, idx) => {
                 const isActive = activeSemanticTab === idx;
@@ -2870,33 +2849,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterWorkspace }) =>
                     >
                       <p className="steep-v-tab-title">{tab.label}</p>
                       <div className={`steep-v-tab-collapse ${isActive ? 'is-open' : 'is-closed'}`}>
-                        <div style={{ overflow: 'hidden' }}>
-                          <span
-                            className="steep-v-tab-desc"
-                            style={{
-                              color: 'rgba(255,255,255,0.52)',
-                              opacity: isActive ? 1 : 0,
-                            }}
-                          >
-                            {tab.description}
-                          </span>
-                        </div>
+                        <span className="steep-v-tab-desc">
+                          {tab.description}
+                        </span>
                       </div>
                       <span className="steep-v-tab-line-track is-dark">
-                        <span
-                          key={isActive ? `sem-fill-${semanticAnimKey}` : tab.id}
-                          className="steep-v-tab-line-fill is-dark"
-                          style={{
-                            animation: isActive
-                              ? `steepProgressFill ${tab.duration}s linear forwards`
-                              : 'none',
-                          }}
-                          onAnimationEnd={() => {
-                            if (isActive) {
-                              handleSelectSemanticTab((idx + 1) % semanticTabs.length);
-                            }
-                          }}
-                        />
+                        <span className="steep-v-tab-line-fill is-dark" />
                       </span>
                     </button>
                   </div>
