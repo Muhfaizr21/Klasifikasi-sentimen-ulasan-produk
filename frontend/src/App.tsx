@@ -1635,7 +1635,7 @@ export default function App() {
                     window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
                 />
-                <div className="mt-10">
+                <div style={{ marginTop: '32px' }}>
                   <CorpusIntelligenceHub
                     activeSubTab="peta-korpus"
                     onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
