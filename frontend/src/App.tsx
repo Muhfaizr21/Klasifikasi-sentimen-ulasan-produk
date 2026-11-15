@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { BatchUploadCard } from './components/BatchUploadCard'
 import { CorpusIntelligenceHub, type IntelligenceSubTab } from './components/CorpusIntelligenceHub'
 import { EvaluationDashboard } from './components/EvaluationDashboard'
+import { HelpButton } from './components/HelpTooltipModal'
 import { HistoryDrawer } from './components/HistoryDrawer'
 import { LandingPage, type WorkspaceTabTarget } from './components/LandingPage'
 import { PredictionResultCard } from './components/PredictionResultCard'
@@ -1272,6 +1273,7 @@ export default function App() {
                           </svg>
                           <span>Batch CSV</span>
                         </button>
+                        <HelpButton topicId="pred_query_box" />
                       </div>
 
                       <div className="query-toolbar-right">
@@ -1334,15 +1336,18 @@ export default function App() {
                           </svg>
                           <span>Sampel Dinamis ({selectedCategory})</span>
                         </span>
-                        <button
-                          type="button"
-                          className="sample-refresh-btn"
-                          onClick={() => loadDynamicCategorySamples(selectedCategory)}
-                          disabled={samplesLoading}
-                          title="Tarik sampel acak baru dari server"
-                        >
-                          {samplesLoading ? 'Memuat...' : '↻ Acak Baru'}
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <button
+                            type="button"
+                            className="sample-refresh-btn"
+                            onClick={() => loadDynamicCategorySamples(selectedCategory)}
+                            disabled={samplesLoading}
+                            title="Tarik sampel acak baru dari server"
+                          >
+                            {samplesLoading ? 'Memuat...' : '↻ Acak Baru'}
+                          </button>
+                          <HelpButton topicId="pred_dynamic_samples" />
+                        </div>
                       </div>
                       <p className="suggestion-desc">
                         Data ditarik secara dinamis dari server ({corpusTotal.toLocaleString('id-ID')} korpus aktif). Klik untuk analisis:
@@ -1383,9 +1388,12 @@ export default function App() {
                           </svg>
                           <span>Tarik Langsung E-Commerce Indonesia (Live)</span>
                         </span>
-                        <span className="teal-pill-badge">
-                          {liveExternalActive ? 'LIVE E-COMMERCE' : 'LIVE STREAM'}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span className="teal-pill-badge">
+                            {liveExternalActive ? 'LIVE E-COMMERCE' : 'LIVE STREAM'}
+                          </span>
+                          <HelpButton topicId="pred_live_ecommerce" />
+                        </div>
                       </div>
 
                       <div className="sample-pill-row" style={{ marginBottom: '4px' }}>

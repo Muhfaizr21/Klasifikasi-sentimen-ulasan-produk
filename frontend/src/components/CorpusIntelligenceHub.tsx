@@ -9,6 +9,7 @@ import type {
   CategoryMapItem,
   CorpusAnalyticsResponse,
 } from '../types/sentiment'
+import { HelpButton } from './HelpTooltipModal'
 
 type IconProps = { size?: number; style?: React.CSSProperties }
 
@@ -642,7 +643,10 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <Sparkles size={13} />
                 <span>SENTIMEN AI · NATURAL LANGUAGE CORPUS ANALYST</span>
               </div>
-              <h1 className="compare-title">Asisten Analitik Korpus (Sentimen AI)</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 className="compare-title">Asisten Analitik Korpus (Sentimen AI)</h1>
+                <HelpButton topicId="ai_chat_overview" />
+              </div>
               <p className="compare-subtitle">
                 Tanyakan penyebab keluhan pengiriman, kualitas kemasan, atau psikografi emosi pelanggan
                 dalam bahasa alami. Sistem menyintesis jawaban langsung dari{' '}
@@ -686,6 +690,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
           </div>
 
           <div className="cih-panel">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span className="cih-filter-label" style={{ marginBottom: 0 }}>
+                Kolom Kueri Bahasa Alami (Natural Language Query)
+              </span>
+              <HelpButton topicId="ai_chat_overview" />
+            </div>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -736,16 +746,19 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               {/* Left Column: Narrative, Key Findings & Evidence Reviews */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div className="cih-panel">
-                  <div className="cih-meta-strip">
-                    <span className="cih-badge is-pos">
-                      Cakupan: {aiResult.matched_category_label}
-                    </span>
-                    <span className="cih-badge is-neutral-outline">
-                      Dimensi Analisis: {aiResult.matched_aspect}
-                    </span>
-                    <span className="cih-badge is-neutral-outline">
-                      Sampel Dianalisis: {aiResult.metrics_highlight.total_analyzed.toLocaleString('id-ID')} ulasan
-                    </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                    <div className="cih-meta-strip">
+                      <span className="cih-badge is-pos">
+                        Cakupan: {aiResult.matched_category_label}
+                      </span>
+                      <span className="cih-badge is-neutral-outline">
+                        Dimensi Analisis: {aiResult.matched_aspect}
+                      </span>
+                      <span className="cih-badge is-neutral-outline">
+                        Sampel Dianalisis: {aiResult.metrics_highlight.total_analyzed.toLocaleString('id-ID')} ulasan
+                      </span>
+                    </div>
+                    <HelpButton topicId="ai_synthesis_box" />
                   </div>
 
                   <h2 className="cih-synthesis-headline">{aiResult.headline}</h2>
@@ -810,6 +823,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                         Sampel ulasan nyata dari dataset PRDECT-ID yang mendukung kesimpulan di atas
                       </p>
                     </div>
+                    <HelpButton topicId="ai_evidence_box" />
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {aiResult.evidence_reviews.map((rev, idx) => (
@@ -856,10 +870,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               {/* Right Column: Chart Breakdown & Driving Tokens */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
                 <div className="cih-panel">
-                  <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '4px' }}>
-                    <BarChart3 size={16} style={{ color: '#016a71' }} />
-                    <span>{aiResult.chart_title}</span>
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+                    <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                      <BarChart3 size={16} style={{ color: '#016a71' }} />
+                      <span>{aiResult.chart_title}</span>
+                    </h3>
+                    <HelpButton topicId="ai_chart_box" />
+                  </div>
                   <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
                     Proporsi sentimen positif (hijau) berbanding negatif (merah) pada segmen yang dianalisis
                   </p>
@@ -902,9 +919,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 </div>
 
                 <div className="cih-panel">
-                  <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '4px' }}>
-                    <span>Atribusi Token Pendorong (Multinomial Naive Bayes)</span>
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '4px' }}>
+                    <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                      <span>Atribusi Token Pendorong (Multinomial Naive Bayes)</span>
+                    </h3>
+                    <HelpButton topicId="ai_tokens_box" />
+                  </div>
                   <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
                     Kata kunci dengan rasio log-probabilitas tertinggi pada vektorisasi TF-IDF
                   </p>
@@ -954,9 +974,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <Compass size={13} />
                 <span>PETA KORPUS PRDECT-ID · DISTRIBUSI LINTAS SEKTOR</span>
               </div>
-              <h1 className="compare-title">
-                Peta Persebaran Sentimen {analytics?.category_map.length || 29} Kategori Produk
-              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 className="compare-title">
+                  Peta Persebaran Sentimen {analytics?.category_map.length || 29} Kategori Produk
+                </h1>
+                <HelpButton topicId="map_overview" />
+              </div>
               <p className="compare-subtitle">
                 Pemetaan lengkap rasio Positif vs Netral vs Negatif, Net Sentiment Score (NSS),
                 rata-rata rating bintang pelanggan, serta emosi dominan di setiap kategori Tokopedia
@@ -1025,6 +1048,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                   setMapSortBy(val as 'total' | 'nss_desc' | 'nss_asc' | 'rating')
                 }
               />
+              <HelpButton topicId="map_category_card" />
             </div>
           </div>
 
@@ -1045,14 +1069,28 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                       <div className="cih-cat-group-tag">{cat.group}</div>
                       <div className="cih-cat-title">{cat.label}</div>
                     </div>
-                    <span
-                      className={`cih-badge ${
-                        cat.nss >= 5 ? 'is-pos' : cat.nss >= 0 ? 'is-net' : 'is-neg'
-                      }`}
-                    >
-                      NSS {cat.nss >= 0 ? '+' : ''}
-                      {cat.nss}%
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span
+                        className={`cih-badge ${
+                          cat.nss >= 5 ? 'is-pos' : cat.nss >= 0 ? 'is-net' : 'is-neg'
+                        }`}
+                      >
+                        NSS {cat.nss >= 0 ? '+' : ''}
+                        {cat.nss}%
+                      </span>
+                      <HelpButton
+                        topicId="map_category_card"
+                        customTopic={{
+                          id: `cat_${cat.id}`,
+                          category: `PETA KORPUS · ${cat.group.toUpperCase()}`,
+                          title: `Kategori ${cat.label} (${cat.id})`,
+                          simpleMeaning: `Kartu ini merangkum seluruh ulasan pelanggan pada kategori "${cat.label}" di dalam dataset PRDECT-ID (total ${cat.total} sampel ulasan terverifikasi).`,
+                          formulaOrMechanism: `NSS Kategori = % Positif (${cat.positif_pct}%) - % Negatif (${cat.negatif_pct}%) = ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin`,
+                          howToRead: `Dari ${cat.total} ulasan pada kategori ${cat.label}: terdapat ${cat.positif} ulasan Positif (${cat.positif_pct}%), ${cat.netral} ulasan Netral (${cat.netral_pct}%), dan ${cat.negatif} ulasan Negatif (${cat.negatif_pct}%). Rata-rata rating bintang adalah ★ ${cat.avg_rating} dengan psikografi emosi dominan "${cat.top_emotion_label}".`,
+                          presentationTip: `Pada kategori ${cat.label} yang termasuk dalam grup ${cat.group}, sistem kami mencatat Net Sentiment Score sebesar ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin dari ${cat.total} sampel ulasan dengan rata-rata bintang ${cat.avg_rating}.`,
+                        }}
+                      />
+                    </div>
                   </div>
 
                   <div className="cih-bar-track">
@@ -1114,7 +1152,10 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <Target size={13} />
                 <span>GOVERNED KPI TRACKER · NET SENTIMENT SCORE &amp; MODEL SLA</span>
               </div>
-              <h1 className="compare-title">Pelacak Target KPI &amp; Net Sentiment Score (NSS)</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 className="compare-title">Pelacak Target KPI &amp; Net Sentiment Score (NSS)</h1>
+                <HelpButton topicId="net_sentiment_score" />
+              </div>
               <p className="compare-subtitle">
                 Pemantauan terukur atas 5 indikator kinerja utama sistem: kualitas generalisasi model
                 (Macro F1-Score &amp; Akurasi Uji), Net Sentiment Score (NSS), rata-rata rating
@@ -1154,9 +1195,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <span className="cih-quick-kpi-label">Indikator Terkelola</span>
-                    <span className={`cih-badge ${kpi.achieved ? 'is-pos' : 'is-net'}`}>
-                      {kpi.status}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className={`cih-badge ${kpi.achieved ? 'is-pos' : 'is-net'}`}>
+                        {kpi.status}
+                      </span>
+                      <HelpButton topicId={kpi.id} />
+                    </div>
                   </div>
                   <div style={{ fontSize: '0.98rem', fontWeight: 700, color: '#27251e' }}>
                     {kpi.label}
@@ -1181,10 +1225,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
           <div className="cih-grid-2">
             <div className="cih-panel">
-              <h3 className="cih-panel-title" style={{ marginBottom: '14px' }}>
-                <TrendingUp size={17} style={{ color: '#047857' }} />
-                <span>Top 5 Kategori dengan Net Sentiment Score (NSS) Tertinggi</span>
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <h3 className="cih-panel-title">
+                  <TrendingUp size={17} style={{ color: '#047857' }} />
+                  <span>Top 5 Kategori dengan Net Sentiment Score (NSS) Tertinggi</span>
+                </h3>
+                <HelpButton topicId="kpi_top_5_nss" />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {analytics.kpi_summary.top_nss_categories.map((cat) => (
                   <div
@@ -1214,10 +1261,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             </div>
 
             <div className="cih-panel">
-              <h3 className="cih-panel-title" style={{ marginBottom: '14px' }}>
-                <TrendingDown size={17} style={{ color: '#be123c' }} />
-                <span>5 Kategori Prioritas Perbaikan (Rasio Keluhan Tertinggi)</span>
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <h3 className="cih-panel-title">
+                  <TrendingDown size={17} style={{ color: '#be123c' }} />
+                  <span>5 Kategori Prioritas Perbaikan (Rasio Keluhan Tertinggi)</span>
+                </h3>
+                <HelpButton topicId="kpi_bottom_5_nss" />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {analytics.kpi_summary.critical_nss_categories.map((cat) => (
                   <div
@@ -1262,9 +1312,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <SlidersHorizontal size={13} />
                 <span>MULTI-DIMENSIONAL DRILL-DOWN · RATING, EMOTION &amp; CITY</span>
               </div>
-              <h1 className="compare-title">
-                Bedah Data Multi-Dimensi (Rating ★1–★5, Emosi &amp; Kota)
-              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 className="compare-title">
+                  Bedah Data Multi-Dimensi (Rating ★1–★5, Emosi &amp; Kota)
+                </h1>
+                <HelpButton topicId="drill_cross_filter" />
+              </div>
               <p className="compare-subtitle">
                 Eksplorasi silang atribut asli dataset PRDECT-ID: saring berdasarkan kategori produk,
                 tingkat psikografi emosi pelanggan (Happy, Love, Sadness, Fear, Anger), rating
@@ -1293,6 +1346,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               <div>
                 <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
                   <span>Parameter Filter Silang (Cross-Filter)</span>
+                  <HelpButton topicId="drill_cross_filter" />
                 </h3>
                 <p className="cih-panel-desc">
                   Pilih kombinasi dimensi di bawah ini atau klik langsung bar grafik untuk memfokuskan sampel ulasan
@@ -1363,10 +1417,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
           <div className="cih-grid-3" style={{ opacity: drillLoading ? 0.6 : 1 }}>
             {/* Rating Breakdown */}
             <div className="cih-panel">
-              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
-                <Star size={16} style={{ color: '#d97706' }} />
-                <span>Distribusi Rating Bintang (★1 s.d. ★5)</span>
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <h3 className="cih-panel-title" style={{ fontSize: '0.94rem' }}>
+                  <Star size={16} style={{ color: '#d97706' }} />
+                  <span>Distribusi Rating Bintang (★1 s.d. ★5)</span>
+                </h3>
+                <HelpButton topicId="drill_rating_breakdown" />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {analytics.drilldown.ratings.map((r) => (
                   <div
@@ -1413,10 +1470,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
             {/* Emotion Breakdown */}
             <div className="cih-panel">
-              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
-                <Activity size={16} style={{ color: '#016a71' }} />
-                <span>Psikografi Emosi Pelanggan (PRDECT-ID)</span>
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <h3 className="cih-panel-title" style={{ fontSize: '0.94rem' }}>
+                  <Activity size={16} style={{ color: '#016a71' }} />
+                  <span>Psikografi Emosi Pelanggan (PRDECT-ID)</span>
+                </h3>
+                <HelpButton topicId="drill_emotion_psychography" />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {analytics.drilldown.emotions.map((emo) => (
                   <div
@@ -1459,10 +1519,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
 
             {/* Store Locations */}
             <div className="cih-panel">
-              <h3 className="cih-panel-title" style={{ fontSize: '0.94rem', marginBottom: '14px' }}>
-                <MapPin size={16} style={{ color: '#016a71' }} />
-                <span>Sebaran Lokasi Toko / Kota Teratas</span>
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <h3 className="cih-panel-title" style={{ fontSize: '0.94rem' }}>
+                  <MapPin size={16} style={{ color: '#016a71' }} />
+                  <span>Sebaran Lokasi Toko / Kota Teratas</span>
+                </h3>
+                <HelpButton topicId="drill_city_locations" />
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {analytics.drilldown.locations.map((loc) => (
                   <div key={loc.location} className="cih-location-row">
@@ -1479,12 +1542,15 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
           </div>
 
           <div className="cih-panel">
-            <h3 className="cih-panel-title" style={{ fontSize: '0.96rem', marginBottom: '14px' }}>
-              <span>
-                Sampel Ulasan Hasil Bedah Data ({analytics.drilldown.filtered_total.toLocaleString('id-ID')}{' '}
-                ulasan cocok)
-              </span>
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+              <h3 className="cih-panel-title" style={{ fontSize: '0.96rem' }}>
+                <span>
+                  Sampel Ulasan Hasil Bedah Data ({analytics.drilldown.filtered_total.toLocaleString('id-ID')}{' '}
+                  ulasan cocok)
+                </span>
+              </h3>
+              <HelpButton topicId="drill_samples_box" />
+            </div>
             <div className="cih-grid-2">
               {analytics.drilldown.samples.map((s, idx) => (
                 <div key={idx} className="cih-cat-card" style={{ cursor: 'default' }}>
@@ -1557,9 +1623,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <Terminal size={13} />
                 <span>SEMANTIC LAYER · GOVERNED METRICS &amp; REST API PLAYGROUND</span>
               </div>
-              <h1 className="compare-title">
-                Katalog Metrik Semantik &amp; Dokumentasi Interaktif API
-              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                <h1 className="compare-title">
+                  Katalog Metrik Semantik &amp; Dokumentasi Interaktif API
+                </h1>
+                <HelpButton topicId="catalog_governed_metrics" />
+              </div>
               <p className="compare-subtitle">
                 Spesifikasi tunggal untuk formula metrik sentimen terkelola, definisi kode pipeline
                 Scikit-Learn (TF-IDF + Multinomial Naive Bayes), dan terminal pengujian endpoint
@@ -1569,10 +1638,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
           </div>
 
           <div className="cih-panel">
-            <h3 className="cih-panel-title" style={{ marginBottom: '4px' }}>
-              <Layers size={18} style={{ color: '#016a71' }} />
-              <span>Katalog Metrik Semantik Terkelola (Governed Metrics Catalog)</span>
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <h3 className="cih-panel-title">
+                <Layers size={18} style={{ color: '#016a71' }} />
+                <span>Katalog Metrik Semantik Terkelola (Governed Metrics Catalog)</span>
+              </h3>
+              <HelpButton topicId="catalog_governed_metrics" />
+            </div>
             <p className="cih-panel-desc" style={{ marginBottom: '16px' }}>
               Definisi metrik baku yang disinkronkan di seluruh dasbor evaluasi, laporan komparasi,
               dan Sentimen API.
@@ -1583,9 +1655,12 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <div key={m.id} className="cih-stat-card" style={{ padding: '16px 18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <code className="cih-metric-code-pill">{m.name}</code>
-                    <strong style={{ fontSize: '0.98rem', color: '#27251e', fontVariantNumeric: 'tabular-nums' }}>
-                      {m.current_value}
-                    </strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ fontSize: '0.98rem', color: '#27251e', fontVariantNumeric: 'tabular-nums' }}>
+                        {m.current_value}
+                      </strong>
+                      <HelpButton topicId={m.id} />
+                    </div>
                   </div>
                   <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#27251e', marginBottom: '8px' }}>
                     {m.title}
@@ -1608,18 +1683,21 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                   <Code2 size={16} style={{ color: '#2dd4bf' }} />
                   <span>Definisi Dalam Kode (Scikit-Learn Pipeline)</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    void navigator.clipboard.writeText(analytics.semantic_catalog.pipeline_code)
-                    setCopiedCode(true)
-                    setTimeout(() => setCopiedCode(false), 2000)
-                  }}
-                  className="cih-copy-code-btn"
-                >
-                  <Copy size={13} />
-                  <span>{copiedCode ? 'Tersalin!' : 'Salin Kode'}</span>
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      void navigator.clipboard.writeText(analytics.semantic_catalog.pipeline_code)
+                      setCopiedCode(true)
+                      setTimeout(() => setCopiedCode(false), 2000)
+                    }}
+                    className="cih-copy-code-btn"
+                  >
+                    <Copy size={13} />
+                    <span>{copiedCode ? 'Tersalin!' : 'Salin Kode'}</span>
+                  </button>
+                  <HelpButton topicId="catalog_pipeline_code" />
+                </div>
               </div>
               <pre className="cih-code-box">{analytics.semantic_catalog.pipeline_code}</pre>
               <p style={{ fontSize: '0.76rem', color: '#94a3b8', marginTop: '12px', marginBottom: 0 }}>
@@ -1640,6 +1718,7 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                     Pilih endpoint dan jalankan request HTTP langsung ke server Flask backend.
                   </p>
                 </div>
+                <HelpButton topicId="catalog_api_playground" />
               </div>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>

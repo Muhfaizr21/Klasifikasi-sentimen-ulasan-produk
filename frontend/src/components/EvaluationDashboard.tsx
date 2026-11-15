@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { ClassMetric, MetricsReport, SentimentClass, TopFeatureWord } from '../types/sentiment'
 import { fetchTopWords } from '../services/sentimentApi'
+import { HelpButton } from './HelpTooltipModal'
 
 const ORDERED_CLASSES: SentimentClass[] = ['positif', 'netral', 'negatif']
 
@@ -86,7 +87,10 @@ export function EvaluationDashboard({
     <div id="evaluation-view">
       <div className="kpi-grid">
         <div className="kpi-card">
-          <div className="kpi-label">Macro F1-Score</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+            <div className="kpi-label">Macro F1-Score</div>
+            <HelpButton topicId="eval_kpi_macro_f1" />
+          </div>
           <div className="kpi-value" style={{ color: 'var(--color-deep-teal)' }}>
             {(metrics.f1_macro * 100).toFixed(2)}%
           </div>
@@ -94,13 +98,19 @@ export function EvaluationDashboard({
         </div>
 
         <div className="kpi-card">
-          <div className="kpi-label">Accuracy</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+            <div className="kpi-label">Accuracy</div>
+            <HelpButton topicId="eval_kpi_accuracy" />
+          </div>
           <div className="kpi-value">{(metrics.accuracy * 100).toFixed(2)}%</div>
           <div className="kpi-sub">Weighted F1: {(metrics.f1_weighted * 100).toFixed(2)}%</div>
         </div>
 
         <div className="kpi-card">
-          <div className="kpi-label">Arsitektur Pipeline Terbaik</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+            <div className="kpi-label">Arsitektur Pipeline Terbaik</div>
+            <HelpButton topicId="eval_kpi_architecture" />
+          </div>
           <div className="kpi-value" style={{ fontSize: '1.05rem', marginTop: '8px' }}>
             {metrics.vectorizer_type} + {metrics.model_type}
           </div>
@@ -108,7 +118,10 @@ export function EvaluationDashboard({
         </div>
 
         <div className="kpi-card">
-          <div className="kpi-label">Korpus Ulasan Publik</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+            <div className="kpi-label">Korpus Ulasan Publik</div>
+            <HelpButton topicId="eval_kpi_corpus_split" />
+          </div>
           <div className="kpi-value">{metrics.dataset_info?.total_samples ?? '-'}</div>
           <div className="kpi-sub">
             Latih: {metrics.dataset_info?.train_samples ?? '-'} · Uji:{' '}
@@ -120,9 +133,12 @@ export function EvaluationDashboard({
       <section className="card" id="dataset-distribution">
         <div className="card-header">
           <div>
-            <h2 className="card-title">
-              Distribusi Korpus Ulasan (PRDECT-ID Tokopedia &amp; Hugging Face)
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h2 className="card-title">
+                Distribusi Korpus Ulasan (PRDECT-ID Tokopedia &amp; Hugging Face)
+              </h2>
+              <HelpButton topicId="eval_dataset_distribution" />
+            </div>
             <span className="card-subtitle">
               Total {metrics.dataset_info?.total_samples ?? 0} ulasan produk e-commerce Indonesia terverifikasi
             </span>
@@ -158,7 +174,10 @@ export function EvaluationDashboard({
       <section className="card" id="class-metrics">
         <div className="card-header">
           <div>
-            <h2 className="card-title">Metrik Pengujian per Kelas Sentimen</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h2 className="card-title">Metrik Pengujian per Kelas Sentimen</h2>
+              <HelpButton topicId="eval_class_metrics" />
+            </div>
             <span className="card-subtitle">
               Dievaluasi pada 20% data uji terpisah (stratified split) dari <code>models/metrics.json</code>
             </span>
@@ -203,7 +222,10 @@ export function EvaluationDashboard({
       <section className="card" id="confusion-matrix">
         <div className="card-header">
           <div>
-            <h2 className="card-title">Confusion Matrix (Data Uji Stratified 20%)</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h2 className="card-title">Confusion Matrix (Data Uji Stratified 20%)</h2>
+              <HelpButton topicId="eval_confusion_matrix" />
+            </div>
             <span className="card-subtitle">
               Baris menunjukkan label aktual; kolom menunjukkan kelas hasil prediksi model
             </span>
@@ -243,9 +265,12 @@ export function EvaluationDashboard({
       <section className="card" id="feature-importance-explorer">
         <div className="card-header" style={{ alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h2 className="card-title">
-              Explorer Fitur Leksikal &amp; Bobot Kata Naive Bayes (Word Importance)
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <h2 className="card-title">
+                Explorer Fitur Leksikal &amp; Bobot Kata Naive Bayes (Word Importance)
+              </h2>
+              <HelpButton topicId="eval_feature_importance" />
+            </div>
             <span className="card-subtitle">
               Distribusi n-gram diskriminatif berdasarkan selisih log-likelihood pembobot korpus TF-IDF (5.459 ulasan)
             </span>
@@ -397,7 +422,10 @@ export function EvaluationDashboard({
         <section className="card" id="pipeline-comparison">
           <div className="card-header">
             <div>
-              <h2 className="card-title">Perbandingan 5 Konfigurasi Eksperimen</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <h2 className="card-title">Perbandingan 5 Konfigurasi Eksperimen</h2>
+                <HelpButton topicId="eval_experiments_comparison" />
+              </div>
               <span className="card-subtitle">
                 Perbandingan kombinasi ekstraksi fitur (TF-IDF vs CountVectorizer) dan algoritma (MultinomialNB vs ComplementNB)
               </span>

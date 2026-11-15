@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { fetchCategories, requestProductComparison } from '../services/sentimentApi'
 import type { CategoriesResponse, ProductComparisonResponse } from '../types/sentiment'
+import { HelpButton } from './HelpTooltipModal'
 
 const PRESET_SCENARIOS = [
   {
@@ -143,7 +144,10 @@ export function ProductComparisonView({
       {/* Editorial Workspace Header (Left-aligned, zero slop eyebrow pills) */}
       <header className="compare-workspace-header">
         <div className="compare-workspace-heading">
-          <h1 className="compare-workspace-title">Komparasi Reputasi Produk</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <h1 className="compare-workspace-title">Komparasi Reputasi Produk</h1>
+            <HelpButton topicId="compare_control_panel" />
+          </div>
           <p className="compare-workspace-subtitle">
             Evaluasi berdampingan atas indeks reputasi, distribusi sentimen Multinomial Naive Bayes, dan bukti ulasan terverifikasi dari dua produk e-commerce.
           </p>
@@ -177,7 +181,10 @@ export function ProductComparisonView({
       <section className="card compare-control-panel" aria-label="Konfigurasi Kandidat Produk">
         {/* Preset Scenarios Bar */}
         <div className="compare-scenarios-bar">
-          <span className="compare-scenarios-label">Skenario Uji Cepat</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="compare-scenarios-label">Skenario Uji Cepat</span>
+            <HelpButton topicId="compare_control_panel" />
+          </div>
           <div className="compare-scenarios-list" role="list">
             {PRESET_SCENARIOS.map(preset => {
               const isSelected = selectedPresetId === preset.id
@@ -476,6 +483,7 @@ export function ProductComparisonView({
                     ? 'Selisih 0.0 poin (Seimbang)'
                     : `Selisih +${Math.abs(result.score_diff).toFixed(1)} poin indeks`}
                 </span>
+                <HelpButton topicId="compare_verdict_banner" />
               </div>
               <h2 className="compare-verdict-headline">
                 {result.winner === 'A'
@@ -502,9 +510,12 @@ export function ProductComparisonView({
 
           {/* Row 2: Product Identity & Catalog Metadata */}
           <div className="compare-matrix-section">
-            <div className="compare-section-header">
-              <span className="compare-section-num">01</span>
-              <span className="compare-section-title">Identitas Katalog &amp; Sampel Pasar</span>
+            <div className="compare-section-header" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="compare-section-num">01</span>
+                <span className="compare-section-title">Identitas Katalog &amp; Sampel Pasar</span>
+              </div>
+              <HelpButton topicId="compare_section_identity" />
             </div>
             <div className="compare-split-row">
               {[
@@ -572,9 +583,12 @@ export function ProductComparisonView({
 
           {/* Row 3: Reputation Index & Sentiment Distribution */}
           <div className="compare-matrix-section">
-            <div className="compare-section-header">
-              <span className="compare-section-num">02</span>
-              <span className="compare-section-title">Indeks Reputasi &amp; Distribusi Probabilitas Sentimen</span>
+            <div className="compare-section-header" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="compare-section-num">02</span>
+                <span className="compare-section-title">Indeks Reputasi &amp; Distribusi Probabilitas Sentimen</span>
+              </div>
+              <HelpButton topicId="compare_section_reputation" />
             </div>
             <div className="compare-split-row">
               {[
@@ -655,9 +669,12 @@ export function ProductComparisonView({
 
           {/* Row 4: Pros & Cons Aligned Row */}
           <div className="compare-matrix-section">
-            <div className="compare-section-header">
-              <span className="compare-section-num">03</span>
-              <span className="compare-section-title">Perbandingan Aspek Apresiasi &amp; Catatan Keluhan</span>
+            <div className="compare-section-header" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="compare-section-num">03</span>
+                <span className="compare-section-title">Perbandingan Aspek Apresiasi &amp; Catatan Keluhan</span>
+              </div>
+              <HelpButton topicId="compare_section_pros_cons" />
             </div>
             <div className="compare-split-row">
               {[
@@ -714,9 +731,12 @@ export function ProductComparisonView({
 
           {/* Row 5: Verified Customer Review Evidence */}
           <div className="compare-matrix-section">
-            <div className="compare-section-header">
-              <span className="compare-section-num">04</span>
-              <span className="compare-section-title">Bukti Kutipan Ulasan Pembeli Terverifikasi</span>
+            <div className="compare-section-header" style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="compare-section-num">04</span>
+                <span className="compare-section-title">Bukti Kutipan Ulasan Pembeli Terverifikasi</span>
+              </div>
+              <HelpButton topicId="compare_section_evidence" />
             </div>
             <div className="compare-split-row">
               {[

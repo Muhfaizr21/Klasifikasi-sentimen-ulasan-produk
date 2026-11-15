@@ -5,6 +5,7 @@ import type {
   SentimentClass,
 } from '../types/sentiment'
 import { ProbabilityBar } from './ProbabilityBar'
+import { HelpButton } from './HelpTooltipModal'
 
 const BADGE_LABELS: Record<SentimentClass, string> = {
   positif: 'Sentimen Positif',
@@ -275,46 +276,64 @@ export function PredictionResultCard({
 
       {/* 2. Collapsible Reasoning Steps Bar (Perplexity "Pro Search / Steps" pattern) */}
       <div className="ai-reasoning-box">
-        <button
-          type="button"
+        <div
           className="ai-reasoning-toggle"
-          onClick={() => setReasoningOpen(prev => !prev)}
-          aria-expanded={reasoningOpen}
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <div className="ai-reasoning-toggle-left">
-            <span className={`ai-pulse-dot ${isStreaming ? 'streaming' : 'done'}`} />
-            <span className="ai-reasoning-label">
-              {isStreaming
-                ? 'Menyusun sintesis jawaban kontekstual...'
-                : `${analysis.reasoning_steps.length} Tahap Penalaran NLP Selesai`}
+          <button
+            type="button"
+            onClick={() => setReasoningOpen(prev => !prev)}
+            aria-expanded={reasoningOpen}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flex: 1,
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              textAlign: 'left',
+              color: 'inherit',
+              font: 'inherit',
+            }}
+          >
+            <div className="ai-reasoning-toggle-left">
+              <span className={`ai-pulse-dot ${isStreaming ? 'streaming' : 'done'}`} />
+              <span className="ai-reasoning-label">
+                {isStreaming
+                  ? 'Menyusun sintesis jawaban kontekstual...'
+                  : `${analysis.reasoning_steps.length} Tahap Penalaran NLP Selesai`}
+              </span>
+              <span className="ai-reasoning-preview-pills">
+                {analysis.reasoning_steps.map(s => (
+                  <span key={s.step} className="ai-step-mini-pill">
+                    {s.badge}
+                  </span>
+                ))}
+              </span>
+            </div>
+            <span className="ai-reasoning-chevron" style={{ marginRight: '8px' }}>
+              {reasoningOpen ? 'Sembunyikan' : 'Lihat Proses'}
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                style={{
+                  transform: reasoningOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.15s ease',
+                }}
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </span>
-            <span className="ai-reasoning-preview-pills">
-              {analysis.reasoning_steps.map(s => (
-                <span key={s.step} className="ai-step-mini-pill">
-                  {s.badge}
-                </span>
-              ))}
-            </span>
-          </div>
-          <span className="ai-reasoning-chevron">
-            {reasoningOpen ? 'Sembunyikan' : 'Lihat Proses'}
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              style={{
-                transform: reasoningOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 0.15s ease',
-              }}
-              aria-hidden="true"
-            >
-              <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </span>
-        </button>
+          </button>
+          <HelpButton topicId="pred_reasoning_steps" />
+        </div>
 
         {reasoningOpen && (
           <div className="ai-reasoning-steps-list">
@@ -444,6 +463,7 @@ export function PredictionResultCard({
             <span className="ai-confidence-chip">
               Keyakinan <strong>{result.confidence.toFixed(2)}%</strong>
             </span>
+            <HelpButton topicId="pred_verdict_confidence" />
           </div>
         </div>
 
@@ -547,9 +567,12 @@ export function PredictionResultCard({
         {onLearnRealtime && (
           <div className="ai-realtime-learn-bar">
             <div className="ai-realtime-learn-info">
-              <span className="ai-realtime-learn-title">
-                Sinkronisasi &amp; Latih Model Real-Time (Online Learning <code>partial_fit</code>)
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="ai-realtime-learn-title">
+                  Sinkronisasi &amp; Latih Model Real-Time (Online Learning <code>partial_fit</code>)
+                </span>
+                <HelpButton topicId="pred_online_learning" />
+              </div>
               <span className="ai-realtime-learn-sub">
                 Simpan ulasan ini ke korpus aktif &amp; perbarui bobot Naive Bayes secara instan:
               </span>
@@ -582,6 +605,12 @@ export function PredictionResultCard({
         {/* 4. Mathematical & Lexical Evidence Section */}
         {showTechnicalDetails && (
           <div className="ai-technical-section">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span className="info-box-label" style={{ marginBottom: 0 }}>
+                Bukti Matematis &amp; Kontribusi Log-Likelihood Token
+              </span>
+              <HelpButton topicId="pred_technical_math" />
+            </div>
             <div className="result-grid">
               <div className="info-box">
                 <div className="info-box-label">Ulasan Asli Pembeli</div>

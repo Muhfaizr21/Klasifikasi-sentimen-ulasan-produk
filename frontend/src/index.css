@@ -5123,3 +5123,219 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   CONTEXTUAL HELP / GLOSARIUM POP-UP MODAL ("?" BUTTON SYSTEM)
+   ========================================================================== */
+.cih-help-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: var(--color-parchment, #faf9f6);
+  color: var(--color-graphite, #57554f);
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.14s ease;
+}
+
+.cih-help-btn:hover {
+  border-color: var(--color-deep-teal, #016a71);
+  background: rgba(1, 106, 113, 0.1);
+  color: var(--color-deep-teal, #016a71);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(1, 106, 113, 0.12);
+}
+
+.cih-help-btn:focus-visible {
+  outline: 2px solid var(--color-deep-teal, #016a71);
+  outline-offset: 2px;
+}
+
+.cih-help-btn-glyph {
+  display: inline-block;
+  transform: translateY(0.5px);
+}
+
+.cih-help-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(23, 25, 28, 0.52);
+  backdrop-filter: blur(3px);
+  animation: cihFadeIn 0.15s ease-out;
+}
+
+@keyframes cihFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cih-help-modal-card {
+  width: 100%;
+  max-width: 650px;
+  max-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-soft-paper, #ffffff);
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  border-radius: 14px;
+  box-shadow:
+    0 24px 56px rgba(23, 25, 28, 0.24),
+    0 4px 12px rgba(23, 25, 28, 0.08);
+  overflow: hidden;
+  animation: cihSlideUp 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cihSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.cih-help-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: var(--color-parchment, #faf9f6);
+}
+
+.cih-help-modal-kicker {
+  display: inline-block;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-deep-teal, #016a71);
+  background: rgba(1, 106, 113, 0.1);
+  padding: 3px 8px;
+  border-radius: 5px;
+  margin-bottom: 6px;
+}
+
+.cih-help-modal-title {
+  margin: 0;
+  font-family: var(--font-serif, Georgia, serif);
+  font-size: 1.24rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--color-ink, #27251e);
+}
+
+.cih-help-modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: #ffffff;
+  color: var(--color-graphite, #57554f);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.14s ease;
+}
+
+.cih-help-modal-close:hover {
+  border-color: var(--color-ink, #27251e);
+  color: var(--color-ink, #27251e);
+}
+
+.cih-help-modal-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cih-help-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cih-help-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-deep-teal, #016a71);
+}
+
+.cih-help-section-text {
+  margin: 0;
+  font-size: 0.87rem;
+  line-height: 1.62;
+  color: var(--color-ink, #27251e);
+}
+
+.cih-help-formula-box {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--color-ink, #27251e);
+  background: var(--color-parchment, #faf9f6);
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  border-left: 3px solid var(--color-deep-teal, #016a71);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.cih-help-tip-box {
+  background: rgba(1, 106, 113, 0.06);
+  border: 1px solid rgba(1, 106, 113, 0.22);
+  border-radius: 10px;
+  padding: 13px 16px;
+}
+
+.cih-help-tip-quote {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-ink, #27251e);
+}
+
+.cih-help-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 24px;
+  border-top: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: var(--color-parchment, #faf9f6);
+}
+
+.cih-help-footer-note {
+  font-size: 0.75rem;
+  color: var(--color-ash, #66645e);
+}
+

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { requestBatchPrediction } from '../services/sentimentApi'
 import type { BatchPredictionResponse, SentimentClass } from '../types/sentiment'
+import { HelpButton } from './HelpTooltipModal'
 
 const BADGE_MAP: Record<SentimentClass, string> = {
   positif: 'Positif',
@@ -82,7 +83,10 @@ export function BatchUploadCard() {
     <section className="card" aria-label="Analisis Batch CSV">
       <div className="card-header">
         <div>
-          <h2 className="card-title">Analisis Batch Ulasan Produk (CSV)</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            <h2 className="card-title">Analisis Batch Ulasan Produk (CSV)</h2>
+            <HelpButton topicId="batch_upload_overview" />
+          </div>
           <span className="card-subtitle">
             Klasifikasikan hingga 500 baris ulasan pelanggan sekaligus dan unduh rekapitulasi CSV
           </span>
@@ -158,26 +162,38 @@ export function BatchUploadCard() {
         <div style={{ marginTop: '18px' }}>
           <div className="kpi-grid">
             <div className="kpi-card">
-              <div className="kpi-label">Total Ulasan Diproses</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                <div className="kpi-label">Total Ulasan Diproses</div>
+                <HelpButton topicId="batch_kpi_summary" />
+              </div>
               <div className="kpi-value">{result.total}</div>
               <div className="kpi-sub">Baris data valid</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Sentimen Positif</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                <div className="kpi-label">Sentimen Positif</div>
+                <HelpButton topicId="batch_kpi_summary" />
+              </div>
               <div className="kpi-value" style={{ color: 'var(--pos-text)' }}>
                 {result.distribution.positif}
               </div>
               <div className="kpi-sub">{result.percentages.positif}% dari total</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Sentimen Netral</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                <div className="kpi-label">Sentimen Netral</div>
+                <HelpButton topicId="batch_kpi_summary" />
+              </div>
               <div className="kpi-value" style={{ color: 'var(--neu-text)' }}>
                 {result.distribution.netral}
               </div>
               <div className="kpi-sub">{result.percentages.netral}% dari total</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Sentimen Negatif</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
+                <div className="kpi-label">Sentimen Negatif</div>
+                <HelpButton topicId="batch_kpi_summary" />
+              </div>
               <div className="kpi-value" style={{ color: 'var(--neg-text)' }}>
                 {result.distribution.negatif}
               </div>
@@ -195,9 +211,12 @@ export function BatchUploadCard() {
               gap: '8px',
             }}
           >
-            <h3 className="card-title" style={{ fontSize: '0.9rem' }}>
-              Tabel Hasil Prediksi ({result.results.length} Ulasan)
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 className="card-title" style={{ fontSize: '0.9rem' }}>
+                Tabel Hasil Prediksi ({result.results.length} Ulasan)
+              </h3>
+              <HelpButton topicId="batch_results_table" />
+            </div>
             <button
               type="button"
               className="btn-primary"
