@@ -70,6 +70,26 @@ const ArrowRight: React.FC<IconProps> = ({ size = 14, style }) => (
     <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
+const ChevronLeft: React.FC<IconProps> = ({ size = 15, style }) => (
+  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const ChevronRight: React.FC<IconProps> = ({ size = 15, style }) => (
+  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const ChevronsLeft: React.FC<IconProps> = ({ size = 15, style }) => (
+  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+const ChevronsRight: React.FC<IconProps> = ({ size = 15, style }) => (
+  <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M13 17l5-5-5-5M6 17l5-5-5-5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
 const BarChart3: React.FC<IconProps> = ({ size = 16, style }) => (
   <svg width={size} height={size} style={style} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
     <path d="M4 19h16M7 15V9m5 6V5m5 10v-4" strokeLinecap="round" />
@@ -359,6 +379,15 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
   const [mapGroupFilter, setMapGroupFilter] = useState<string>('Semua')
   const [mapSearch, setMapSearch] = useState<string>('')
   const [mapSortBy, setMapSortBy] = useState<'total' | 'nss_desc' | 'nss_asc' | 'rating'>('total')
+  const [mapCurrentPage, setMapCurrentPage] = useState<number>(1)
+  const [mapPageSize, setMapPageSize] = useState<number>(9)
+  const mapTopRef = useRef<HTMLDivElement | null>(null)
+
+  const scrollToMapTop = useCallback(() => {
+    if (mapTopRef.current) {
+      mapTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }, [])
 
   // Bedah Data (Drill-Down) filter state
   const [drillCategory, setDrillCategory] = useState<string>('Semua')
@@ -466,9 +495,11 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
     handleDrillFilterChange(catId, 'Semua', 'Semua', 'Semua')
   }
 
+  const categoryMap = analytics?.category_map
+
   const filteredCategories = useMemo(() => {
-    if (!analytics?.category_map) return []
-    return analytics.category_map
+    if (!categoryMap) return []
+    return categoryMap
       .filter((item) => {
         if (mapGroupFilter !== 'Semua' && item.group !== mapGroupFilter) return false
         if (mapSearch.trim()) {
@@ -487,7 +518,28 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
         if (mapSortBy === 'rating') return b.avg_rating - a.avg_rating
         return b.total - a.total
       })
-  }, [analytics?.category_map, mapGroupFilter, mapSearch, mapSortBy])
+  }, [categoryMap, mapGroupFilter, mapSearch, mapSortBy])
+
+  const totalMapItems = filteredCategories.length
+  const totalMapPages = mapPageSize > 0 ? Math.max(1, Math.ceil(totalMapItems / mapPageSize)) : 1
+  const activeMapPage = Math.min(Math.max(1, mapCurrentPage), totalMapPages)
+
+  const paginatedCategories = useMemo(() => {
+    if (mapPageSize <= 0) return filteredCategories
+    const startIdx = (activeMapPage - 1) * mapPageSize
+    return filteredCategories.slice(startIdx, startIdx + mapPageSize)
+  }, [filteredCategories, activeMapPage, mapPageSize])
+
+  const mapPageSizeOptions = useMemo<SelectOptionItem[]>(
+    () => [
+      { value: '6', label: '6 per hal (2 baris)' },
+      { value: '9', label: '9 per hal (3 baris)' },
+      { value: '12', label: '12 per hal (4 baris)' },
+      { value: '18', label: '18 per hal (6 baris)' },
+      { value: '0', label: 'Semua (30 Kategori)' },
+    ],
+    []
+  )
 
   const aiScopeOptions = useMemo<SelectOptionItem[]>(() => {
     const base: SelectOptionItem[] = [
@@ -1065,13 +1117,16 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             )}
           </div>
 
-          <div className="cih-toolbar-card">
+          <div className="cih-toolbar-card" ref={mapTopRef}>
             <div className="cih-toolbar-search">
               <Search size={15} />
               <input
                 type="text"
                 value={mapSearch}
-                onChange={(e) => setMapSearch(e.target.value)}
+                onChange={(e) => {
+                  setMapSearch(e.target.value)
+                  setMapCurrentPage(1)
+                }}
                 placeholder="Cari nama kategori produk (misal: Komputer, Kecantikan, Kamera)..."
                 className="cih-toolbar-search-input"
               />
@@ -1079,7 +1134,10 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 <button
                   type="button"
                   className="cih-toolbar-clear"
-                  onClick={() => setMapSearch('')}
+                  onClick={() => {
+                    setMapSearch('')
+                    setMapCurrentPage(1)
+                  }}
                 >
                   Reset
                 </button>
@@ -1092,7 +1150,10 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 value={mapGroupFilter}
                 options={mapGroupOptions}
                 minWidth={225}
-                onChange={(val) => setMapGroupFilter(val)}
+                onChange={(val) => {
+                  setMapGroupFilter(val)
+                  setMapCurrentPage(1)
+                }}
               />
               <CustomSelect
                 prefixLabel="Urutkan"
@@ -1100,9 +1161,20 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
                 options={mapSortOptions}
                 align="right"
                 minWidth={250}
-                onChange={(val) =>
+                onChange={(val) => {
                   setMapSortBy(val as 'total' | 'nss_desc' | 'nss_asc' | 'rating')
-                }
+                  setMapCurrentPage(1)
+                }}
+              />
+              <CustomSelect
+                prefixLabel="Tampil"
+                value={String(mapPageSize)}
+                options={mapPageSizeOptions}
+                minWidth={175}
+                onChange={(val) => {
+                  setMapPageSize(Number(val))
+                  setMapCurrentPage(1)
+                }}
               />
               <HelpButton topicId="map_category_card" />
             </div>
@@ -1112,87 +1184,209 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             <div className="cih-panel" style={{ padding: '48px 24px', textAlign: 'center', color: '#66645e' }}>
               Memuat peta persebaran kategori dari server...
             </div>
+          ) : filteredCategories.length === 0 ? (
+            <div className="cih-panel" style={{ padding: '48px 24px', textAlign: 'center', color: '#66645e' }}>
+              <p style={{ margin: 0, fontSize: '0.94rem', fontWeight: 700, color: '#27251e' }}>
+                Tidak ditemukan kategori produk yang cocok dengan &ldquo;{mapSearch}&rdquo;.
+              </p>
+              <p style={{ margin: '8px 0 16px', fontSize: '0.82rem', color: '#66645e' }}>
+                Coba gunakan kata kunci lain atau ubah filter grup kategori.
+              </p>
+              <button
+                type="button"
+                className="cih-btn-secondary"
+                onClick={() => {
+                  setMapSearch('')
+                  setMapGroupFilter('Semua')
+                  setMapCurrentPage(1)
+                }}
+              >
+                Reset Filter &amp; Pencarian
+              </button>
+            </div>
           ) : (
-            <div className="cih-grid-3">
-              {filteredCategories.map((cat: CategoryMapItem) => (
-                <div
-                  key={cat.id}
-                  onClick={() => handleSelectCategoryForDrilldown(cat.id)}
-                  className="cih-cat-card"
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-                    <div>
-                      <div className="cih-cat-group-tag">{cat.group}</div>
-                      <div className="cih-cat-title">{cat.label}</div>
+            <>
+              <div className="cih-grid-3">
+                {paginatedCategories.map((cat: CategoryMapItem) => (
+                  <div
+                    key={cat.id}
+                    onClick={() => handleSelectCategoryForDrilldown(cat.id)}
+                    className="cih-cat-card"
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <div className="cih-cat-group-tag">{cat.group}</div>
+                        <div className="cih-cat-title">{cat.label}</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span
+                          className={`cih-badge ${
+                            cat.nss >= 5 ? 'is-pos' : cat.nss >= 0 ? 'is-net' : 'is-neg'
+                          }`}
+                        >
+                          NSS {cat.nss >= 0 ? '+' : ''}
+                          {cat.nss}%
+                        </span>
+                        <HelpButton
+                          topicId="map_category_card"
+                          customTopic={{
+                            id: `cat_${cat.id}`,
+                            category: `PETA KORPUS · ${cat.group.toUpperCase()}`,
+                            title: `Kategori ${cat.label} (${cat.id})`,
+                            simpleMeaning: `Kartu ini merangkum seluruh ulasan pelanggan pada kategori "${cat.label}" di dalam dataset PRDECT-ID (total ${cat.total} sampel ulasan terverifikasi).`,
+                            formulaOrMechanism: `NSS Kategori = % Positif (${cat.positif_pct}%) - % Negatif (${cat.negatif_pct}%) = ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin`,
+                            howToRead: `Dari ${cat.total} ulasan pada kategori ${cat.label}: terdapat ${cat.positif} ulasan Positif (${cat.positif_pct}%), ${cat.netral} ulasan Netral (${cat.netral_pct}%), dan ${cat.negatif} ulasan Negatif (${cat.negatif_pct}%). Rata-rata rating bintang adalah ★ ${cat.avg_rating} dengan psikografi emosi dominan "${cat.top_emotion_label}".`,
+                            presentationTip: `Pada kategori ${cat.label} yang termasuk dalam grup ${cat.group}, sistem kami mencatat Net Sentiment Score sebesar ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin dari ${cat.total} sampel ulasan dengan rata-rata bintang ${cat.avg_rating}.`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span
-                        className={`cih-badge ${
-                          cat.nss >= 5 ? 'is-pos' : cat.nss >= 0 ? 'is-net' : 'is-neg'
-                        }`}
-                      >
-                        NSS {cat.nss >= 0 ? '+' : ''}
-                        {cat.nss}%
-                      </span>
-                      <HelpButton
-                        topicId="map_category_card"
-                        customTopic={{
-                          id: `cat_${cat.id}`,
-                          category: `PETA KORPUS · ${cat.group.toUpperCase()}`,
-                          title: `Kategori ${cat.label} (${cat.id})`,
-                          simpleMeaning: `Kartu ini merangkum seluruh ulasan pelanggan pada kategori "${cat.label}" di dalam dataset PRDECT-ID (total ${cat.total} sampel ulasan terverifikasi).`,
-                          formulaOrMechanism: `NSS Kategori = % Positif (${cat.positif_pct}%) - % Negatif (${cat.negatif_pct}%) = ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin`,
-                          howToRead: `Dari ${cat.total} ulasan pada kategori ${cat.label}: terdapat ${cat.positif} ulasan Positif (${cat.positif_pct}%), ${cat.netral} ulasan Netral (${cat.netral_pct}%), dan ${cat.negatif} ulasan Negatif (${cat.negatif_pct}%). Rata-rata rating bintang adalah ★ ${cat.avg_rating} dengan psikografi emosi dominan "${cat.top_emotion_label}".`,
-                          presentationTip: `Pada kategori ${cat.label} yang termasuk dalam grup ${cat.group}, sistem kami mencatat Net Sentiment Score sebesar ${cat.nss >= 0 ? '+' : ''}${cat.nss} poin dari ${cat.total} sampel ulasan dengan rata-rata bintang ${cat.avg_rating}.`,
-                        }}
+
+                    <div className="cih-bar-track">
+                      <div
+                        style={{ width: `${cat.positif_pct}%` }}
+                        className="cih-bar-pos"
+                        title={`Positif: ${cat.positif_pct}%`}
+                      />
+                      <div
+                        style={{ width: `${cat.netral_pct}%` }}
+                        className="cih-bar-net"
+                        title={`Netral: ${cat.netral_pct}%`}
+                      />
+                      <div
+                        style={{ width: `${cat.negatif_pct}%` }}
+                        className="cih-bar-neg"
+                        title={`Negatif: ${cat.negatif_pct}%`}
                       />
                     </div>
-                  </div>
 
-                  <div className="cih-bar-track">
-                    <div
-                      style={{ width: `${cat.positif_pct}%` }}
-                      className="cih-bar-pos"
-                      title={`Positif: ${cat.positif_pct}%`}
-                    />
-                    <div
-                      style={{ width: `${cat.netral_pct}%` }}
-                      className="cih-bar-net"
-                      title={`Netral: ${cat.netral_pct}%`}
-                    />
-                    <div
-                      style={{ width: `${cat.negatif_pct}%` }}
-                      className="cih-bar-neg"
-                      title={`Negatif: ${cat.negatif_pct}%`}
-                    />
-                  </div>
+                    <div className="cih-cat-pct-row">
+                      <span style={{ color: '#047857' }}>
+                        {cat.positif_pct}% Pos ({cat.positif})
+                      </span>
+                      <span style={{ color: '#b45309' }}>
+                        {cat.netral_pct}% Net ({cat.netral})
+                      </span>
+                      <span style={{ color: '#be123c' }}>
+                        {cat.negatif_pct}% Neg ({cat.negatif})
+                      </span>
+                    </div>
 
-                  <div className="cih-cat-pct-row">
-                    <span style={{ color: '#047857' }}>
-                      {cat.positif_pct}% Pos ({cat.positif})
-                    </span>
-                    <span style={{ color: '#b45309' }}>
-                      {cat.netral_pct}% Net ({cat.netral})
-                    </span>
-                    <span style={{ color: '#be123c' }}>
-                      {cat.negatif_pct}% Neg ({cat.negatif})
-                    </span>
+                    <div className="cih-cat-footer">
+                      <span>
+                        Sampel: <strong style={{ color: '#27251e' }}>{cat.total}</strong> ·{' '}
+                        <strong style={{ color: '#b45309' }}>★ {cat.avg_rating}</strong> ·{' '}
+                        <span>{cat.top_emotion_label}</span>
+                      </span>
+                      <span className="cih-link-action">
+                        <span>Bedah</span>
+                        <ArrowRight size={13} />
+                      </span>
+                    </div>
                   </div>
+                ))}
+              </div>
 
-                  <div className="cih-cat-footer">
+              {/* Bar Navigasi Pagination */}
+              {totalMapItems > 0 && (
+                <div className="cih-pagination-bar">
+                  <div className="cih-pagination-info">
                     <span>
-                      Sampel: <strong style={{ color: '#27251e' }}>{cat.total}</strong> ·{' '}
-                      <strong style={{ color: '#b45309' }}>★ {cat.avg_rating}</strong> ·{' '}
-                      <span>{cat.top_emotion_label}</span>
+                      Menampilkan{' '}
+                      <strong>
+                        {mapPageSize <= 0
+                          ? `1–${totalMapItems}`
+                          : `${(activeMapPage - 1) * mapPageSize + 1}–${Math.min(
+                              activeMapPage * mapPageSize,
+                              totalMapItems
+                            )}`}
+                      </strong>{' '}
+                      dari <strong>{totalMapItems}</strong> kategori produk
                     </span>
-                    <span className="cih-link-action">
-                      <span>Bedah</span>
-                      <ArrowRight size={13} />
-                    </span>
+                    {mapPageSize > 0 && totalMapPages > 1 && (
+                      <span className="cih-pagination-page-badge">
+                        Halaman {activeMapPage} dari {totalMapPages}
+                      </span>
+                    )}
                   </div>
+
+                  {mapPageSize > 0 && totalMapPages > 1 && (
+                    <div className="cih-pagination-actions">
+                      <button
+                        type="button"
+                        className="cih-page-nav-btn"
+                        disabled={activeMapPage <= 1}
+                        onClick={() => {
+                          setMapCurrentPage(1)
+                          scrollToMapTop()
+                        }}
+                        title="Halaman Pertama"
+                      >
+                        <ChevronsLeft size={14} />
+                        <span>Pertama</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="cih-page-nav-btn"
+                        disabled={activeMapPage <= 1}
+                        onClick={() => {
+                          setMapCurrentPage((p) => Math.max(1, p - 1))
+                          scrollToMapTop()
+                        }}
+                        title="Halaman Sebelumnya"
+                      >
+                        <ChevronLeft size={14} />
+                        <span>Prev</span>
+                      </button>
+
+                      <div className="cih-page-numbers">
+                        {Array.from({ length: totalMapPages }, (_, idx) => idx + 1).map((pNum) => (
+                          <button
+                            key={pNum}
+                            type="button"
+                            className={`cih-page-num-btn ${pNum === activeMapPage ? 'is-active' : ''}`}
+                            onClick={() => {
+                              setMapCurrentPage(pNum)
+                              scrollToMapTop()
+                            }}
+                            title={`Buka halaman ${pNum}`}
+                          >
+                            {pNum}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="cih-page-nav-btn"
+                        disabled={activeMapPage >= totalMapPages}
+                        onClick={() => {
+                          setMapCurrentPage((p) => Math.min(totalMapPages, p + 1))
+                          scrollToMapTop()
+                        }}
+                        title="Halaman Berikutnya"
+                      >
+                        <span>Next</span>
+                        <ChevronRight size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        className="cih-page-nav-btn"
+                        disabled={activeMapPage >= totalMapPages}
+                        onClick={() => {
+                          setMapCurrentPage(totalMapPages)
+                          scrollToMapTop()
+                        }}
+                        title="Halaman Terakhir"
+                      >
+                        <span>Terakhir</span>
+                        <ChevronsRight size={14} />
+                      </button>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </>
       )}

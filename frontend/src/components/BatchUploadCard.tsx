@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { requestBatchPrediction } from '../services/sentimentApi'
 import type { BatchPredictionResponse, SentimentClass } from '../types/sentiment'
 import { HelpButton } from './HelpTooltipModal'
@@ -14,6 +14,8 @@ export function BatchUploadCard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<BatchPredictionResponse | null>(null)
+  const [tablePage, setTablePage] = useState<number>(1)
+  const [tablePageSize, setTablePageSize] = useState<number>(15)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -34,12 +36,23 @@ export function BatchUploadCard() {
     try {
       const data = await requestBatchPrediction(file)
       setResult(data)
+      setTablePage(1)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Gagal memproses batch ulasan.')
     } finally {
       setLoading(false)
     }
   }
+
+  const totalRows = result?.results.length || 0
+  const totalPages = Math.max(1, Math.ceil(totalRows / tablePageSize))
+  const activePage = Math.min(Math.max(1, tablePage), totalPages)
+
+  const paginatedRows = useMemo(() => {
+    if (!result) return []
+    const start = (activePage - 1) * tablePageSize
+    return result.results.slice(start, start + tablePageSize)
+  }, [result, activePage, tablePageSize])
 
   const downloadSampleTemplate = () => {
     const csvContent =
@@ -226,37 +239,119 @@ export function BatchUploadCard() {
             </button>
           </div>
 
-          <div className="table-responsive" style={{ maxHeight: '360px', overflowY: 'auto' }}>
+          <div className="table-responsive" style={{ maxHeight: '380px', overflowY: 'auto' }}>
             <table className="data-table">
               <thead>
                 <tr>
-                  <th style={{ width: '48px' }}>No</th>
+                  <th style={{ width: '56px' }}>No</th>
                   <th>Teks Ulasan</th>
                   <th style={{ width: '110px' }}>Sentimen</th>
                   <th style={{ width: '96px' }}>Keyakinan</th>
                 </tr>
               </thead>
               <tbody>
-                {result.results.slice(0, 50).map((row, idx) => (
-                  <tr key={idx}>
-                    <td>{idx + 1}</td>
-                    <td>{row.text}</td>
-                    <td>
-                      <span className={`sentiment-badge ${row.label}`}>
-                        {BADGE_MAP[row.label]}
-                      </span>
-                    </td>
-                    <td>{row.confidence.toFixed(1)}%</td>
-                  </tr>
-                ))}
+                {paginatedRows.map((row, idx) => {
+                  const absoluteIdx = (activePage - 1) * tablePageSize + idx + 1
+                  return (
+                    <tr key={idx}>
+                      <td>{absoluteIdx}</td>
+                      <td>{row.text}</td>
+                      <td>
+                        <span className={`sentiment-badge ${row.label}`}>
+                          {BADGE_MAP[row.label]}
+                        </span>
+                      </td>
+                      <td>{row.confidence.toFixed(1)}%</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
-          {result.results.length > 50 && (
-            <p className="card-subtitle" style={{ textAlign: 'center', marginTop: '8px' }}>
-              Menampilkan 50 baris pertama. Ekspor laporan CSV untuk memeriksa seluruh {result.results.length} baris.
-            </p>
-          )}
+
+          <div className="cih-pagination-bar" style={{ marginTop: '12px', padding: '10px 14px' }}>
+            <div className="cih-pagination-info">
+              <span>
+                Menampilkan{' '}
+                <strong>
+                  {(activePage - 1) * tablePageSize + 1}–
+                  {Math.min(activePage * tablePageSize, totalRows)}
+                </strong>{' '}
+                dari <strong>{totalRows}</strong> baris ulasan
+              </span>
+              <span className="cih-pagination-page-badge">
+                Halaman {activePage} dari {totalPages}
+              </span>
+            </div>
+
+            <div className="cih-pagination-actions">
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', marginRight: '8px' }}>
+                <span style={{ color: 'var(--color-ash)' }}>Per hal:</span>
+                <select
+                  value={tablePageSize}
+                  onChange={(e) => {
+                    setTablePageSize(Number(e.target.value))
+                    setTablePage(1)
+                  }}
+                  style={{
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    border: '1px solid var(--color-border-subtle)',
+                    background: '#fff',
+                    fontSize: '0.78rem',
+                    color: 'var(--color-ink)',
+                  }}
+                >
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </label>
+
+              <button
+                type="button"
+                className="cih-page-nav-btn"
+                disabled={activePage <= 1}
+                onClick={() => setTablePage(1)}
+                title="Halaman Pertama"
+              >
+                «
+              </button>
+              <button
+                type="button"
+                className="cih-page-nav-btn"
+                disabled={activePage <= 1}
+                onClick={() => setTablePage((p) => Math.max(1, p - 1))}
+                title="Halaman Sebelumnya"
+              >
+                ‹ Prev
+              </button>
+
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, padding: '0 4px', fontVariantNumeric: 'tabular-nums' }}>
+                {activePage} / {totalPages}
+              </span>
+
+              <button
+                type="button"
+                className="cih-page-nav-btn"
+                disabled={activePage >= totalPages}
+                onClick={() => setTablePage((p) => Math.min(totalPages, p + 1))}
+                title="Halaman Berikutnya"
+              >
+                Next ›
+              </button>
+              <button
+                type="button"
+                className="cih-page-nav-btn"
+                disabled={activePage >= totalPages}
+                onClick={() => setTablePage(totalPages)}
+                title="Halaman Terakhir"
+              >
+                »
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>

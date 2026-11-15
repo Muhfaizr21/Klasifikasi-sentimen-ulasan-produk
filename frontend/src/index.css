@@ -4963,6 +4963,128 @@ body {
   font-weight: 600;
 }
 
+/* ==========================================================================
+   CIH PAGINATION COMPONENT
+   ========================================================================== */
+.cih-pagination-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 14px 18px;
+  background: var(--color-soft-paper, #ffffff);
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.cih-pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--color-graphite, #57554f);
+  flex-wrap: wrap;
+}
+
+.cih-pagination-page-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(1, 106, 113, 0.08);
+  border: 1px solid rgba(1, 106, 113, 0.2);
+  color: var(--color-deep-teal, #016a71);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.cih-pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cih-page-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 11px;
+  border-radius: var(--radius-xs, 7px);
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: var(--color-soft-paper, #ffffff);
+  color: var(--color-ink, #27251e);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.cih-page-nav-btn:hover:not(:disabled) {
+  border-color: var(--color-deep-teal, #016a71);
+  background: rgba(1, 106, 113, 0.05);
+  color: var(--color-deep-teal, #016a71);
+}
+
+.cih-page-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: var(--color-parchment, #faf9f6);
+}
+
+.cih-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cih-page-num-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xs, 7px);
+  border: 1px solid var(--color-border-subtle, #e4e2dd);
+  background: var(--color-soft-paper, #ffffff);
+  color: var(--color-ink, #27251e);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-variant-numeric: tabular-nums;
+}
+
+.cih-page-num-btn:hover:not(.is-active) {
+  border-color: var(--color-deep-teal, #016a71);
+  background: rgba(1, 106, 113, 0.05);
+  color: var(--color-deep-teal, #016a71);
+}
+
+.cih-page-num-btn.is-active {
+  border-color: var(--color-deep-teal, #016a71);
+  background: var(--color-deep-teal, #016a71);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(1, 106, 113, 0.25);
+}
+
+@media (max-width: 640px) {
+  .cih-pagination-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .cih-pagination-actions {
+    justify-content: center;
+  }
+}
+
 .cih-formula-footer {
   margin-top: 14px;
   padding-top: 10px;
