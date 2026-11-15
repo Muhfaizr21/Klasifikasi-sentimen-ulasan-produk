@@ -5,12 +5,94 @@ import { HelpButton } from './HelpTooltipModal'
 
 const ORDERED_CLASSES: SentimentClass[] = ['positif', 'netral', 'negatif']
 
+const CM_CELL_EXPLANATIONS: Record<
+  string,
+  {
+    cause: string
+    examples: string[]
+  }
+> = {
+  'positif->positif': {
+    cause:
+      'True Positive (Prediksi Tepat): Ulasan memuat kata sifat apresiatif yang tegas seperti "original", "mantap", "cepat", "rapi", dan "sesuai deskripsi" tanpa klausa keluhan.',
+    examples: [
+      'Barang original 100%, pengiriman super cepat dan paking bubble wrap sangat tebal!',
+      'Kualitas bahan adem banget, jahitan rapi sesuai ekspektasi. Recommended seller!',
+    ],
+  },
+  'positif->netral': {
+    cause:
+      'False Negative (Positif ditebak Netral): Pembeli memberikan rating tinggi (★4/★5) namun menulis ulasan pendek yang nadanya moderat seperti "lumayan sesuai harga" atau "cukup oke".',
+    examples: [
+      'Barang sudah sampai dengan selamat, kualitas standar lumayan sesuai harga.',
+      'Cukup bagus buat pemakaian harian, pengiriman standar 3 hari sampai.',
+    ],
+  },
+  'positif->negatif': {
+    cause:
+      'False Negative (Positif ditebak Negatif): Ulasan positif yang banyak menceritakan kekhawatiran awal atau kata berkonotasi negatif ("awalnya takut pecah/rusak, tapi ternyata aman").',
+    examples: [
+      'Awalnya ragu takut barangnya rusak atau palsu karena murah, ternyata pas dicoba berfungsi normal.',
+      'Kardus luarnya agak penyok dikit kena kurir, untung isi barang di dalamnya aman gak lecet.',
+    ],
+  },
+  'netral->positif': {
+    cause:
+      'Misclassification (Netral ditebak Positif): Pembeli memberi rating ★3 (Netral), tetapi di dalam kalimatnya lebih banyak menggunakan kata pujian ("barang bagus, bahan oke") dibanding catatannya.',
+    examples: [
+      'Barangnya bagus dan berfungsi baik, cuma sayang warna yang dikirim beda sedikit.',
+      'Kualitas produk oke sesuai foto, pengiriman aja agak lama dari kurirnya.',
+    ],
+  },
+  'netral->netral': {
+    cause:
+      'True Positive (Prediksi Tepat Kelas Netral): Ulasan berhasil dikenali sebagai evaluasi moderat/standar yang menyeimbangkan aspek fungsional dan catatan ringan.',
+    examples: [
+      'Kualitas standar sesuai harga, lumayan buat cadangan di rumah.',
+      'Barang biasa saja sesuai deskripsi, pengiriman standar.',
+    ],
+  },
+  'netral->negatif': {
+    cause:
+      'Misclassification (Netral ditebak Negatif): Pembeli memberi bintang ★3, namun porsi kalimat keluhannya ("tipis", "kurang rapi", "lambat") lebih dominan secara bobot TF-IDF.',
+    examples: [
+      'Bahan agak tipis dan jahitan kurang rapi di bagian ujung, tapi masih bisa dipakai.',
+      'Pengiriman lama banget hampir seminggu, untung barangnya masih nyala.',
+    ],
+  },
+  'negatif->positif': {
+    cause:
+      'False Positive (Negatif ditebak Positif): Kalimat sarkasme atau pembalikan ekspektasi yang dipenuhi kata-kata positif ("saya kira bagus, mantap, original, ternyata mengecewakan").',
+    examples: [
+      'Saya kira barangnya bagus dan original seperti di iklan, ternyata pas sampai tipis banget.',
+      'Katanya pengiriman cepat dan paking aman, nyatanya sampai rumah pecah berantakan.',
+    ],
+  },
+  'negatif->netral': {
+    cause:
+      'False Negative (Negatif ditebak Netral): Komplain ditulis secara halus/sopan menggunakan kata moderat ("kurang sesuai", "agak kecewa") sehingga skor log-likelihood mendekati kelas Netral.',
+    examples: [
+      'Agak kurang sesuai dengan ekspektasi saya, ukurannya kekecilan dibanding tabel.',
+      'Barang sampai tapi kualitasnya biasa banget cenderung kurang memuaskan.',
+    ],
+  },
+  'negatif->negatif': {
+    cause:
+      'True Positive (Prediksi Tepat Kelas Negatif): Ulasan memuat token keluhan berdaya pisah tinggi seperti "rusak", "pecah", "kecewa", "palsu", "tidak berfungsi", atau "penipu".',
+    examples: [
+      'Barang datang dalam kondisi rusak parah dan pecah, seller dichat tidak mau tanggung jawab!',
+      'Sangat mengecewakan, barang mati total tidak berfungsi sama sekali. Kapok beli di sini.',
+    ],
+  },
+}
+
 interface EvaluationDashboardProps {
   metrics: MetricsReport | null
   loading: boolean
   error: string | null
   onRefresh?: () => void
   onSelectWord?: (word: string) => void
+  onSelectSampleReview?: (reviewText: string) => void
 }
 
 export function EvaluationDashboard({
@@ -19,6 +101,7 @@ export function EvaluationDashboard({
   error,
   onRefresh,
   onSelectWord,
+  onSelectSampleReview,
 }: EvaluationDashboardProps) {
   const [activePolarityFilter, setActivePolarityFilter] = useState<'all' | SentimentClass>('all')
   const [topWordsLimit, setTopWordsLimit] = useState<number>(30)
@@ -29,6 +112,8 @@ export function EvaluationDashboard({
   } | null>(metrics?.top_features || null)
   const [fetchingWords, setFetchingWords] = useState<boolean>(false)
   const [selectedWordDetail, setSelectedWordDetail] = useState<TopFeatureWord | null>(null)
+  const [selectedCmCell, setSelectedCmCell] = useState<{ rowIdx: number; colIdx: number } | null>(null)
+  const [printDate] = useState(() => new Date().toLocaleDateString('id-ID'))
 
   // Sync if metrics updates with top_features
   useEffect(() => {
@@ -85,6 +170,19 @@ export function EvaluationDashboard({
 
   return (
     <div id="evaluation-view">
+      {/* Official Academic Print-Ready Header (Visible when printed to PDF) */}
+      <div className="academic-print-header">
+        <div className="academic-print-title">POLITEKNIK NEGERI INDRAMAYU · JURUSAN TEKNIK INFORMATIKA</div>
+        <div className="academic-print-subtitle">
+          LAPORAN EVALUASI AKADEMIK MODEL KLASIFIKASI SENTIMEN ULASAN E-COMMERCE
+        </div>
+        <div className="academic-print-meta">
+          <span>Model: {metrics.vectorizer_type} + {metrics.model_type}</span>
+          <span>Korpus: {metrics.dataset_info?.total_samples ?? 5459} Ulasan (Stratified 80:20)</span>
+          <span>Tanggal Cetak: {printDate}</span>
+        </div>
+      </div>
+
       <div className="kpi-grid">
         <div className="kpi-card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '6px' }}>
@@ -143,11 +241,21 @@ export function EvaluationDashboard({
               Total {metrics.dataset_info?.total_samples ?? 0} ulasan produk e-commerce Indonesia terverifikasi
             </span>
           </div>
-          {onRefresh && (
-            <button type="button" className="btn-secondary" onClick={onRefresh}>
-              Segarkan Data Evaluasi
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+            {onRefresh && (
+              <button type="button" className="btn-secondary" onClick={onRefresh}>
+                Segarkan Data Evaluasi
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => window.print()}
+              title="Cetak atau simpan laporan evaluasi akademik sebagai PDF"
+            >
+              Cetak / Ekspor Laporan PDF
             </button>
-          )}
+          </div>
         </div>
 
         <div className="prob-list">
@@ -223,11 +331,11 @@ export function EvaluationDashboard({
         <div className="card-header">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <h2 className="card-title">Confusion Matrix (Data Uji Stratified 20%)</h2>
+              <h2 className="card-title">Confusion Matrix Interaktif (Data Uji Stratified 20%)</h2>
               <HelpButton topicId="eval_confusion_matrix" />
             </div>
             <span className="card-subtitle">
-              Baris menunjukkan label aktual; kolom menunjukkan kelas hasil prediksi model
+              Baris menunjukkan label aktual; kolom menunjukkan kelas hasil prediksi model. <strong>Klik angka di dalam kotak mana saja</strong> untuk membedah contoh kasusnya (Error Analysis).
             </span>
           </div>
         </div>
@@ -247,18 +355,123 @@ export function EvaluationDashboard({
                 <div className="cm-row-label" style={{ textTransform: 'capitalize' }}>
                   Aktual: {rowLabel}
                 </div>
-                {rowValues.map((val, colIdx) => (
-                  <div
-                    key={`cell-${rowIdx}-${colIdx}`}
-                    className={`cm-cell ${rowIdx === colIdx ? 'diagonal' : 'off-diagonal'}`}
-                  >
-                    {val}
-                  </div>
-                ))}
+                {rowValues.map((val, colIdx) => {
+                  const isSelected =
+                    selectedCmCell?.rowIdx === rowIdx && selectedCmCell?.colIdx === colIdx
+                  return (
+                    <button
+                      key={`cell-${rowIdx}-${colIdx}`}
+                      type="button"
+                      onClick={() => setSelectedCmCell({ rowIdx, colIdx })}
+                      className={`cm-cell ${rowIdx === colIdx ? 'diagonal' : 'off-diagonal'}`}
+                      style={{
+                        cursor: 'pointer',
+                        outline: isSelected ? '2.5px solid var(--color-deep-teal, #016a71)' : undefined,
+                        outlineOffset: '-2px',
+                        position: 'relative',
+                      }}
+                      title={`Klik untuk membedah ${val} ulasan (Aktual: ${rowLabel} → Prediksi: ${matrixLabels[colIdx]})`}
+                    >
+                      <span>{val}</span>
+                      <span
+                        style={{
+                          display: 'block',
+                          fontSize: '0.66rem',
+                          fontWeight: 500,
+                          opacity: 0.78,
+                          marginTop: '2px',
+                        }}
+                      >
+                        {rowIdx === colIdx ? 'Tepat ✓' : 'Bedah Sel →'}
+                      </span>
+                    </button>
+                  )
+                })}
               </div>
             )
           })}
         </div>
+
+        {selectedCmCell && (() => {
+          const actualLbl = matrixLabels[selectedCmCell.rowIdx]
+          const predLbl = matrixLabels[selectedCmCell.colIdx]
+          const cellCount =
+            metrics.confusion_matrix[selectedCmCell.rowIdx]?.[selectedCmCell.colIdx] ?? 0
+          const isTruePositive = selectedCmCell.rowIdx === selectedCmCell.colIdx
+          const key = `${actualLbl}->${predLbl}`
+          const detail = CM_CELL_EXPLANATIONS[key]
+
+          return (
+            <div className="wordcloud-inspector-card" style={{ marginTop: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                    <span className={`cih-badge ${isTruePositive ? 'is-pos' : 'is-neg'}`}>
+                      {isTruePositive ? 'TRUE POSITIVE (PREDIKSI TEPAT)' : 'ERROR ANALYSIS (SALAH KLASIFIKASI)'}
+                    </span>
+                    <span className="cih-badge is-neutral-outline">
+                      {cellCount} dari {metrics.dataset_info?.test_samples ?? 1092} Data Uji ({((cellCount / (metrics.dataset_info?.test_samples || 1092)) * 100).toFixed(1)}%)
+                    </span>
+                    <HelpButton topicId="eval_cm_error_inspector" />
+                  </div>
+                  <h3 style={{ margin: '0 0 6px', fontSize: '1.02rem', color: '#27251e' }}>
+                    Label Aktual: <span style={{ textTransform: 'capitalize' }}>{actualLbl}</span> → Ditebak Model:{' '}
+                    <span style={{ textTransform: 'capitalize' }}>{predLbl}</span>
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  className="btn-text-close"
+                  onClick={() => setSelectedCmCell(null)}
+                  aria-label="Tutup bedah sel confusion matrix"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {detail && (
+                <>
+                  <p style={{ margin: '6px 0 12px', fontSize: '0.84rem', color: '#3f3d37', lineHeight: 1.58 }}>
+                    <strong>Analisis Penyebab Linguistik:</strong> {detail.cause}
+                  </p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div className="cih-quick-kpi-label">
+                      Contoh Kasus Ulasan pada Sel Ini (Klik untuk Uji Langsung):
+                    </div>
+                    {detail.examples.map((ex, i) => (
+                      <div
+                        key={i}
+                        className="cih-evidence-card"
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          gap: '12px',
+                          flexWrap: 'wrap',
+                          background: '#ffffff',
+                        }}
+                      >
+                        <span style={{ fontSize: '0.82rem', fontStyle: 'italic', color: '#27251e' }}>
+                          &ldquo;{ex}&rdquo;
+                        </span>
+                        {onSelectSampleReview && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            style={{ padding: '5px 10px', fontSize: '0.76rem' }}
+                            onClick={() => onSelectSampleReview(ex)}
+                          >
+                            Uji Kalimat Ini →
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )
+        })()}
       </section>
 
       {/* Point 5: Visualisasi Word Cloud / Top Feature Weights Interaktif */}

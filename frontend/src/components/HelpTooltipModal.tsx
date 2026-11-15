@@ -708,6 +708,83 @@ const HELP_TOPICS: Record<string, HelpTopicContent> = {
     presentationTip:
       '"Melalui REST API Playground ini, kami mendemonstrasikan arsitektur client-server yang terpisah (decoupled), di mana mesin NLP Flask dapat diintegrasikan oleh aplikasi pihak ketiga via JSON API."',
   },
+
+  /* ========================================================================
+     10. FITUR TAMBAHAN SIDANG: KALKULATOR BAYES, ABLASI PREPROCESSING & CM INSPECTOR
+     ======================================================================== */
+  pred_ablation_preprocessing: {
+    id: 'pred_ablation_preprocessing',
+    category: 'Studi Ablasi Preprocessing',
+    title: 'Simulasi Perbandingan Sebelum vs Sesudah Normalisasi Slang & Sastrawi',
+    simpleMeaning:
+      'Kotak pembuktian visual yang memperlihatkan kata mana saja yang diubah dari bahasa gaul menjadi kata baku, kata sambung mana yang dibuang oleh Sastrawi, dan kata negasi mana yang sengaja dipertahankan.',
+    formulaOrMechanism:
+      'Membandingkan token mentah hasil pemisahan spasi (Raw Tokens) dengan token bersih setelah melewati tahapan Case Folding, Slang Dictionary Normalization, dan PySastrawi Stopword Removal (dengan Negation Preservation).',
+    howToRead:
+      'Lihat persentase reduksi noise kata dan daftar token yang berubah. Kata negasi seperti "tidak", "bukan", "kurang", "gak" tetap dipertahankan agar tidak membalikkan makna kalimat.',
+    presentationTip:
+      '"Kotak simulasi ini membuktikan secara langsung kontribusi tahapan Text Preprocessing terhadap pengurangan noise kosakata sekaligus menjaga kata pengingkar (negasi) tetap utuh."',
+  },
+  pred_bayes_step_calc: {
+    id: 'pred_bayes_step_calc',
+    category: 'Pembuktian Rumus Matematika',
+    title: 'Kalkulator Bedah Rumus Multinomial Naive Bayes Langkah-demi-Langkah',
+    simpleMeaning:
+      'Tabel rincian cara berhitung matematika model Naive Bayes mulai dari peluang awal kelas (Prior), bobot tiap kata di kalimat ini, hingga menjadi angka persentase keyakinan akhir.',
+    formulaOrMechanism:
+      'Rumus Log-Posterior: log P(C_k | X) = log P(C_k) + sum(w_i * log P(t_i | C_k)). Nilai log-posterior ketiga kelas kemudian dinormalisasi menggunakan fungsi eksponensial Softmax: P(C_k | X) = exp(score_k) / sum(exp(score_j)).',
+    howToRead:
+      'Perhatikan bagaimana setiap token aktif di dalam kalimat memberikan suntikan poin log-likelihood ke kelas Positif, Netral, atau Negatif hingga menghasilkan pemenang akhir.',
+    presentationTip:
+      '"Jika penguji menanyakan dari mana angka persentase keyakinan berasal, tabel kalkulator ini menjabarkan perhitungan rumus Teorema Bayes mulai dari Log-Prior hingga normalisasi Softmax secara transparan."',
+  },
+  eval_cm_error_inspector: {
+    id: 'eval_cm_error_inspector',
+    category: 'Analisis Kesalahan Model (Error Analysis)',
+    title: 'Inspector Bedah Sel Confusion Matrix & Contoh Kasus Ulasan',
+    simpleMeaning:
+      'Fitur interaktif untuk mengklik salah satu dari 9 kotak angka di Confusion Matrix guna melihat contoh ulasan nyata pada kotak tersebut beserta penjelasan mengapa model menebak benar atau keliru.',
+    formulaOrMechanism:
+      'Memetakan pasangan (Label Aktual = Baris i, Prediksi Model = Kolom j) pada 1.092 data uji stratified 20% dan menyajikan analisis linguistik penyebab True Positive maupun False Positive / False Negative.',
+    howToRead:
+      'Klik kotak hijau (diagonal) untuk melihat contoh tebakan tepat, atau klik kotak di luar diagonal untuk membedah kasus ulasan ambigu/campuran yang membuat model meleset.',
+    presentationTip:
+      '"Dalam evaluasi Machine Learning yang baik, kita wajib melakukan Error Analysis. Dengan mengklik sel di luar diagonal Confusion Matrix, kita dapat mengaudit mengapa ulasan tertentu salah diklasifikasikan."',
+  },
+}
+
+// Sinkronisasi alias ID agar seluruh pemanggilan topicId di semua komponen terjamin terpetakan
+const TOPIC_ALIASES: Record<string, string> = {
+  ai_chat_overview: 'aichat_overview',
+  ai_synthesis_box: 'aichat_synthesis_box',
+  ai_evidence_box: 'aichat_evidence_box',
+  ai_chart_box: 'aichat_chart_box',
+  ai_tokens_box: 'aichat_token_attribution',
+  map_category_card: 'map_toolbar_filter',
+  eval_kpi_macro_f1: 'f1_macro',
+  eval_kpi_accuracy: 'test_accuracy',
+  eval_kpi_architecture: 'eval_pipeline_winner',
+  eval_kpi_corpus_split: 'eval_corpus_split',
+  eval_dataset_distribution: 'eval_class_distribution',
+  eval_class_metrics: 'eval_per_class_table',
+  eval_feature_importance: 'eval_word_importance',
+  eval_experiments_comparison: 'eval_5_experiments',
+  batch_upload_overview: 'batch_upload_guide',
+  batch_results_table: 'batch_table_results',
+  compare_control_panel: 'compare_overview',
+  compare_verdict_banner: 'compare_verdict_box',
+  compare_section_identity: 'compare_identity_box',
+  compare_section_reputation: 'compare_reputation_index',
+  compare_section_pros_cons: 'compare_pros_cons_box',
+  compare_section_evidence: 'compare_evidence_box',
+  pred_query_box: 'pred_input_composer',
+  pred_live_ecommerce: 'pred_live_scraper',
+  pred_technical_math: 'pred_math_evidence',
+}
+for (const [aliasKey, targetKey] of Object.entries(TOPIC_ALIASES)) {
+  if (!HELP_TOPICS[aliasKey] && HELP_TOPICS[targetKey]) {
+    HELP_TOPICS[aliasKey] = HELP_TOPICS[targetKey]
+  }
 }
 
 interface HelpButtonProps {

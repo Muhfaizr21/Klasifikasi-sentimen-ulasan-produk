@@ -376,6 +376,13 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
   const [playgroundOutput, setPlaygroundOutput] = useState<string>('')
   const [playgroundRunning, setPlaygroundRunning] = useState<boolean>(false)
   const [copiedCode, setCopiedCode] = useState<boolean>(false)
+  const [printDate] = useState<string>(() =>
+    new Date().toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    })
+  )
 
   const loadAnalytics = useCallback(
     async (filters?: {
@@ -1195,6 +1202,17 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
          ===================================================================== */}
       {activeSubTab === 'target-kpi' && analytics && (
         <>
+          <div className="academic-print-header">
+            <div className="academic-print-brand">
+              <strong>SENTIMEN · PLATFORM INTELIJEN ULASAN E-COMMERCE INDONESIA</strong>
+              <span>Politeknik Negeri Indramayu · Tugas Besar Kecerdasan Buatan</span>
+            </div>
+            <div className="academic-print-meta">
+              <div>Laporan Target KPI &amp; Net Sentiment Score (NSS)</div>
+              <div>Dicetak: {printDate}</div>
+            </div>
+          </div>
+
           <div className="compare-workspace-header">
             <div className="compare-header-left">
               <div className="cih-page-kicker">
@@ -1204,6 +1222,19 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 <h1 className="compare-title">Pelacak Target KPI &amp; Net Sentiment Score (NSS)</h1>
                 <HelpButton topicId="net_sentiment_score" />
+                <button
+                  type="button"
+                  className="action-pill-btn no-print"
+                  onClick={() => window.print()}
+                  title="Cetak atau simpan laporan Target KPI & NSS sebagai dokumen PDF"
+                  style={{ marginLeft: '4px' }}
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+                    <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" strokeLinecap="round" strokeLinejoin="round" />
+                    <rect x="6" y="14" width="12" height="8" rx="1" />
+                  </svg>
+                  <span>Cetak / Ekspor PDF</span>
+                </button>
               </div>
               <p className="compare-subtitle">
                 Pemantauan terukur atas 5 indikator kinerja utama sistem: kualitas generalisasi model

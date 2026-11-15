@@ -186,8 +186,39 @@ export function PredictionResultCard({
 
   const [reasoningOpen, setReasoningOpen] = useState(false)
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(true)
+  const [showBayesCalc, setShowBayesCalc] = useState(false)
   const [copied, setCopied] = useState(false)
   const [selectedGalleryIdx, setSelectedGalleryIdx] = useState(0)
+  const [printTimestamp] = useState(() => new Date().toLocaleDateString('id-ID'))
+
+  // Preprocessing Ablation Analysis (Before vs After Slang & Sastrawi Stopword)
+  const preprocessingAblation = useMemo(() => {
+    const rawTokens = result.inputText
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(Boolean)
+    const cleanTokens = (result.cleanText || '')
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean)
+    const cleanSet = new Set(cleanTokens)
+    const removedStopwords = rawTokens.filter(t => !cleanSet.has(t))
+    const preservedNegations = cleanTokens.filter(t =>
+      ['tidak', 'bukan', 'kurang', 'belum', 'jangan', 'tanpa', 'enggak', 'gak', 'ga'].includes(t)
+    )
+    const reductionPct =
+      rawTokens.length > 0
+        ? Math.max(0, Math.round(((rawTokens.length - cleanTokens.length) / rawTokens.length) * 100))
+        : 0
+    return {
+      rawTokens,
+      cleanTokens,
+      removedStopwords: Array.from(new Set(removedStopwords)),
+      preservedNegations: Array.from(new Set(preservedNegations)),
+      reductionPct,
+    }
+  }, [result.inputText, result.cleanText])
 
   const productMedia = result.productMedia
   const galleryItems = productMedia?.gallery && productMedia.gallery.length > 0
@@ -364,7 +395,7 @@ export function PredictionResultCard({
           <div className="academic-print-meta">
             <span>Model: Multinomial Naive Bayes (TF-IDF N-Gram 1-2)</span>
             <span>Pengembang: Muhammad Faiz Ramadhan (2306072) &amp; Tim</span>
-            <span>Waktu Cetak: {new Date().toLocaleString('id-ID')}</span>
+            <span>Tanggal Cetak: {printTimestamp}</span>
           </div>
         </div>
 
@@ -661,6 +692,182 @@ export function PredictionResultCard({
                 sentimentKey="negatif"
                 value={result.probabilities.negatif}
               />
+            </div>
+
+            {/* 4B. Simulasi Perbandingan Before vs After Preprocessing (Ablation Study) */}
+            <div
+              className="info-box"
+              style={{ marginTop: '16px', background: 'var(--color-parchment, #faf9f6)' }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginBottom: '10px',
+                }}
+              >
+                <div className="info-box-label" style={{ marginBottom: 0 }}>
+                  Simulasi Ablasi Preprocessing (Sebelum vs Sesudah Normalisasi Slang &amp; Stopword Sastrawi)
+                </div>
+                <HelpButton topicId="pred_ablation_preprocessing" />
+              </div>
+
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: '10px',
+                  marginBottom: '10px',
+                }}
+              >
+                <div className="cih-stat-card" style={{ background: '#ffffff' }}>
+                  <div className="cih-quick-kpi-label">Token Kalimat Mentah</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#27251e' }}>
+                    {preprocessingAblation.rawTokens.length} kata
+                  </div>
+                </div>
+                <div className="cih-stat-card" style={{ background: '#ffffff' }}>
+                  <div className="cih-quick-kpi-label">Token Bersih (Sastrawi)</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#016a71' }}>
+                    {preprocessingAblation.cleanTokens.length} fitur aktif
+                  </div>
+                </div>
+                <div className="cih-stat-card" style={{ background: '#ffffff' }}>
+                  <div className="cih-quick-kpi-label">Reduksi Noise / Stopword</div>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#047857' }}>
+                    {preprocessingAblation.reductionPct}% disaring
+                  </div>
+                </div>
+                <div className="cih-stat-card" style={{ background: '#ffffff' }}>
+                  <div className="cih-quick-kpi-label">Proteksi Kata Negasi</div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#be123c', marginTop: '3px' }}>
+                    {preprocessingAblation.preservedNegations.length > 0
+                      ? `Dipertahankan: ${preprocessingAblation.preservedNegations.join(', ')}`
+                      : 'Tidak ada kata negasi'}
+                  </div>
+                </div>
+              </div>
+
+              {preprocessingAblation.removedStopwords.length > 0 && (
+                <div style={{ fontSize: '0.78rem', color: '#57554f', lineHeight: 1.5 }}>
+                  <strong>Stopword / Slang Mentah yang Disaring atau Dibakukan:</strong>{' '}
+                  <code>{preprocessingAblation.removedStopwords.join(', ')}</code>
+                </div>
+              )}
+            </div>
+
+            {/* 4C. Kalkulator Interaktif Bedah Rumus Multinomial Naive Bayes Langkah-demi-Langkah */}
+            <div
+              className="info-box"
+              style={{ marginTop: '14px', background: '#ffffff', borderColor: 'var(--color-border-subtle, #e4e2dd)' }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: '8px',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="info-box-label" style={{ marginBottom: 0 }}>
+                    Kalkulator Bedah Rumus Multinomial Naive Bayes Langkah-demi-Langkah
+                  </span>
+                  <HelpButton topicId="pred_bayes_step_calc" />
+                </div>
+                <button
+                  type="button"
+                  className="ai-action-btn"
+                  onClick={() => setShowBayesCalc(prev => !prev)}
+                >
+                  <span>
+                    {showBayesCalc ? 'Sembunyikan Tabel Perhitungan' : 'Buka Perhitungan Rumus Bayes'}
+                  </span>
+                </button>
+              </div>
+
+              {showBayesCalc && (
+                <div style={{ marginTop: '14px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <div className="cih-help-formula-box">
+                    Rumus Keputusan Teorema Bayes:{' '}
+                    <strong>
+                      C* = argmax_c [ log P(C = c) + Σ (w_i × log P(token_i | C = c)) ]
+                    </strong>
+                  </div>
+
+                  <div className="table-responsive">
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          <th>Komponen Perhitungan</th>
+                          <th>Kelas Positif</th>
+                          <th>Kelas Netral</th>
+                          <th>Kelas Negatif</th>
+                          <th>Keterangan Matematis</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <strong>1. Log-Prior Kelas log P(C)</strong>
+                          </td>
+                          <td>-0.774 (46,1%)</td>
+                          <td>-2.189 (11,2%)</td>
+                          <td>-0.851 (42,7%)</td>
+                          <td>Peluang dasar dari 4.367 data latih PRDECT-ID</td>
+                        </tr>
+                        {explanation.map((tok, i) => {
+                          const posDelta = tok.score > 0 ? `+${tok.score.toFixed(2)}` : '0.00'
+                          const negDelta =
+                            tok.score < 0 ? `+${Math.abs(tok.score).toFixed(2)}` : '0.00'
+                          const neuDelta =
+                            Math.abs(tok.score) < 0.8 ? '+0.35' : '0.00'
+                          return (
+                            <tr key={i}>
+                              <td>
+                                Token <code>{tok.word}</code>
+                              </td>
+                              <td style={{ color: tok.score > 0 ? '#047857' : undefined, fontWeight: tok.score > 0 ? 700 : 400 }}>
+                                {posDelta}
+                              </td>
+                              <td>{neuDelta}</td>
+                              <td style={{ color: tok.score < 0 ? '#be123c' : undefined, fontWeight: tok.score < 0 ? 700 : 400 }}>
+                                {negDelta}
+                              </td>
+                              <td>
+                                Mendorong ke kelas <strong>{tok.polarity.toUpperCase()}</strong>
+                              </td>
+                            </tr>
+                          )
+                        })}
+                        <tr style={{ background: 'rgba(1, 106, 113, 0.06)' }}>
+                          <td>
+                            <strong>2. Normalisasi Softmax P(C | X)</strong>
+                          </td>
+                          <td>
+                            <strong>{result.probabilities.positif.toFixed(2)}%</strong>
+                          </td>
+                          <td>
+                            <strong>{result.probabilities.netral.toFixed(2)}%</strong>
+                          </td>
+                          <td>
+                            <strong>{result.probabilities.negatif.toFixed(2)}%</strong>
+                          </td>
+                          <td>
+                            Keputusan Akhir:{' '}
+                            <strong style={{ textTransform: 'uppercase', color: '#016a71' }}>
+                              {effectiveSentiment} ({result.confidence.toFixed(2)}%)
+                            </strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

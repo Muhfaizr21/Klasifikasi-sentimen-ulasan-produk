@@ -1,13 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { BatchUploadCard } from './components/BatchUploadCard'
-import { CorpusIntelligenceHub, type IntelligenceSubTab } from './components/CorpusIntelligenceHub'
-import { EvaluationDashboard } from './components/EvaluationDashboard'
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
+import type { IntelligenceSubTab } from './components/CorpusIntelligenceHub'
 import { HelpButton } from './components/HelpTooltipModal'
 import { HistoryDrawer } from './components/HistoryDrawer'
-import { LandingPage, type WorkspaceTabTarget } from './components/LandingPage'
+import type { WorkspaceTabTarget } from './components/LandingPage'
 import { PredictionResultCard } from './components/PredictionResultCard'
 import { ProductSummaryCard } from './components/ProductSummaryCard'
-import { ProductComparisonView } from './components/ProductComparisonView'
+
+const BatchUploadCard = lazy(() =>
+  import('./components/BatchUploadCard').then(m => ({ default: m.BatchUploadCard }))
+)
+const CorpusIntelligenceHub = lazy(() =>
+  import('./components/CorpusIntelligenceHub').then(m => ({ default: m.CorpusIntelligenceHub }))
+)
+const EvaluationDashboard = lazy(() =>
+  import('./components/EvaluationDashboard').then(m => ({ default: m.EvaluationDashboard }))
+)
+const LandingPage = lazy(() =>
+  import('./components/LandingPage').then(m => ({ default: m.LandingPage }))
+)
+const PresentationGuideModal = lazy(() =>
+  import('./components/PresentationGuideModal').then(m => ({ default: m.PresentationGuideModal }))
+)
+const ProductComparisonView = lazy(() =>
+  import('./components/ProductComparisonView').then(m => ({ default: m.ProductComparisonView }))
+)
 import {
   fetchBackendHealth,
   fetchCategories,
@@ -212,6 +228,18 @@ export default function App() {
   const [metrics, setMetrics] = useState<MetricsReport | null>(null)
   const [metricsLoading, setMetricsLoading] = useState(true)
   const [metricsError, setMetricsError] = useState<string | null>(null)
+  const [presentationGuideOpen, setPresentationGuideOpen] = useState(false)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setPresentationGuideOpen(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const saveHistory = (newItem: PredictionResult) => {
     setHistory(prev => {
@@ -612,13 +640,15 @@ export default function App() {
 
   if (showLanding) {
     return (
-      <LandingPage
-        corpusTotal={corpusTotal}
-        accuracyPct={accuracyPctText}
-        f1MacroPct={f1MacroPctText}
-        totalCategories={categoriesCatalog?.total_categories || 30}
-        onEnterWorkspace={handleEnterWorkspace}
-      />
+      <Suspense fallback={null}>
+        <LandingPage
+          corpusTotal={corpusTotal}
+          accuracyPct={accuracyPctText}
+          f1MacroPct={f1MacroPctText}
+          totalCategories={categoriesCatalog?.total_categories || 30}
+          onEnterWorkspace={handleEnterWorkspace}
+        />
+      </Suspense>
     )
   }
 
@@ -701,6 +731,44 @@ export default function App() {
               <path d="M12 5v14M5 12h14" strokeLinecap="round" />
             </svg>
             <span className="sidebar-label-text">Analisis Baru</span>
+          </button>
+
+          <button
+            type="button"
+            className="new-session-btn"
+            onClick={() => setPresentationGuideOpen(true)}
+            title="Buka Cheatsheet Presentasi & Pertanyaan Penguji (Cmd/Ctrl + K)"
+            style={{
+              marginTop: '6px',
+              background: 'rgba(1, 106, 113, 0.08)',
+              borderColor: 'rgba(1, 106, 113, 0.25)',
+              color: '#016a71',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" aria-hidden="true">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+              </svg>
+              <span className="sidebar-label-text" style={{ fontWeight: 700 }}>
+                Panduan Sidang
+              </span>
+            </span>
+            <kbd
+              className="sidebar-label-text"
+              style={{
+                fontSize: '0.66rem',
+                fontWeight: 700,
+                padding: '1px 5px',
+                borderRadius: '4px',
+                background: '#ffffff',
+                border: '1px solid rgba(1, 106, 113, 0.22)',
+                color: '#016a71',
+              }}
+            >
+              ⌘K
+            </kbd>
           </button>
 
           <nav className="sidebar-nav" aria-label="Menu Utama">
@@ -1634,51 +1702,65 @@ export default function App() {
               </>
             )}
 
-            {activeTab === 'batch' && <BatchUploadCard />}
+            <Suspense
+              fallback={
+                <div className="card" style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--color-stone)' }}>
+                  Memuat modul analitik...
+                </div>
+              }
+            >
+              {activeTab === 'batch' && <BatchUploadCard />}
 
-            {activeTab === 'komparasi' && (
-              <ProductComparisonView
-                categoriesData={categoriesCatalog}
-                onSelectReview={reviewText => {
-                  setActiveTab('prediksi')
-                  setText(reviewText)
-                  void handlePredict(reviewText)
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-              />
-            )}
+              {activeTab === 'komparasi' && (
+                <ProductComparisonView
+                  categoriesData={categoriesCatalog}
+                  onSelectReview={reviewText => {
+                    setActiveTab('prediksi')
+                    setText(reviewText)
+                    void handlePredict(reviewText)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                />
+              )}
 
-            {activeTab === 'evaluasi' && (
-              <EvaluationDashboard
-                metrics={metrics}
-                loading={metricsLoading}
-                error={metricsError}
-                onRefresh={loadMetrics}
-                onSelectWord={word => {
-                  setActiveTab('prediksi')
-                  setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-              />
-            )}
+              {activeTab === 'evaluasi' && (
+                <EvaluationDashboard
+                  metrics={metrics}
+                  loading={metricsLoading}
+                  error={metricsError}
+                  onRefresh={loadMetrics}
+                  onSelectWord={word => {
+                    setActiveTab('prediksi')
+                    setText(`Produk ini ${word}, kualitas bagus sesuai ekspektasi.`)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  onSelectSampleReview={sampleText => {
+                    setActiveTab('prediksi')
+                    setText(sampleText)
+                    void handlePredict(sampleText)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                />
+              )}
 
-            {(activeTab === 'ai-chat' ||
-              activeTab === 'peta-korpus' ||
-              activeTab === 'target-kpi' ||
-              activeTab === 'bedah-data' ||
-              activeTab === 'katalog-api') && (
-              <CorpusIntelligenceHub
-                activeSubTab={activeTab}
-                onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
-                initialAiQuestion={initialAiQuestion}
-                onInspectReview={(revText, cat) => {
-                  if (cat) setSelectedCategory(cat)
-                  setActiveTab('prediksi')
-                  setText(revText)
-                  void handlePredict(revText, { category: cat })
-                }}
-              />
-            )}
+              {(activeTab === 'ai-chat' ||
+                activeTab === 'peta-korpus' ||
+                activeTab === 'target-kpi' ||
+                activeTab === 'bedah-data' ||
+                activeTab === 'katalog-api') && (
+                <CorpusIntelligenceHub
+                  activeSubTab={activeTab}
+                  onSubTabChange={(sub: IntelligenceSubTab) => setActiveTab(sub)}
+                  initialAiQuestion={initialAiQuestion}
+                  onInspectReview={(revText, cat) => {
+                    if (cat) setSelectedCategory(cat)
+                    setActiveTab('prediksi')
+                    setText(revText)
+                    void handlePredict(revText, { category: cat })
+                  }}
+                />
+              )}
+            </Suspense>
           </main>
         </div>
 
@@ -1686,6 +1768,23 @@ export default function App() {
           Tugas Besar Kecerdasan Buatan · Politeknik Negeri Indramayu · Muhammad Faiz Ramadhan (2305072) &amp; Tim
         </footer>
       </div>
+
+      {presentationGuideOpen && (
+        <Suspense fallback={null}>
+          <PresentationGuideModal
+            open={presentationGuideOpen}
+            onClose={() => setPresentationGuideOpen(false)}
+            onNavigateTab={(targetTab, sampleReview) => {
+              setActiveTab(targetTab as WorkspaceTabTarget)
+              if (targetTab === 'prediksi' && sampleReview) {
+                setText(sampleReview)
+                void handlePredict(sampleReview)
+              }
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   )
 }
