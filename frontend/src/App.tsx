@@ -1,5 +1,6 @@
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { IntelligenceSubTab } from './components/CorpusIntelligenceHub'
+import { CustomSelect, type SelectOptionItem } from './components/CustomSelect'
 import { HelpButton } from './components/HelpTooltipModal'
 import { HistoryDrawer } from './components/HistoryDrawer'
 import type { WorkspaceTabTarget } from './components/LandingPage'
@@ -240,6 +241,16 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
+
+  const topSubcategoryOptions = useMemo<SelectOptionItem[]>(() => {
+    if (!categoriesCatalog?.categories) return []
+    return categoriesCatalog.categories.map((c) => ({
+      value: c.id,
+      label: c.label,
+      group: c.group || 'Kategori',
+      badge: `${c.count}`,
+    }))
+  }, [categoriesCatalog])
 
   const saveHistory = (newItem: PredictionResult) => {
     setHistory(prev => {
@@ -1115,31 +1126,24 @@ export default function App() {
                 {cat}
               </button>
             ))}
-            {categoriesCatalog && categoriesCatalog.categories.length > 0 && (
-              <label className="top-category-select-wrap" aria-label="Pilih subkategori spesifik dari 30 kategori korpus">
-                <select
-                  className="top-category-select"
+            {topSubcategoryOptions.length > 0 && (
+              <div className="top-category-select-wrap">
+                <CustomSelect
                   value={
-                    categoriesCatalog.categories.some(c => c.id === selectedCategory)
+                    topSubcategoryOptions.some((o) => o.value === selectedCategory)
                       ? selectedCategory
                       : ''
                   }
-                  onChange={e => {
-                    if (e.target.value) {
-                      handleCategorySelect(e.target.value)
-                    }
+                  options={topSubcategoryOptions}
+                  searchable
+                  prefixLabel="Sub"
+                  placeholder={`Subkategori (${categoriesCatalog?.total_categories || 30})`}
+                  minWidth={190}
+                  onChange={(val) => {
+                    if (val) handleCategorySelect(val)
                   }}
-                >
-                  <option value="">
-                    Subkategori ({categoriesCatalog.total_categories})
-                  </option>
-                  {categoriesCatalog.categories.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.label} ({c.count})
-                    </option>
-                  ))}
-                </select>
-              </label>
+                />
+              </div>
             )}
             <button
               type="button"

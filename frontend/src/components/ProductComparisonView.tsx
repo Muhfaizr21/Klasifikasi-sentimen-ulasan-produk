@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { fetchCategories, requestProductComparison } from '../services/sentimentApi'
 import type { CategoriesResponse, ProductComparisonResponse } from '../types/sentiment'
+import { CustomSelect, type SelectOptionItem } from './CustomSelect'
 import { HelpButton } from './HelpTooltipModal'
 
 const PRESET_SCENARIOS = [
@@ -138,6 +139,47 @@ export function ProductComparisonView({
     if (foundGroup) return `${foundGroup.label} (${foundGroup.count} sampel)`
     return category
   })()
+
+  const categoryOptions = useMemo<SelectOptionItem[]>(() => {
+    const opts: SelectOptionItem[] = [
+      {
+        value: 'Otomatis',
+        label: 'Deteksi Otomatis dari Kata Kunci Produk',
+        badge: 'AI Smart',
+      },
+      {
+        value: 'Semua',
+        label: 'Semua Kategori Korpus',
+        badge: `${categoriesCatalog ? categoriesCatalog.corpus_total.toLocaleString('id-ID') : '5.459'} data`,
+      },
+    ]
+
+    // 4 Kelompok Utama E-Commerce
+    if (categoriesCatalog?.groups && categoriesCatalog.groups.length > 0) {
+      for (const grp of categoriesCatalog.groups) {
+        opts.push({
+          value: grp.id,
+          label: grp.label,
+          group: 'Kelompok Utama E-Commerce',
+          badge: `${grp.count.toLocaleString('id-ID')} ulasan · ${grp.subcategories} subkategori`,
+        })
+      }
+    }
+
+    // 30 Kategori Spesifik Dataset PRDECT-ID
+    if (categoriesCatalog?.categories && categoriesCatalog.categories.length > 0) {
+      for (const cat of categoriesCatalog.categories) {
+        opts.push({
+          value: cat.id,
+          label: `${cat.label} · ${cat.raw_name}`,
+          group: `Kategori Spesifik Dataset (${categoriesCatalog.categories.length} Kategori)`,
+          badge: `${cat.count.toLocaleString('id-ID')} ulasan`,
+        })
+      }
+    }
+
+    return opts
+  }, [categoriesCatalog])
 
   return (
     <div className="compare-workspace" aria-label="Matriks Komparasi Reputasi Produk">
@@ -319,55 +361,25 @@ export function ProductComparisonView({
           {/* Dynamic Category & Submit Footer */}
           <div className="compare-toolbar-footer">
             <div className="compare-category-control">
-              <label htmlFor="compare-category-select" className="compare-category-label">
-                Filter Kategori Korpus
+              <label className="compare-category-label">
+                Filter Kategori Korpus ({categoriesCatalog?.total_categories || 30} Kategori PRDECT-ID)
               </label>
               <div className="compare-select-wrapper">
-                <select
-                  id="compare-category-select"
-                  className="compare-category-select"
+                <CustomSelect
                   value={category}
-                  onChange={e => {
-                    const nextCat = e.target.value
+                  options={categoryOptions}
+                  searchable
+                  fullWidth
+                  prefixLabel="Kategori"
+                  ariaLabel="Pilih kategori korpus untuk komparasi produk"
+                  onChange={(nextCat) => {
                     setCategory(nextCat)
                     if (productA.trim() && productB.trim()) {
                       void handleCompare(productA, productB, nextCat)
                     }
                   }}
                   disabled={loading}
-                >
-                  <option value="Otomatis">Deteksi Otomatis dari Kata Kunci Produk</option>
-                  <option value="Semua">
-                    Semua Kategori ({categoriesCatalog ? categoriesCatalog.corpus_total.toLocaleString('id-ID') : '5.459'} ulasan)
-                  </option>
-
-                  {categoriesCatalog && categoriesCatalog.groups.length > 0 ? (
-                    <optgroup label="Kelompok Utama E-Commerce">
-                      {categoriesCatalog.groups.map(grp => (
-                        <option key={grp.id} value={grp.id}>
-                          {grp.label} ({grp.count.toLocaleString('id-ID')} ulasan · {grp.subcategories} subkategori)
-                        </option>
-                      ))}
-                    </optgroup>
-                  ) : (
-                    <optgroup label="Kelompok Utama E-Commerce">
-                      <option value="Elektronik">Elektronik</option>
-                      <option value="Fashion">Fashion</option>
-                      <option value="Rumah Tangga">Rumah Tangga</option>
-                      <option value="Otomotif & Hobi">Otomotif &amp; Hobi</option>
-                    </optgroup>
-                  )}
-
-                  {categoriesCatalog && categoriesCatalog.categories.length > 0 && (
-                    <optgroup label={`Kategori Spesifik Dataset (${categoriesCatalog.categories.length} Kategori)`}>
-                      {categoriesCatalog.categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>
-                          {cat.label} · {cat.raw_name} ({cat.count.toLocaleString('id-ID')} ulasan)
-                        </option>
-                      ))}
-                    </optgroup>
-                  )}
-                </select>
+                />
               </div>
               <span className="compare-active-filter-pill">
                 Aktif: {activeCategoryLabel}
