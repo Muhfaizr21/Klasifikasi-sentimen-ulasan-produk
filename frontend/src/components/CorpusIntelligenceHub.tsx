@@ -346,9 +346,9 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
   const [loadingAnalytics, setLoadingAnalytics] = useState<boolean>(true)
   const [analyticsError, setAnalyticsError] = useState<string | null>(null)
 
-  // AI Analyst Chat state
+  // AI Analyst Chat state (starts in clean default state until user asks or selects a preset)
   const [questionInput, setQuestionInput] = useState<string>(
-    initialAiQuestion || PRESET_AI_QUESTIONS[0]
+    initialAiQuestion || ''
   )
   const [aiCategoryFilter, setAiCategoryFilter] = useState<string>('Semua')
   const [aiResult, setAiResult] = useState<AiAnalystResponse | null>(null)
@@ -426,9 +426,14 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
   }, [loadAnalytics])
 
   useEffect(() => {
-    const qToRun = initialAiQuestion?.trim() || PRESET_AI_QUESTIONS[0]
-    setQuestionInput(qToRun)
-    void runAiQuery(qToRun, 'Semua')
+    const qToRun = initialAiQuestion?.trim()
+    if (qToRun) {
+      setQuestionInput(qToRun)
+      void runAiQuery(qToRun, 'Semua')
+    } else {
+      setQuestionInput('')
+      setAiResult(null)
+    }
   }, [initialAiQuestion, runAiQuery])
 
   const handleDrillFilterChange = (
@@ -739,6 +744,50 @@ export const CorpusIntelligenceHub: React.FC<CorpusIntelligenceHubProps> = ({
             <div className="error-banner" role="alert">
               <span>{aiError}</span>
             </div>
+          )}
+
+          {!aiLoading && !aiResult && (
+            <section className="card compare-empty-state" aria-label="Panduan Awal Sentimen AI Chat">
+              <div className="compare-empty-header">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span className="compare-empty-kicker">ASISTEN ANALITIK KORPUS SIAP DIGUNAKAN</span>
+                  <HelpButton topicId="ai_chat_overview" />
+                </div>
+                <h2 className="compare-empty-title">Belum ada pertanyaan analitik yang diajukan</h2>
+                <p className="compare-empty-desc">
+                  Ketik pertanyaan tentang kualitas pengiriman, pengemasan, harga, atau emosi pelanggan pada kolom di atas, atau pilih salah satu tombol <strong>Pertanyaan Cepat</strong> untuk menyintesis jawaban langsung dari 5.459 ulasan PRDECT-ID.
+                </p>
+              </div>
+              <div className="compare-empty-steps">
+                <div className="compare-empty-step">
+                  <span className="compare-empty-step-num">01</span>
+                  <div>
+                    <div className="compare-empty-step-title">Pilih Cakupan Kategori</div>
+                    <p className="compare-empty-step-text">
+                      Saring ke seluruh korpus (5.459 ulasan), 4 grup makro, atau salah satu dari 29 kategori spesifik.
+                    </p>
+                  </div>
+                </div>
+                <div className="compare-empty-step">
+                  <span className="compare-empty-step-num">02</span>
+                  <div>
+                    <div className="compare-empty-step-title">Ketik atau Pilih Pertanyaan</div>
+                    <p className="compare-empty-step-text">
+                      Tanyakan penyebab keluhan pengiriman, originalitas barang, atau distribusi psikografi emosi pelanggan.
+                    </p>
+                  </div>
+                </div>
+                <div className="compare-empty-step">
+                  <span className="compare-empty-step-num">03</span>
+                  <div>
+                    <div className="compare-empty-step-title">Evaluasi Bukti &amp; Bobot Token</div>
+                    <p className="compare-empty-step-text">
+                      Periksa narasi sintesis, kutipan ulasan asli, grafik proporsi sentimen, dan atribusi token TF-IDF + MNB.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
           )}
 
           {aiResult && (

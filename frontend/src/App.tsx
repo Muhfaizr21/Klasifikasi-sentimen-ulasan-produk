@@ -526,6 +526,11 @@ export default function App() {
     setResult(null)
     setError(null)
     setLearnedSuccessNote(null)
+    setLiveStreamItems([])
+    setLiveProductShowcase(null)
+    setLiveProductSummary(null)
+    setLiveStreamStatus(null)
+    setLiveStreamError(null)
     closeSidebarOnMobile()
     setTimeout(() => {
       textareaRef.current?.focus()
@@ -544,8 +549,11 @@ export default function App() {
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category)
     setActiveTab('prediksi')
+    setText('')
+    setResult(null)
+    setError(null)
+    setLearnedSuccessNote(null)
     loadDynamicCategorySamples(category)
-    void handleFetchRealtimeStream(liveSearchQuery, category)
   }
 
   useEffect(() => {
@@ -578,12 +586,19 @@ export default function App() {
     if (targetTab === 'ai-chat') {
       if (initialReviewText && initialReviewText.trim().length > 0) {
         setInitialAiQuestion(initialReviewText.trim())
+      } else {
+        setInitialAiQuestion(undefined)
       }
       return
     }
     if (initialReviewText && initialReviewText.trim().length > 0) {
       setText(initialReviewText)
       void handlePredict(initialReviewText)
+    } else {
+      setText('')
+      setResult(null)
+      setError(null)
+      setLearnedSuccessNote(null)
     }
   }
 
@@ -693,8 +708,7 @@ export default function App() {
               type="button"
               className={`sidebar-nav-item ${activeTab === 'prediksi' ? 'active' : ''}`}
               onClick={() => {
-                setActiveTab('prediksi')
-                closeSidebarOnMobile()
+                startNewSession()
               }}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.65" aria-hidden="true">
@@ -751,6 +765,7 @@ export default function App() {
               type="button"
               className={`sidebar-nav-item ${activeTab === 'ai-chat' ? 'active' : ''}`}
               onClick={() => {
+                setInitialAiQuestion(undefined)
                 setActiveTab('ai-chat')
                 closeSidebarOnMobile()
               }}
@@ -1082,7 +1097,10 @@ export default function App() {
             <button
               type="button"
               className={`category-link ${activeTab === 'ai-chat' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai-chat')}
+              onClick={() => {
+                setInitialAiQuestion(undefined)
+                setActiveTab('ai-chat')
+              }}
             >
               Sentimen AI Chat
             </button>
