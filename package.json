@@ -1,0 +1,11 @@
+{
+  "name": "klasifikasi-sentimen-ulasan-produk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia",
+  "scripts": {
+    "dev": "bash scripts/dev.sh",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint"
+  }
+}
