@@ -12,13 +12,43 @@ if [ ! -x "$PYTHON_BIN" ]; then
   exit 1
 fi
 
+# Otomatis deteksi & tangani port bentrok (misal macOS AirPlay Receiver di port 5000)
+while lsof -Pi :"$BACKEND_PORT" -sTCP:LISTEN -t >/dev/null 2>&1; do
+  PIDS=$(lsof -Pi :"$BACKEND_PORT" -sTCP:LISTEN -t 2>/dev/null || true)
+  KILLED_ANY=false
+  for pid in $PIDS; do
+    COMM=$(ps -p "$pid" -o comm= 2>/dev/null || true)
+    if [[ "$COMM" == *"python"* ]]; then
+      echo "[dev] Menutup proses Flask lama di port $BACKEND_PORT (PID: $pid)..."
+      kill -9 "$pid" 2>/dev/null || true
+      KILLED_ANY=true
+    fi
+  done
+
+  if [ "$KILLED_ANY" = true ]; then
+    sleep 0.5
+    if ! lsof -Pi :"$BACKEND_PORT" -sTCP:LISTEN -t >/dev/null 2>&1; then
+      break
+    fi
+  fi
+
+  echo "[dev] Port $BACKEND_PORT sedang digunakan oleh layanan sistem (misal macOS AirPlay Receiver)."
+  BACKEND_PORT=$((BACKEND_PORT + 1))
+  echo "[dev] Otomatis mengalihkan Flask backend ke port $BACKEND_PORT..."
+done
+
+export VITE_BACKEND_PORT="$BACKEND_PORT"
+
 BACKEND_PID=""
 FRONTEND_PID=""
 
 cleanup() {
   trap - EXIT INT TERM
   [ -n "$FRONTEND_PID" ] && kill "$FRONTEND_PID" 2>/dev/null || true
-  [ -n "$BACKEND_PID" ] && kill "$BACKEND_PID" 2>/dev/null || true
+  if [ -n "$BACKEND_PID" ]; then
+    pkill -P "$BACKEND_PID" 2>/dev/null || true
+    kill "$BACKEND_PID" 2>/dev/null || true
+  fi
   wait 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
