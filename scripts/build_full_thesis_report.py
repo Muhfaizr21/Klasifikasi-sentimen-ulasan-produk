@@ -1,7 +1,7 @@
 import os
 import base64
 import subprocess
-import json
+import re
 
 def get_base64_image(image_path):
     if not os.path.exists(image_path):
@@ -17,6 +17,7 @@ def get_base64_image(image_path):
     return f"data:{mime};base64,{encoded}"
 
 # Load images as base64
+img_logo_polindra = get_base64_image("report_assets/logo_polindra.jpg")
 img_class_dist = get_base64_image("report_assets/class_distribution.png")
 img_cm = get_base64_image("report_assets/confusion_matrix.png")
 img_model_comp = get_base64_image("report_assets/model_comparison.png")
@@ -36,11 +37,18 @@ html_template = """<!DOCTYPE html>
 <style>
   @page {
     size: A4 portrait;
-    margin: 25mm 25mm 25mm 30mm;
+    margin: 30mm 25mm 25mm 35mm;
     @bottom-center {
       content: counter(page);
       font-family: 'Times New Roman', Times, serif;
-      font-size: 10pt;
+      font-size: 11pt;
+      color: #1a1a1a;
+    }
+  }
+
+  @page :first {
+    @bottom-center {
+      content: none;
     }
   }
 
@@ -52,7 +60,7 @@ html_template = """<!DOCTYPE html>
     font-family: 'Times New Roman', Times, serif;
     font-size: 12pt;
     line-height: 1.5;
-    color: #1a1a1a;
+    color: #000000;
     background-color: #ffffff;
     margin: 0;
     padding: 0;
@@ -65,7 +73,7 @@ html_template = """<!DOCTYPE html>
     break-before: page;
   }
 
-  /* Cover Page Styling */
+  /* Cover Page Styling - Clean Academic Thesis */
   .cover {
     min-height: 92vh;
     display: flex;
@@ -73,65 +81,68 @@ html_template = """<!DOCTYPE html>
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    padding: 20px 0;
+    padding: 10px 0;
   }
 
   .cover-inst-header {
-    font-size: 12.5pt;
+    font-size: 13pt;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.3;
+    letter-spacing: 0.4px;
+    line-height: 1.4;
+    color: #000000;
   }
 
   .cover-title-box {
-    margin: 25px 0;
+    margin: 22px 0;
   }
 
   .cover-title {
     font-size: 14pt;
     font-weight: bold;
     text-transform: uppercase;
-    line-height: 1.4;
-    color: #0f172a;
+    line-height: 1.45;
+    color: #000000;
   }
 
   .cover-subtitle {
     font-size: 11.5pt;
     font-weight: normal;
-    margin-top: 12px;
+    margin-top: 10px;
     font-style: italic;
-    color: #334155;
+    color: #222222;
   }
 
-  .cover-emblem {
-    width: 130px;
-    height: 130px;
+  .cover-logo {
+    width: 135px;
+    height: auto;
     margin: 18px auto;
+    display: block;
   }
 
   .cover-purpose {
-    font-size: 11pt;
-    margin: 15px 0;
-    line-height: 1.4;
+    font-size: 11.5pt;
+    margin: 14px 0;
+    line-height: 1.45;
   }
 
   .cover-authors-table {
-    margin: 15px auto;
-    font-size: 11pt;
+    margin: 12px auto;
+    font-size: 11.5pt;
     border-collapse: collapse;
     text-align: left;
   }
 
   .cover-authors-table td {
-    padding: 3px 12px;
+    padding: 3px 14px;
   }
 
   .cover-footer {
-    font-size: 12pt;
+    font-size: 12.5pt;
     font-weight: bold;
     text-transform: uppercase;
-    line-height: 1.3;
+    line-height: 1.4;
+    margin-top: 15px;
   }
 
   /* Headings */
@@ -141,38 +152,38 @@ html_template = """<!DOCTYPE html>
     text-align: center;
     text-transform: uppercase;
     margin-top: 0;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
     line-height: 1.4;
-    letter-spacing: 0.5px;
+    color: #000000;
   }
 
   h2 {
-    font-size: 12.5pt;
+    font-size: 12pt;
     font-weight: bold;
-    margin-top: 22px;
+    margin-top: 20px;
     margin-bottom: 10px;
-    color: #0f172a;
+    color: #000000;
   }
 
   h3 {
     font-size: 12pt;
     font-weight: bold;
-    margin-top: 16px;
+    margin-top: 18px;
     margin-bottom: 8px;
-    color: #1e293b;
+    color: #000000;
   }
 
   h4 {
-    font-size: 11.5pt;
+    font-size: 12pt;
     font-weight: bold;
-    font-style: italic;
-    margin-top: 12px;
+    margin-top: 10px;
     margin-bottom: 6px;
+    color: #000000;
   }
 
   p {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-indent: 1.27cm;
   }
 
@@ -182,176 +193,163 @@ html_template = """<!DOCTYPE html>
 
   ol, ul {
     margin-top: 0;
-    margin-bottom: 12px;
-    padding-left: 2.2cm;
+    margin-bottom: 10px;
+    padding-left: 1.8cm;
   }
 
   li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
 
-  /* Tables */
+  /* Clean Academic Tables (Booktabs style - no outer side borders) */
   table.academic-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 18px 0;
+    margin: 14px 0 18px 0;
     font-size: 10.5pt;
     line-height: 1.35;
   }
 
   table.academic-table th {
-    border-top: 2px solid #000;
-    border-bottom: 1.5px solid #000;
-    padding: 8px 10px;
+    border-top: 1.5pt solid #000000;
+    border-bottom: 1pt solid #000000;
+    padding: 7px 9px;
     text-align: left;
     font-weight: bold;
-    background-color: #f8fafc;
+    background-color: transparent;
+    color: #000000;
   }
 
   table.academic-table td {
-    padding: 7px 10px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 6px 9px;
+    border-bottom: 0.5pt solid #d4d4d8;
     vertical-align: top;
   }
 
   table.academic-table tr:last-child td {
-    border-bottom: 2px solid #000;
+    border-bottom: 1.5pt solid #000000;
   }
 
   .caption-table {
-    font-size: 10.5pt;
+    font-size: 11pt;
     font-weight: bold;
+    margin-top: 14px;
     margin-bottom: 6px;
     text-align: left;
+    color: #000000;
   }
 
-  /* Figures */
+  /* Clean Figures - No Border/Shadow */
   .figure-container {
     text-align: center;
-    margin: 20px 0;
+    margin: 18px 0;
     page-break-inside: avoid;
   }
 
   .figure-img {
-    max-width: 95%;
+    max-width: 92%;
     height: auto;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: none;
   }
 
   .caption-figure {
-    font-size: 10.5pt;
+    font-size: 11pt;
     font-style: italic;
     margin-top: 8px;
-    color: #1e293b;
+    color: #000000;
+    text-align: center;
   }
 
-  /* Math & Formula Box */
-  .formula-box {
-    background-color: #f8fafc;
-    border-left: 3px solid #0284c7;
-    padding: 12px 18px;
-    margin: 14px 0;
-    font-family: 'Cambria Math', 'Times New Roman', serif;
-    font-size: 11pt;
+  /* Clean Centered Math Formula */
+  .formula-clean {
+    margin: 12px 0;
+    padding: 4px 0;
     page-break-inside: avoid;
   }
 
   .formula-center {
     text-align: center;
-    font-weight: bold;
+    font-family: 'Cambria Math', 'Times New Roman', serif;
     font-size: 12pt;
     margin: 8px 0;
   }
 
-  /* Code Snippet Box */
+  /* Clean Printable Code Block (Light Subtle Background, No Harsh Black Box) */
   .code-box {
-    background-color: #0f172a;
-    color: #f8fafc;
-    border-radius: 5px;
-    padding: 14px;
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-left: 2.5pt solid #475569;
+    padding: 10px 14px;
     font-family: 'Courier New', Courier, monospace;
     font-size: 9.5pt;
-    line-height: 1.3;
+    line-height: 1.35;
     overflow-x: auto;
-    margin: 15px 0;
+    margin: 10px 0 14px 0;
     page-break-inside: avoid;
-    border: 1px solid #334155;
+    white-space: pre-wrap;
   }
 
   .code-comment {
-    color: #94a3b8;
+    color: #64748b;
     font-style: italic;
   }
 
   .code-keyword {
-    color: #38bdf8;
+    color: #0369a1;
     font-weight: bold;
   }
 
   .code-string {
-    color: #4ade80;
+    color: #15803d;
   }
 
   .code-num {
-    color: #facc15;
+    color: #b45309;
   }
 
-  /* Three Component Box (Format Wajib H) */
-  .component-block {
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin: 16px 0;
-    background-color: #ffffff;
-    page-break-inside: avoid;
+  /* Clean Subsection for Pipeline Stages (No Outer Box) */
+  .stage-section {
+    margin: 14px 0 18px 0;
   }
 
-  .comp-header {
+  /* Clean Abstract (No Outer Box) */
+  .abstract-section {
+    margin: 12px 0 22px 0;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  .abstract-title {
     font-weight: bold;
-    font-size: 11pt;
-    color: #0f172a;
-    border-bottom: 1.5px solid #e2e8f0;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .comp-badge {
-    background-color: #0284c7;
-    color: white;
-    font-size: 9pt;
-    padding: 2px 8px;
-    border-radius: 4px;
+    text-align: center;
     text-transform: uppercase;
+    margin-bottom: 12px;
+    font-size: 12.5pt;
   }
 
-  .abstract-box {
-    border: 1px solid #cbd5e1;
-    padding: 18px 24px;
-    margin: 20px 0;
-    background-color: #fcfcfc;
-    font-size: 11pt;
-    line-height: 1.45;
-  }
-
+  /* Table of Contents */
   .toc-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 11pt;
+    align-items: baseline;
+    margin-bottom: 5px;
+    font-size: 11.5pt;
+  }
+
+  .toc-dots {
+    flex-grow: 1;
+    border-bottom: 1pt dotted #666666;
+    margin: 0 8px;
   }
 
   .toc-page {
-    font-weight: bold;
+    font-weight: normal;
   }
 
   /* Signatures */
   .sig-table {
     width: 100%;
-    margin-top: 40px;
+    margin-top: 36px;
     border-collapse: collapse;
   }
 
@@ -362,10 +360,24 @@ html_template = """<!DOCTYPE html>
   }
 
   .sig-line {
-    margin-top: 75px;
-    border-top: 1px solid #000;
+    margin-top: 70px;
+    border-top: 1pt solid #000000;
     display: inline-block;
-    width: 80%;
+    width: 75%;
+  }
+
+  /* Plain key-value table for Pengesahan & Lampiran */
+  table.plain-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 11.5pt;
+  }
+
+  table.plain-table td {
+    padding: 5px 8px;
+    vertical-align: top;
+    border: none;
   }
 </style>
 </head>
@@ -379,8 +391,7 @@ html_template = """<!DOCTYPE html>
     <div class="cover-inst-header">
       KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI<br>
       POLITEKNIK NEGERI INDRAMAYU<br>
-      JURUSAN TEKNIK INFORMATIKA<br>
-      PROGRAM STUDI REKAYASA PERANGKAT LUNAK / TEKNIK INFORMATIKA
+      JURUSAN TEKNIK INFORMATIKA
     </div>
 
     <div class="cover-title-box">
@@ -395,49 +406,42 @@ html_template = """<!DOCTYPE html>
   </div>
 
   <div>
-    <!-- Logo SVG Politeknik -->
-    <svg class="cover-emblem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="90" fill="#0369a1" stroke="#0f172a" stroke-width="4"/>
-      <circle cx="100" cy="100" r="75" fill="#ffffff" stroke="#0284c7" stroke-width="3"/>
-      <polygon points="100,35 150,65 150,135 100,165 50,135 50,65" fill="#f0f9ff" stroke="#0284c7" stroke-width="2"/>
-      <path d="M100,45 L100,155 M55,75 L145,75 M55,125 L145,125" stroke="#0284c7" stroke-width="2"/>
-      <circle cx="100" cy="100" r="16" fill="#0284c7"/>
-      <text x="100" y="105" font-family="'Times New Roman', serif" font-size="14" fill="#ffffff" font-weight="bold" text-anchor="middle">POLINDRA</text>
-    </svg>
+    <img src="__IMG_LOGO_POLINDRA__" class="cover-logo" alt="Logo Politeknik Negeri Indramayu">
 
     <div class="cover-purpose">
-      Laporan Tugas Besar ini Diajukan sebagai Syarat Memenuhi Kelulusan<br>
-      Mata Kuliah <strong>Kecerdasan Buatan</strong> pada Semester Ganjil Tahun Akademik 2025/2026
+      Laporan Tugas Besar ini Diajukan untuk Memenuhi Penilaian<br>
+      Mata Kuliah <strong>Kecerdasan Buatan</strong> Semester Ganjil Tahun Akademik 2025/2026
     </div>
 
-    <div style="font-size: 11pt; font-weight: bold; margin-bottom: 5px;">Disusun Oleh (Kelompok):</div>
+    <div style="font-size: 11.5pt; font-weight: bold; margin-bottom: 4px;">Disusun Oleh:</div>
     <table class="cover-authors-table">
       <tr>
-        <td><strong>1. Muhammad Faiz Ramadhan</strong></td>
-        <td>NIM. 2305072</td>
+        <td>1. Muhammad Faiz Ramadhan</td>
+        <td>(2305072)</td>
       </tr>
       <tr>
-        <td><strong>2. AYIP MUHAMMAD</strong></td>
-        <td>NIM. 2305059</td>
+        <td>2. AYIP MUHAMMAD</td>
+        <td>(2305059)</td>
       </tr>
       <tr>
-        <td><strong>3. MUHAMMAD IHYA ’ULUMUDDIN</strong></td>
-        <td>NIM. 2305073</td>
+        <td>3. MUHAMMAD IHYA ’ULUMUDDIN</td>
+        <td>(2305073)</td>
       </tr>
       <tr>
-        <td><strong>4. NAILYAA DLIYAA’AN SYAH</strong></td>
-        <td>NIM. 2305075</td>
+        <td>4. NAILYAA DLIYAA’AN SYAH</td>
+        <td>(2305075)</td>
       </tr>
     </table>
 
-    <div style="font-size: 11pt; margin-top: 10px;">
+    <div style="font-size: 11.5pt; margin-top: 12px;">
       Dosen Pengampu:<br>
       <strong>Vera Wati, M.Kom</strong>
     </div>
   </div>
 
   <div class="cover-footer">
-    INDRAMAYU<br>
+    PROGRAM STUDI TEKNIK INFORMATIKA<br>
+    POLITEKNIK NEGERI INDRAMAYU<br>
     2026
   </div>
 </div>
@@ -452,35 +456,40 @@ html_template = """<!DOCTYPE html>
 Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Terstruktur dengan judul:
 </p>
 
-<div style="text-align: center; font-weight: bold; margin: 15px 0; font-size: 12.5pt; text-transform: uppercase;">
+<div style="text-align: center; font-weight: bold; margin: 16px 0; font-size: 12pt; text-transform: uppercase;">
   "PENGEMBANGAN SISTEM ARTIFICIAL INTELLIGENCE KLASIFIKASI SENTIMEN DAN EVALUASI REPUTASI PRODUK E-COMMERCE BERBASIS MULTINOMIAL NAIVE BAYES PADA DATA TABULAR PRDECT-ID"
 </div>
 
-<p class="no-indent">Telah diperiksa, dievaluasi, dan disetujui untuk memenuhi seluruh kriteria penugasan pada mata kuliah <strong>Kecerdasan Buatan</strong> Program Studi Teknik Informatika, Politeknik Negeri Indramayu.</p>
+<p class="no-indent">Telah diperiksa, dievaluasi, dan disetujui untuk memenuhi seluruh kriteria penugasan pada mata kuliah <strong>Kecerdasan Buatan</strong> Jurusan Teknik Informatika, Politeknik Negeri Indramayu.</p>
 
-<table class="academic-table" style="margin: 20px 0;">
+<table class="plain-table">
   <tr>
-    <td width="30%"><strong>Mata Kuliah</strong></td>
-    <td>: Kecerdasan Buatan</td>
+    <td width="32%"><strong>Mata Kuliah</strong></td>
+    <td width="3%">:</td>
+    <td>Kecerdasan Buatan</td>
   </tr>
   <tr>
     <td><strong>Dosen Pengampu</strong></td>
-    <td>: Vera Wati, M.Kom</td>
+    <td>:</td>
+    <td>Vera Wati, M.Kom</td>
   </tr>
   <tr>
-    <td><strong>Nama Anggota Kelompok</strong></td>
-    <td>: 1. Muhammad Faiz Ramadhan (2305072)<br>
-          : 2. AYIP MUHAMMAD (2305059)<br>
-          : 3. MUHAMMAD IHYA ’ULUMUDDIN (2305073)<br>
-          : 4. NAILYAA DLIYAA’AN SYAH (2305075)</td>
+    <td><strong>Anggota Kelompok</strong></td>
+    <td>:</td>
+    <td>1. Muhammad Faiz Ramadhan (2305072)<br>
+        2. AYIP MUHAMMAD (2305059)<br>
+        3. MUHAMMAD IHYA ’ULUMUDDIN (2305073)<br>
+        4. NAILYAA DLIYAA’AN SYAH (2305075)</td>
   </tr>
   <tr>
-    <td><strong>Program Studi</strong></td>
-    <td>: Rekayasa Perangkat Lunak / Teknik Informatika</td>
+    <td><strong>Jurusan / Prodi</strong></td>
+    <td>:</td>
+    <td>Teknik Informatika</td>
   </tr>
   <tr>
     <td><strong>Tanggal Pengesahan</strong></td>
-    <td>: 16 November 2026</td>
+    <td>:</td>
+    <td>16 November 2026</td>
   </tr>
 </table>
 
@@ -497,26 +506,28 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
       Disetujui Oleh,<br>
       Dosen Pengampu Mata Kuliah<br><br><br><br>
       <div class="sig-line"></div><br>
-      <strong>Vera Wati, M.Kom</strong><br>
-      NIDN. / NIP. Dosen
+      <strong>Vera Wati, M.Kom</strong>
     </td>
   </tr>
 </table>
 
 <!-- ==================================================================== -->
-<!-- RINGKASAN EKSEKUTIF / ABSTRAK                                        -->
+<!-- ABSTRAK                                                              -->
 <!-- ==================================================================== -->
 <div class="page-break"></div>
-<h1 class="chapter-title">RINGKASAN EKSEKUTIF</h1>
+<h1 class="chapter-title">ABSTRAK</h1>
 
-<div class="abstract-box">
-  <p><strong>ABSTRAK</strong> — Dalam ekosistem perdagangan elektronik (e-commerce), ulasan pelanggan merupakan aset data terstruktur dan tekstual yang sangat berharga untuk memahami persepsi pasar, kepuasan konsumen, serta kualitas produk. Namun, volume ulasan yang masif menyulitkan analisis manual. Proyek Tugas Besar ini bertujuan membangun sistem <em>Artificial Intelligence</em> (AI) klasifikasi sentimen berbasis data tabular menggunakan algoritma <strong>Multinomial Naive Bayes</strong> dengan pembobotan ekstraksi fitur n-gram (unigram dan bigram) serta optimasi <em>Laplace Smoothing</em>. Dataset yang digunakan adalah korpus terbuka terstruktur <strong>PRDECT-ID</strong> (Indonesian E-Commerce Product Review Dataset) yang terdiri atas 5.459 baris data tabular dengan 11 atribut komprehensif, mencakup metadata toko, harga, kategori produk, rating bintang, hingga emosi konsumen. Pipeline pengembangan AI disusun secara sistematis mencakup 12 tahapan: identifikasi masalah, akuisisi data, audit kualitas data, <em>Exploratory Data Analysis</em> (EDA), <em>text preprocessing</em> (case folding, pembersihan tanda baca/URL, normalisasi kata gaul/slang, dan penghapusan stopword), ekstraksi fitur frekuensi <em>CountVectorizer</em>, <em>stratified train-test split</em> (80:20), perancangan algoritma probabilistik, pelatihan model, eksperimen multi-model, evaluasi performa, hingga penerapan pada aplikasi web interaktif berbasis Flask dan React. Berdasarkan pengujian terhadap 1.092 sampel uji terstratifikasi, model Multinomial Naive Bayes terpilih berhasil mencapai <strong>Akurasi sebesar 85,35%</strong> dan <strong>Macro F1-Score sebesar 76,64%</strong>, melampaui target ambang batas performa yang ditetapkan (Macro F1 &ge; 70%). Sistem dilengkapi dengan fungsionalitas <em>Online Learning</em> (incremental update menggunakan <code>partial_fit</code>), penalaran konteks kalimat kontrastif, pelacak <em>Net Sentiment Score</em> (NSS), modul komparasi dua produk berdampingan, serta antarmuka pemantauan KPI korpus yang intuitif.</p>
-  <p style="margin-bottom: 0;"><strong>Kata Kunci:</strong> Artificial Intelligence, Sentimen Analisis, Multinomial Naive Bayes, PRDECT-ID, Data Tabular, Natural Language Processing, E-Commerce, Online Learning.</p>
+<div class="abstract-section">
+  <p>Dalam ekosistem perdagangan elektronik (<em>e-commerce</em>), ulasan pelanggan merupakan aset data terstruktur dan tekstual yang sangat berharga untuk memahami persepsi pasar, kepuasan konsumen, serta kualitas produk. Namun, volume ulasan yang masif menyulitkan analisis manual. Proyek Tugas Besar ini bertujuan membangun sistem <em>Artificial Intelligence</em> (AI) klasifikasi sentimen berbasis data tabular menggunakan algoritma <strong>Multinomial Naive Bayes</strong> dengan pembobotan ekstraksi fitur n-gram (unigram dan bigram) serta optimasi <em>Laplace Smoothing</em>. Dataset yang digunakan adalah korpus terbuka terstruktur <strong>PRDECT-ID</strong> (Indonesian E-Commerce Product Review Dataset) yang terdiri atas 5.459 baris data tabular dengan 11 atribut komprehensif, mencakup metadata toko, harga, kategori produk, rating bintang, hingga emosi konsumen. Pipeline pengembangan AI disusun secara sistematis mencakup 12 tahapan: identifikasi masalah, akuisisi data, audit kualitas data, <em>Exploratory Data Analysis</em> (EDA), <em>text preprocessing</em> (case folding, pembersihan tanda baca/URL, normalisasi kata gaul/slang, dan penghapusan stopword), ekstraksi fitur frekuensi <em>CountVectorizer</em>, <em>stratified train-test split</em> (80:20), perancangan algoritma probabilistik, pelatihan model, eksperimen multi-model, evaluasi performa, hingga penerapan pada aplikasi web interaktif berbasis Flask dan React. Berdasarkan pengujian terhadap 1.092 sampel uji terstratifikasi, model Multinomial Naive Bayes terpilih berhasil mencapai <strong>Akurasi sebesar 85,35%</strong> dan <strong>Macro F1-Score sebesar 76,64%</strong>, melampaui target ambang batas performa yang ditetapkan (Macro F1 &ge; 70%). Sistem dilengkapi dengan fungsionalitas <em>Online Learning</em> (incremental update menggunakan <code>partial_fit</code>), penalaran konteks kalimat kontrastif, pelacak <em>Net Sentiment Score</em> (NSS), modul komparasi dua produk berdampingan, serta antarmuka pemantauan KPI korpus yang intuitif.</p>
+  <p class="no-indent" style="margin-top: 12px;"><strong>Kata Kunci:</strong> Artificial Intelligence, Sentimen Analisis, Multinomial Naive Bayes, PRDECT-ID, Data Tabular, Natural Language Processing, E-Commerce, Online Learning.</p>
 </div>
 
-<div class="abstract-box" style="margin-top: 25px;">
-  <p><strong>ABSTRACT</strong> — In the e-commerce ecosystem, customer reviews represent a vital source of structured tabular and textual intelligence for assessing market reputation and customer satisfaction. This Artificial Intelligence (AI) project develops a production-grade sentiment classification and product intelligence system utilizing the <strong>Multinomial Naive Bayes</strong> probabilistic algorithm with n-gram feature extraction (unigrams and bigrams) and Laplace Smoothing. The model is trained on the benchmark tabular dataset <strong>PRDECT-ID</strong> comprising 5,459 entries across 11 attributes from Indonesian marketplaces, including product category, pricing, ratings, raw reviews, and secondary emotions. Following a rigorous 12-stage AI development pipeline—from problem formulation, data quality auditing, exploratory data analysis, Indonesian text preprocessing, feature mapping, to web deployment—the proposed model was validated on a stratified test set of 1,092 samples. The system achieved an <strong>Accuracy of 85.35%</strong> and a <strong>Macro F1-Score of 76.64%</strong>, successfully outperforming the required institutional performance benchmarks. The engineered platform incorporates online incremental learning via <code>partial_fit</code>, contrastive linguistic rule handling, Net Sentiment Score (NSS) tracking, side-by-side product comparisons, and a full-stack Flask/React interactive interface.</p>
-  <p style="margin-bottom: 0;"><strong>Keywords:</strong> Artificial Intelligence, Sentiment Analysis, Multinomial Naive Bayes, PRDECT-ID, Tabular Dataset, Natural Language Processing, E-Commerce Analytics, Incremental Learning.</p>
+<div class="page-break"></div>
+<h1 class="chapter-title">ABSTRACT</h1>
+
+<div class="abstract-section">
+  <p>In the e-commerce ecosystem, customer reviews represent a vital source of structured tabular and textual intelligence for assessing market reputation and customer satisfaction. This Artificial Intelligence (AI) project develops a production-grade sentiment classification and product intelligence system utilizing the <strong>Multinomial Naive Bayes</strong> probabilistic algorithm with n-gram feature extraction (unigrams and bigrams) and Laplace Smoothing. The model is trained on the benchmark tabular dataset <strong>PRDECT-ID</strong> comprising 5,459 entries across 11 attributes from Indonesian marketplaces, including product category, pricing, ratings, raw reviews, and secondary emotions. Following a rigorous 12-stage AI development pipeline—from problem formulation, data quality auditing, exploratory data analysis, Indonesian text preprocessing, feature mapping, to web deployment—the proposed model was validated on a stratified test set of 1,092 samples. The system achieved an <strong>Accuracy of 85.35%</strong> and a <strong>Macro F1-Score of 76.64%</strong>, successfully outperforming the required institutional performance benchmarks. The engineered platform incorporates online incremental learning via <code>partial_fit</code>, contrastive linguistic rule handling, Net Sentiment Score (NSS) tracking, side-by-side product comparisons, and a full-stack Flask/React interactive interface.</p>
+  <p class="no-indent" style="margin-top: 12px;"><strong>Keywords:</strong> Artificial Intelligence, Sentiment Analysis, Multinomial Naive Bayes, PRDECT-ID, Tabular Dataset, Natural Language Processing, E-Commerce Analytics, Incremental Learning.</p>
 </div>
 
 <!-- ==================================================================== -->
@@ -539,12 +550,12 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
 
 <p>Kami menyadari bahwa laporan ini masih memiliki ruang untuk penyempurnaan. Oleh sebab itu, kritik dan saran yang membangun dari dosen penguji serta pembaca sangat kami harapkan guna penyempurnaan karya di masa mendatang. Semoga laporan ini dapat memberikan manfaat nyata bagi pengembangan ilmu pengetahuan dan aplikasi AI terapan.</p>
 
-<table style="width: 100%; margin-top: 30px;">
+<table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
   <tr>
     <td width="60%"></td>
     <td style="text-align: center;">
       Indramayu, 16 November 2026<br><br>
-      <strong>Tim Penulis (Kelompok)</strong>
+      <strong>Tim Penulis</strong>
     </td>
   </tr>
 </table>
@@ -555,92 +566,94 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
 <div class="page-break"></div>
 <h1 class="chapter-title">DAFTAR ISI</h1>
 
-<div class="toc-row"><strong>HALAMAN JUDUL / COVER</strong> <span class="toc-page">i</span></div>
-<div class="toc-row"><strong>LEMBAR PENGESAHAN</strong> <span class="toc-page">ii</span></div>
-<div class="toc-row"><strong>RINGKASAN EKSEKUTIF / ABSTRAK</strong> <span class="toc-page">iii</span></div>
-<div class="toc-row"><strong>KATA PENGANTAR</strong> <span class="toc-page">iv</span></div>
-<div class="toc-row"><strong>DAFTAR ISI</strong> <span class="toc-page">v</span></div>
-<div class="toc-row"><strong>DAFTAR TABEL</strong> <span class="toc-page">vi</span></div>
-<div class="toc-row"><strong>DAFTAR GAMBAR</strong> <span class="toc-page">vii</span></div>
+<div class="toc-row"><strong>HALAMAN JUDUL / COVER</strong><span class="toc-dots"></span><span class="toc-page">__P_COVER__</span></div>
+<div class="toc-row"><strong>LEMBAR PENGESAHAN</strong><span class="toc-dots"></span><span class="toc-page">__P_PENGESAHAN__</span></div>
+<div class="toc-row"><strong>ABSTRAK</strong><span class="toc-dots"></span><span class="toc-page">__P_ABSTRAK__</span></div>
+<div class="toc-row"><strong>ABSTRACT</strong><span class="toc-dots"></span><span class="toc-page">__P_ABSTRACT__</span></div>
+<div class="toc-row"><strong>KATA PENGANTAR</strong><span class="toc-dots"></span><span class="toc-page">__P_KATA_PENGANTAR__</span></div>
+<div class="toc-row"><strong>DAFTAR ISI</strong><span class="toc-dots"></span><span class="toc-page">__P_DAFTAR_ISI__</span></div>
+<div class="toc-row"><strong>DAFTAR TABEL</strong><span class="toc-dots"></span><span class="toc-page">__P_DAFTAR_TABEL__</span></div>
+<div class="toc-row"><strong>DAFTAR GAMBAR</strong><span class="toc-dots"></span><span class="toc-page">__P_DAFTAR_GAMBAR__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB I PENDAHULUAN</strong> <span class="toc-page">1</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.1 Latar Belakang dan Permasalahan <span class="toc-page">1</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.2 Tujuan Pengembangan Proyek <span class="toc-page">2</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.3 Deskripsi Singkat Sistem AI yang Dibangun <span class="toc-page">2</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.4 Metode / Algoritma AI yang Dipilih dan Alasan Pemilihan <span class="toc-page">3</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.5 Batasan Masalah dan Ruang Lingkup <span class="toc-page">3</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB I PENDAHULUAN</strong><span class="toc-dots"></span><span class="toc-page">__P_BAB1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.1 Latar Belakang dan Permasalahan<span class="toc-dots"></span><span class="toc-page">__P_1_1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.2 Tujuan Pengembangan Proyek<span class="toc-dots"></span><span class="toc-page">__P_1_2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.3 Deskripsi Singkat Sistem AI yang Dibangun<span class="toc-dots"></span><span class="toc-page">__P_1_3__</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.4 Metode / Algoritma AI yang Dipilih dan Alasan Pemilihan<span class="toc-dots"></span><span class="toc-page">__P_1_4__</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.5 Batasan Masalah dan Ruang Lingkup<span class="toc-dots"></span><span class="toc-page">__P_1_5__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB II DATASET DAN PERMASALAHAN</strong> <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.1 Deskripsi Dataset dan Sumber Pengambilan Data <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.2 Dimensi Data, Atribut, dan Tipe Data Tabular <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.3 Penjelasan Fungsi Atribut Tabular dan Korelasi Bisnis <span class="toc-page">5</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.4 Identifikasi Variabel Input (X) dan Target/Label (y) <span class="toc-page">6</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.5 Contoh Data dan Visualisasi Distribusi Awal Korpus <span class="toc-page">6</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.6 Keterkaitan Dataset dengan Penyelesaian Permasalahan <span class="toc-page">7</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB II DATASET DAN PERMASALAHAN</strong><span class="toc-dots"></span><span class="toc-page">__P_BAB2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.1 Deskripsi Dataset dan Sumber Pengambilan Data<span class="toc-dots"></span><span class="toc-page">__P_2_1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.2 Dimensi Data, Atribut, dan Tipe Data Tabular<span class="toc-dots"></span><span class="toc-page">__P_2_2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.3 Penjelasan Fungsi Atribut Tabular dan Korelasi Bisnis<span class="toc-dots"></span><span class="toc-page">__P_2_3__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.4 Identifikasi Variabel Input (X) dan Target/Label (y)<span class="toc-dots"></span><span class="toc-page">__P_2_4__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.5 Contoh Data dan Visualisasi Distribusi Awal Korpus<span class="toc-dots"></span><span class="toc-page">__P_2_5__</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.6 Keterkaitan Dataset dengan Penyelesaian Permasalahan<span class="toc-dots"></span><span class="toc-page">__P_2_6__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB III PIPELINE PENGEMBANGAN ARTIFICIAL INTELLIGENCE</strong> <span class="toc-page">8</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.1 Flowchart Pipeline Umum Pengembangan AI (12 Tahapan) <span class="toc-page">8</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes <span class="toc-page">10</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.3 Penjelasan Rinci 12 Tahap Pipeline (Teori, Koding, & Hasil Analisis) <span class="toc-page">11</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.1 Tahap 1: Problem Identification <span class="toc-page">11</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.2 Tahap 2: Data Acquisition / Data Ingestion <span class="toc-page">12</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.3 Tahap 3: Data Understanding & Quality Assessment <span class="toc-page">13</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.4 Tahap 4: Exploratory Data Analysis (EDA) <span class="toc-page">14</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia <span class="toc-page">15</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.6 Tahap 6: Data Transformation & Feature Engineering <span class="toc-page">16</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.7 Tahap 7: Data Preparation / Problem Representation <span class="toc-page">17</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.8 Tahap 8: AI Method / Algorithm Design & Perhitungan Manual <span class="toc-page">18</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.9 Tahap 9: Algorithm / Model Implementation <span class="toc-page">21</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios <span class="toc-page">23</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.11 Tahap 11: Evaluation & Error Analysis <span class="toc-page">24</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.12 Tahap 12: Final Output, Web Deployment, & Online Learning <span class="toc-page">25</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB III PIPELINE PENGEMBANGAN ARTIFICIAL INTELLIGENCE</strong><span class="toc-dots"></span><span class="toc-page">__P_BAB3__</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.1 Flowchart Pipeline Umum Pengembangan AI (12 Tahapan)<span class="toc-dots"></span><span class="toc-page">__P_3_1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes<span class="toc-dots"></span><span class="toc-page">__P_3_2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.3 Penjelasan Rinci 12 Tahap Pipeline (Teori, Koding, & Hasil Analisis)<span class="toc-dots"></span><span class="toc-page">__P_3_3__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.1 Tahap 1: Problem Identification<span class="toc-dots"></span><span class="toc-page">__P_3_3_1__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.2 Tahap 2: Data Acquisition / Data Ingestion<span class="toc-dots"></span><span class="toc-page">__P_3_3_2__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.3 Tahap 3: Data Understanding & Quality Assessment<span class="toc-dots"></span><span class="toc-page">__P_3_3_3__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.4 Tahap 4: Exploratory Data Analysis (EDA)<span class="toc-dots"></span><span class="toc-page">__P_3_3_4__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia<span class="toc-dots"></span><span class="toc-page">__P_3_3_5__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.6 Tahap 6: Data Transformation & Feature Engineering<span class="toc-dots"></span><span class="toc-page">__P_3_3_6__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.7 Tahap 7: Data Preparation / Problem Representation<span class="toc-dots"></span><span class="toc-page">__P_3_3_7__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.8 Tahap 8: AI Method / Algorithm Design & Perhitungan Manual<span class="toc-dots"></span><span class="toc-page">__P_3_3_8__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.9 Tahap 9: Algorithm / Model Implementation<span class="toc-dots"></span><span class="toc-page">__P_3_3_9__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios<span class="toc-dots"></span><span class="toc-page">__P_3_3_10__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.11 Tahap 11: Evaluation & Error Analysis<span class="toc-dots"></span><span class="toc-page">__P_3_3_11__</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.12 Tahap 12: Final Output, Web Deployment, & Online Learning<span class="toc-dots"></span><span class="toc-page">__P_3_3_12__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB IV PENGUJIAN DAN EVALUASI</strong> <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.1 Skenario dan Data Kasus Pengujian <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.2 Hasil Implementasi dan Output Sistem <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.3 Metrik Evaluasi Kinerja (Akurasi, F1, Precision, Recall) <span class="toc-page">28</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.4 Perbandingan Hasil 5 Eksperimen Model <span class="toc-page">29</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.5 Analisis Kesalahan (Error Analysis) & Keterbatasan Sistem <span class="toc-page">30</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB IV PENGUJIAN DAN EVALUASI</strong><span class="toc-dots"></span><span class="toc-page">__P_BAB4__</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.1 Skenario dan Data Kasus Pengujian<span class="toc-dots"></span><span class="toc-page">__P_4_1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.2 Hasil Implementasi dan Output Sistem<span class="toc-dots"></span><span class="toc-page">__P_4_2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.3 Metrik Evaluasi Kinerja (Akurasi, F1, Precision, Recall)<span class="toc-dots"></span><span class="toc-page">__P_4_3__</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.4 Perbandingan Hasil 5 Eksperimen Model<span class="toc-dots"></span><span class="toc-page">__P_4_4__</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.5 Analisis Kesalahan (Error Analysis) & Keterbatasan Sistem<span class="toc-dots"></span><span class="toc-page">__P_4_5__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB V KESIMPULAN DAN SARAN</strong> <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.1 Kesimpulan Hasil Pengembangan Proyek <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.2 Ketercapaian Tujuan dan Manfaat Sistem <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.3 Hasil Evaluasi Metode Naive Bayes <span class="toc-page">33</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.4 Saran dan Arah Pengembangan Selanjutnya <span class="toc-page">33</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB V KESIMPULAN DAN SARAN</strong><span class="toc-dots"></span><span class="toc-page">__P_BAB5__</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.1 Kesimpulan Hasil Pengembangan Proyek<span class="toc-dots"></span><span class="toc-page">__P_5_1__</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.2 Ketercapaian Tujuan dan Manfaat Sistem<span class="toc-dots"></span><span class="toc-page">__P_5_2__</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.3 Hasil Evaluasi Metode Naive Bayes<span class="toc-dots"></span><span class="toc-page">__P_5_3__</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.4 Saran dan Arah Pengembangan Selanjutnya<span class="toc-dots"></span><span class="toc-page">__P_5_4__</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>DAFTAR PUSTAKA</strong> <span class="toc-page">34</span></div>
-<div class="toc-row"><strong>LAMPIRAN</strong> <span class="toc-page">35</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>DAFTAR PUSTAKA</strong><span class="toc-dots"></span><span class="toc-page">__P_DAPUS__</span></div>
+<div class="toc-row"><strong>LAMPIRAN</strong><span class="toc-dots"></span><span class="toc-page">__P_LAMPIRAN__</span></div>
 
 <!-- ==================================================================== -->
 <!-- DAFTAR TABEL & GAMBAR                                                -->
 <!-- ==================================================================== -->
 <div class="page-break"></div>
 <h1 class="chapter-title">DAFTAR TABEL</h1>
-<div class="toc-row">Tabel 2.1: Spesifikasi Metadata Struktur Atribut Tabular Dataset PRDECT-ID <span class="toc-page">5</span></div>
-<div class="toc-row">Tabel 2.2: Contoh Baris Data Tabular Korpus Ulasan Tokopedia PRDECT-ID <span class="toc-page">6</span></div>
-<div class="toc-row">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan <span class="toc-page">13</span></div>
-<div class="toc-row">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia <span class="toc-page">15</span></div>
-<div class="toc-row">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram <span class="toc-page">16</span></div>
-<div class="toc-row">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split <span class="toc-page">17</span></div>
-<div class="toc-row">Tabel 3.5: Korpus Mini Sederhana untuk Simulasi Perhitungan Manual Bayes <span class="toc-page">18</span></div>
-<div class="toc-row">Tabel 3.6: Frekuensi Kemunculan Kata pada Korpus Mini Sederhana <span class="toc-page">19</span></div>
-<div class="toc-row">Tabel 3.7: Hasil Perhitungan Probabilitas Posterior Ulasan Uji Manual <span class="toc-page">20</span></div>
-<div class="toc-row">Tabel 4.1: Classification Report Model Multinomial Naive Bayes Terpilih <span class="toc-page">28</span></div>
-<div class="toc-row">Tabel 4.2: Confusion Matrix Pengujian Model (Test Set N=1.092) <span class="toc-page">28</span></div>
-<div class="toc-row">Tabel 4.3: Perbandingan Komprehensif Kinerja 5 Eksperimen Model AI <span class="toc-page">29</span></div>
-<div class="toc-row">Tabel 4.4: Sampel Analisis Kasus Misklasifikasi Model dan Diagnosa Akar Masalah <span class="toc-page">31</span></div>
+<div class="toc-row">Tabel 2.1: Spesifikasi Metadata Struktur Atribut Tabular Dataset PRDECT-ID<span class="toc-dots"></span><span class="toc-page">__T_2_1__</span></div>
+<div class="toc-row">Tabel 2.2: Contoh Baris Data Tabular Korpus Ulasan Tokopedia PRDECT-ID<span class="toc-dots"></span><span class="toc-page">__T_2_2__</span></div>
+<div class="toc-row">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan<span class="toc-dots"></span><span class="toc-page">__T_3_1__</span></div>
+<div class="toc-row">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia<span class="toc-dots"></span><span class="toc-page">__T_3_2__</span></div>
+<div class="toc-row">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram<span class="toc-dots"></span><span class="toc-page">__T_3_3__</span></div>
+<div class="toc-row">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split<span class="toc-dots"></span><span class="toc-page">__T_3_4__</span></div>
+<div class="toc-row">Tabel 3.5: Korpus Mini Sederhana untuk Simulasi Perhitungan Manual Bayes<span class="toc-dots"></span><span class="toc-page">__T_3_5__</span></div>
+<div class="toc-row">Tabel 3.6: Frekuensi Kemunculan Kata pada Korpus Mini Sederhana<span class="toc-dots"></span><span class="toc-page">__T_3_6__</span></div>
+<div class="toc-row">Tabel 3.7: Hasil Perhitungan Probabilitas Posterior Ulasan Uji Manual<span class="toc-dots"></span><span class="toc-page">__T_3_7__</span></div>
+<div class="toc-row">Tabel 4.1: Classification Report Model Multinomial Naive Bayes Terpilih<span class="toc-dots"></span><span class="toc-page">__T_4_1__</span></div>
+<div class="toc-row">Tabel 4.2: Confusion Matrix Pengujian Model (Test Set N=1.092)<span class="toc-dots"></span><span class="toc-page">__T_4_2__</span></div>
+<div class="toc-row">Tabel 4.3: Perbandingan Komprehensif Kinerja 5 Eksperimen Model AI<span class="toc-dots"></span><span class="toc-page">__T_4_3__</span></div>
+<div class="toc-row">Tabel 4.4: Sampel Analisis Kasus Misklasifikasi Model dan Diagnosa Akar Masalah<span class="toc-dots"></span><span class="toc-page">__T_4_4__</span></div>
 
-<h1 class="chapter-title" style="margin-top: 35px;">DAFTAR GAMBAR</h1>
-<div class="toc-row">Gambar 2.1: Grafik Distribusi Frekuensi dan Proporsi Kelas Sentimen PRDECT-ID <span class="toc-page">7</span></div>
-<div class="toc-row">Gambar 3.1: Flowchart Pipeline Umum Pengembangan Artificial Intelligence (12 Tahapan) <span class="toc-page">9</span></div>
-<div class="toc-row">Gambar 3.2: Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes <span class="toc-page">10</span></div>
-<div class="toc-row">Gambar 4.1: Visualisasi Confusion Matrix Model Terpilih (CountVec + MNB) <span class="toc-page">29</span></div>
-<div class="toc-row">Gambar 4.2: Grafik Perbandingan Akurasi dan Macro F1-Score 5 Eksperimen Model <span class="toc-page">30</span></div>
-<div class="toc-row">Gambar 4.3: Fitur Kata Paling Berpengaruh (Top Log-Likelihood Ratio Positif vs Negatif) <span class="toc-page">31</span></div>
-<div class="toc-row">Gambar L.1: Tangkapan Layar Modul Analisis Sentimen Tunggal dengan Bukti Matematis <span class="toc-page">36</span></div>
-<div class="toc-row">Gambar L.2: Tangkapan Layar Modul Pelacak Target KPI & Net Sentiment Score (NSS) <span class="toc-page">36</span></div>
-<div class="toc-row">Gambar L.3: Tangkapan Layar Modul Peta Korpus 30 Kategori Produk Tokopedia <span class="toc-page">37</span></div>
-<div class="toc-row">Gambar L.4: Tangkapan Layar Modul Komparasi Reputasi 2 Produk Berdampingan <span class="toc-page">37</span></div>
+<div class="page-break"></div>
+<h1 class="chapter-title">DAFTAR GAMBAR</h1>
+<div class="toc-row">Gambar 2.1: Grafik Distribusi Frekuensi dan Proporsi Kelas Sentimen PRDECT-ID<span class="toc-dots"></span><span class="toc-page">__G_2_1__</span></div>
+<div class="toc-row">Gambar 3.1: Flowchart Pipeline Umum Pengembangan Artificial Intelligence (12 Tahapan)<span class="toc-dots"></span><span class="toc-page">__G_3_1__</span></div>
+<div class="toc-row">Gambar 3.2: Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes<span class="toc-dots"></span><span class="toc-page">__G_3_2__</span></div>
+<div class="toc-row">Gambar 4.1: Visualisasi Confusion Matrix Model Terpilih (CountVec + MNB)<span class="toc-dots"></span><span class="toc-page">__G_4_1__</span></div>
+<div class="toc-row">Gambar 4.2: Grafik Perbandingan Akurasi dan Macro F1-Score 5 Eksperimen Model<span class="toc-dots"></span><span class="toc-page">__G_4_2__</span></div>
+<div class="toc-row">Gambar 4.3: Fitur Kata Paling Berpengaruh (Top Log-Likelihood Ratio Positif vs Negatif)<span class="toc-dots"></span><span class="toc-page">__G_4_3__</span></div>
+<div class="toc-row">Gambar L.1: Tangkapan Layar Modul Analisis Sentimen Tunggal dengan Bukti Matematis<span class="toc-dots"></span><span class="toc-page">__G_L_1__</span></div>
+<div class="toc-row">Gambar L.2: Tangkapan Layar Modul Pelacak Target KPI & Net Sentiment Score (NSS)<span class="toc-dots"></span><span class="toc-page">__G_L_2__</span></div>
+<div class="toc-row">Gambar L.3: Tangkapan Layar Modul Peta Korpus 30 Kategori Produk Tokopedia<span class="toc-dots"></span><span class="toc-page">__G_L_3__</span></div>
+<div class="toc-row">Gambar L.4: Tangkapan Layar Modul Komparasi Reputasi 2 Produk Berdampingan<span class="toc-dots"></span><span class="toc-page">__G_L_4__</span></div>
 
 <!-- ==================================================================== -->
 <!-- BAB I PENDAHULUAN                                                    -->
@@ -915,6 +928,7 @@ Sesuai instruksi baku tugas besar, arsitektur pengembangan AI dirancang secara b
   <div class="caption-figure">Gambar 3.1: Flowchart Pipeline Umum Pengembangan AI (12 Tahapan Sistematis End-to-End)</div>
 </div>
 
+<div class="page-break"></div>
 <h2>3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes</h2>
 <p>
 Untuk memahami secara mendalam cara kerja komputasi internal dari model AI yang dipilih, disusun flowchart khusus mekanisme algoritma <strong>Multinomial Naive Bayes</strong> yang diperkaya dengan tahapan prapemrosesan teks, pembentukan vektor n-gram, kalkulasi prior dan likelihood dengan <em>Laplace Smoothing</em>, evaluasi aturan konjungsi kalimat kontrastif, hingga pembaruan inkremental secara <em>real-time</em> (Gambar 3.2).
@@ -932,81 +946,66 @@ Setiap tahapan dalam pipeline pengembangan di bawah ini diuraikan secara kompreh
 </p>
 
 <!-- TAHAP 1 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.1 TAHAP 1: PROBLEM IDENTIFICATION (IDENTIFIKASI MASALAH)</span>
-    <span class="comp-badge">Tahap Wajib E.1</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.1 Tahap 1: Problem Identification (Identifikasi Masalah)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Tahap awal berfokus pada perumusan kebutuhan bisnis dan ilmiah. Dalam domain e-commerce, ulasan pelanggan adalah sinyal vital reputasi. Masalah diklasifikasikan sebagai <em>Supervised Multi-Class Text Classification</em> dengan 3 kelas target. Pengguna sasaran adalah pemilik toko, analis produk, dan pembeli yang memerlukan rekapitulasi sentimen instan tanpa harus membaca ribuan ulasan manual.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
+  <h4>B. Implementasi Coding</h4>
   <p>
   Perumusan kriteria SLA diwujudkan dalam konfigurasi KPI pada modul backend analitik (<code>backend/app/main.py</code>):
   </p>
-  <div class="code-box">
-<span class="code-comment"># Konfigurasi Target SLA dan Batas Kinerja Sistem (main.py)</span>
+  <div class="code-box"><span class="code-comment"># Konfigurasi Target SLA dan Batas Kinerja Sistem (main.py)</span>
 KPI_TARGETS = {
-    <span class="code-string">"target_macro_f1"</span>: <span class="code-num">0.70</span>,       <span class="code-comment"># Target ambang batas F1-Score &gt;= 70%</span>
-    <span class="code-string">"target_accuracy"</span>: <span class="code-num">0.80</span>,       <span class="code-comment"># Target akurasi pengujian &gt;= 80%</span>
+    <span class="code-string">"target_macro_f1"</span>: <span class="code-num">0.70</span>,          <span class="code-comment"># Target ambang batas F1-Score &gt;= 70%</span>
+    <span class="code-string">"target_accuracy"</span>: <span class="code-num">0.80</span>,          <span class="code-comment"># Target akurasi pengujian &gt;= 80%</span>
     <span class="code-string">"max_critical_anger_ratio"</span>: <span class="code-num">0.15</span>, <span class="code-comment"># Ambang batas komplain emosi marah &lt;= 15%</span>
-    <span class="code-string">"target_nss_score"</span>: <span class="code-num">0.0</span>        <span class="code-comment"># Net Sentiment Score harus bernilai positif</span>
-}
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-string">"target_nss_score"</span>: <span class="code-num">0.0</span>           <span class="code-comment"># Net Sentiment Score harus bernilai positif</span>
+}</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Berhasil ditetapkan acuan pengujian yang jelas: sistem harus menghasilkan model dengan Macro F1-Score &ge; 70% pada data uji terstratifikasi, mendukung respons inferensi di bawah 50 milidetik, serta menyediakan metrik operasional Net Sentiment Score (NSS) untuk analitik bisnis.
   </p>
 </div>
 
 <!-- TAHAP 2 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.2 TAHAP 2: DATA ACQUISITION / INGESTION (AKUISISI DATA)</span>
-    <span class="comp-badge">Tahap Wajib E.2</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.2 Tahap 2: Data Acquisition / Ingestion (Akuisisi Data)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Akuisisi data melibatkan pemuatan berkas tabular terstruktur dari repositori terbuka PRDECT-ID ke dalam struktur memori DataFrame Python menggunakan library <code>pandas</code>. Verifikasi integritas data dilakukan untuk memastikan jumlah baris, pemisah kolom, dan representasi karakter UTF-8 terpelihara secara presisi.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 
 <span class="code-comment"># Memuat dataset tabular mentah ulasan e-commerce</span>
 raw_df = pd.read_csv(<span class="code-string">"data/raw/prdect_id_tokopedia.csv"</span>, encoding=<span class="code-string">"utf-8"</span>)
 print(f"Dimensi Awal: {raw_df.shape[0]} baris, {raw_df.shape[1]} kolom")
-print(raw_df.head(3)[[<span class="code-string">"Product Name"</span>, <span class="code-string">"Customer Rating"</span>, <span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>]])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(raw_df.head(3)[[<span class="code-string">"Product Name"</span>, <span class="code-string">"Customer Rating"</span>, <span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>]])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Sebanyak 5.400 baris data dari berkas mentah PRDECT-ID berhasil dimuat secara lengkap. Setelah penggabungan sampel validasi korpus terverifikasi, jumlah data final mencapai 5.459 baris dengan 11 kolom tanpa kegagalan encoding huruf.
   </p>
 </div>
 
 <!-- TAHAP 3 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.3 TAHAP 3: DATA UNDERSTANDING & QUALITY ASSESSMENT (AUDIT KUALITAS)</span>
-    <span class="comp-badge">Tahap Wajib E.3</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.3 Tahap 3: Data Understanding & Quality Assessment (Audit Kualitas)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Pemeriksaan kualitas data mencakup identifikasi nilai kosong (<em>missing values</em> / <code>NaN</code>), data duplikat yang berpotensi menyebabkan bias memori, inkonsistensi penamaan label kelas (misal huruf kapital vs kecil), serta keberadaan teks ulasan yang hanya berupa deretan spasi atau karakter non-alfanumerik.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Audit missing values, duplikasi, dan standardisasi label</span>
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-comment"># Audit missing values, duplikasi, dan standardisasi label</span>
 missing_counts = raw_df.isnull().sum()
 duplicate_count = raw_df.duplicated(subset=[<span class="code-string">"Customer Review"</span>]).sum()
 
 <span class="code-comment"># Standarisasi nilai target sentiment ke format huruf kecil konsisten</span>
 raw_df[<span class="code-string">"Sentiment"</span>] = raw_df[<span class="code-string">"Sentiment"</span>].astype(str).str.strip().str.lower()
 clean_df = raw_df.dropna(subset=[<span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>])
-clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer Review"</span>])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer Review"</span>])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan</div>
   <table class="academic-table">
     <thead>
@@ -1041,36 +1040,27 @@ clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer 
 </div>
 
 <!-- TAHAP 4 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.4 TAHAP 4: EXPLORATORY DATA ANALYSIS (EDA)</span>
-    <span class="comp-badge">Tahap Wajib E.4</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.4 Tahap 4: Exploratory Data Analysis (EDA)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Eksplorasi data bertujuan memahami karakteristik distribusi panjang teks, perbandingan rating bintang terhadap sentimen, dan statistik ringkasan korpus. Analisis ini memberikan intuisi linguistik mengenai pola kata yang mendominasi ulasan positif dan ulasan negatif.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Analisis statistik panjang kata ulasan per kelas</span>
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-comment"># Analisis statistik panjang kata ulasan per kelas</span>
 clean_df[<span class="code-string">"word_count"</span>] = clean_df[<span class="code-string">"Customer Review"</span>].apply(<span class="code-keyword">lambda</span> x: len(str(x).split()))
 stats = clean_df.groupby(<span class="code-string">"Sentiment"</span>)[<span class="code-string">"word_count"</span>].describe()
-print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">"std"</span>, <span class="code-string">"min"</span>, <span class="code-string">"50%"</span>, <span class="code-string">"max"</span>]])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">"std"</span>, <span class="code-string">"min"</span>, <span class="code-string">"50%"</span>, <span class="code-string">"max"</span>]])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Ulasan negatif memiliki rata-rata panjang kata lebih tinggi (rata-rata 18,4 kata per ulasan) dibandingkan ulasan positif (rata-rata 11,2 kata). Hal ini secara psikologis menunjukkan bahwa konsumen yang merasa kecewa cenderung menuliskan kronologi komplain yang lebih panjang dan detail mengenai kerusakan barang atau keterlambatan pengiriman.
   </p>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 5 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.5 TAHAP 5: DATA PREPROCESSING NLP BAHASA INDONESIA</span>
-    <span class="comp-badge">Tahap Wajib E.5</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Tahap preprocessing membersihkan noise dan menstandarisasi ragam bahasa Indonesia. Urutan tahapan:
   </p>
@@ -1080,9 +1070,8 @@ print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">
     <li><em>Slang Word Normalization:</em> Mengganti singkatan atau kata gaul dengan bentuk bakunya menggunakan kamus leksikal (misal: <em>"yg"</em> &rarr; <em>"yang"</em>, <em>"ga"</em> &rarr; <em>"tidak"</em>).</li>
     <li><em>Selective Stopword Removal:</em> Menghapus kata hubung netral namun <strong>tetap mempertahankan</strong> kata negasi penting (seperti <em>"tidak"</em>, <em>"bukan"</em>, <em>"jangan"</em>, <em>"kurang"</em>) karena kata-kata ini membalikkan polaritas sentimen secara drastis.</li>
   </ol>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">import</span> re
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">import</span> re
 
 SLANG_DICT = {
     <span class="code-string">"bgt"</span>: <span class="code-string">"banget"</span>, <span class="code-string">"yg"</span>: <span class="code-string">"yang"</span>, <span class="code-string">"gak"</span>: <span class="code-string">"tidak"</span>, <span class="code-string">"ga"</span>: <span class="code-string">"tidak"</span>,
@@ -1095,9 +1084,8 @@ SLANG_DICT = {
     text = re.sub(r"http\S+|www\S+|https\S+", " ", text)
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     words = [SLANG_DICT.get(w, w) <span class="code-keyword">for</span> w <span class="code-keyword">in</span> text.split()]
-    <span class="code-keyword">return</span> <span class="code-string">" "</span>.join(words)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-keyword">return</span> <span class="code-string">" "</span>.join(words)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia</div>
   <table class="academic-table">
     <thead>
@@ -1123,18 +1111,14 @@ SLANG_DICT = {
 </div>
 
 <!-- TAHAP 6 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.6 TAHAP 6: DATA TRANSFORMATION & FEATURE ENGINEERING</span>
-    <span class="comp-badge">Tahap Wajib E.6</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.6 Tahap 6: Data Transformation & Feature Engineering</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Teks yang telah bersih ditransformasikan ke dalam representasi numerik menggunakan <strong>CountVectorizer</strong> dengan skema n-gram gabungan (unigram dan bigram, range 1-2). Penggunaan unigram mengekstrak kata tunggal (misal: <em>"bagus"</em>), sedangkan bigram menangkap pasangan dua kata berurutan yang sangat esensial untuk membedakan negasi (misal: <em>"tidak bagus"</em>, <em>"kurang rapi"</em>).
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer
 
 <span class="code-comment"># Inisialisasi CountVectorizer unigram + bigram</span>
 vectorizer = CountVectorizer(
@@ -1143,9 +1127,8 @@ vectorizer = CountVectorizer(
     max_df=<span class="code-num">0.85</span>          <span class="code-comment"># Mengabaikan korpus umum (muncul di &gt; 85% dokumen)</span>
 )
 X_matrix = vectorizer.fit_transform(clean_df[<span class="code-string">"cleaned_text"</span>])
-print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary_)} fitur")
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary_)} fitur")</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram</div>
   <table class="academic-table">
     <thead>
@@ -1174,18 +1157,14 @@ print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary
 </div>
 
 <!-- TAHAP 7 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.7 TAHAP 7: DATA PREPARATION & STRATIFIED TRAIN-TEST SPLIT</span>
-    <span class="comp-badge">Tahap Wajib E.7</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.7 Tahap 7: Data Preparation & Stratified Train-Test Split</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Untuk menguji kemampuan generalisasi model secara adil dan mencegah bias data (<em>data leakage</em>), dataset dibagi menjadi <strong>Data Latih (Training Set - 80%)</strong> dan <strong>Data Uji (Testing Set - 20%)</strong>. Pembagian wajib menggunakan teknik <strong>Stratified Splitting</strong> agar proporsi kelas minoritas (Netral 11,2%) tetap identik di kedua subset data.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 
 X = clean_df[<span class="code-string">"cleaned_text"</span>]
 y = clean_df[<span class="code-string">"Sentiment"</span>]
@@ -1195,9 +1174,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size=<span class="code-num">0.20</span>,
     random_state=<span class="code-num">42</span>,
     stratify=y          <span class="code-comment"># Menjamin distribusi rasio kelas tetap proporsional</span>
-)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split</div>
   <table class="academic-table">
     <thead>
@@ -1239,32 +1217,23 @@ X_train, X_test, y_train, y_test = train_test_split(
   </table>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 8 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.8 TAHAP 8: AI METHOD DESIGN & PERHITUNGAN MANUAL LENGKAP</span>
-    <span class="comp-badge">Tahap Wajib E.8</span>
-  </div>
-  <p><strong>A. Konsep, Asumsi, dan Rumus Matematis:</strong></p>
+<div class="stage-section">
+  <h3>3.3.8 Tahap 8: AI Method Design & Perhitungan Manual Lengkap</h3>
+  <h4>A. Konsep, Asumsi, dan Rumus Matematis</h4>
   <p>
   Multinomial Naive Bayes berakar dari Teorema Bayes dengan asumsi independensi bersyarat antar fitur (kata) terhadap kelas. Probabilitas posterior kelas c diberikan dokumen ulasan x dirumuskan sebagai:
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       P(c | x) = P(c) &times; &prod; [ P(w<sub>i</sub> | c)<sup>x<sub>i</sub></sup> ] / P(x)
     </div>
-    <p class="no-indent">Di mana:</p>
-    <ul>
-      <li>P(c): Probabilitas prior kelas c, dihitung sebagai N<sub>c</sub> / N<sub>total</sub>.</li>
-      <li>P(w<sub>i</sub> | c): Likelihood kemunculan kata w<sub>i</sub> pada kelas c.</li>
-      <li>x<sub>i</sub>: Frekuensi kemunculan kata w<sub>i</sub> dalam dokumen x.</li>
-    </ul>
+    <p class="no-indent">Di mana P(c) = N<sub>c</sub> / N<sub>total</sub> adalah probabilitas prior kelas c, P(w<sub>i</sub> | c) adalah likelihood kemunculan kata w<sub>i</sub> pada kelas c, dan x<sub>i</sub> adalah frekuensi kata w<sub>i</sub> dalam dokumen x.</p>
   </div>
   <p>
   Untuk mengatasi masalah probabilitas nol (<em>zero-frequency problem</em>) ketika sebuah kata pada data uji tidak pernah muncul di data latih kelas tertentu, diterapkan <strong>Additive Laplace Smoothing</strong> (&alpha; = 1.0):
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       P(w<sub>i</sub> | c) = [ count(w<sub>i</sub>, c) + &alpha; ] / [ &sum; count(w, c) + &alpha; &times; |V| ]
     </div>
@@ -1273,13 +1242,13 @@ X_train, X_test, y_train, y_test = train_test_split(
   <p>
   Untuk menghindari masalah <em>arithmetic underflow</em> akibat perkalian banyak probabilitas pecahan bernilai kecil, komputasi diimplementasikan dalam domain logaritma alami (Log-Likelihood):
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       c* = argmax<sub>c &isin; C</sub> [ ln P(c) + &sum; x<sub>i</sub> &times; ln P(w<sub>i</sub> | c) ]
     </div>
   </div>
 
-  <p><strong>CONTOH PERHITUNGAN MANUAL LANGKAH DEMI LANGKAH:</strong></p>
+  <h4>Contoh Perhitungan Manual Langkah Demi Langkah</h4>
   <p>
   Misalkan kita memiliki korpus mini mainan (<em>toy corpus</em>) berisi 5 ulasan untuk mengklasifikasikan kalimat uji baru: <em>"barang bagus respon cepat"</em>.
   </p>
@@ -1454,20 +1423,15 @@ X_train, X_test, y_train, y_test = train_test_split(
   </p>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 9 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.9 TAHAP 9: ALGORITHM / MODEL IMPLEMENTATION (IMPLEMENTASI SISTEM)</span>
-    <span class="comp-badge">Tahap Wajib E.9</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.9 Tahap 9: Algorithm / Model Implementation (Implementasi Sistem)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Pemodelan diimplementasikan menggunakan Python melalui library <code>scikit-learn</code> dengan class <code>MultinomialNB(alpha=1.0)</code>. Model dibungkus ke dalam pipeline bersama <code>CountVectorizer</code> dan diekspor ke format serialisasi biner <code>joblib / pickle</code> agar dapat dimuat seketika oleh server web Flask tanpa overhead waktu training ulang.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
 <span class="code-keyword">from</span> sklearn.pipeline <span class="code-keyword">import</span> Pipeline
 <span class="code-keyword">import</span> joblib
 
@@ -1482,21 +1446,17 @@ pipeline.fit(X_train, y_train)
 
 <span class="code-comment"># Simpan model untuk produksi web service</span>
 joblib.dump(pipeline, <span class="code-string">"models/model_sentimen.pkl"</span>)
-print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/model_sentimen.pkl"</span>)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/model_sentimen.pkl"</span>)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Pelatihan model berlangsung sangat cepat, membutuhkan waktu hanya 0,48 detik untuk memproses 4.367 baris data latih dengan 14.890 fitur pada lingkungan CPU Intel Core / Apple Silicon. Ukuran berkas model terkompresi sebesar 197 KB, menjadikannya sangat efisien untuk di-deploy pada server web.
   </p>
 </div>
 
 <!-- TAHAP 10 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.10 TAHAP 10: TESTING & MULTI-EXPERIMENTATION SCENARIOS</span>
-    <span class="comp-badge">Tahap Wajib E.10</span>
-  </div>
-  <p><strong>A. Konsep dan Desain Skenario:</strong></p>
+<div class="stage-section">
+  <h3>3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios</h3>
+  <h4>A. Konsep dan Desain Skenario</h4>
   <p>
   Untuk menemukan konfigurasi terbaik, dirancang <strong>5 (lima) variasi eksperimen</strong> komparatif dengan menguji kombinasi:
   </p>
@@ -1507,9 +1467,8 @@ print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/m
     <li>Eksperimen 4: CountVectorizer + ComplementNB.</li>
     <li>Eksperimen 5: TF-IDF Vectorizer + MultinomialNB (tanpa stopword removal / raw text).</li>
   </ol>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> ComplementNB
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> ComplementNB
 <span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> TfidfVectorizer
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> classification_report, accuracy_score, f1_score
 
@@ -1523,45 +1482,36 @@ results = []
         <span class="code-string">"name"</span>: exp_name,
         <span class="code-string">"accuracy"</span>: accuracy_score(y_test, y_pred),
         <span class="code-string">"f1_macro"</span>: f1_score(y_test, y_pred, average=<span class="code-string">"macro"</span>)
-    })
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    })</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Meskipun TF-IDF menghasilkan akurasi sedikit lebih tinggi (86,54%), <strong>CountVectorizer + MultinomialNB unggul mutlak pada metrik Macro F1-Score sebesar 76,64%</strong>. Hal ini dikarenakan CountVectorizer mempertahankan bobot frekuensi kata pada kelas minoritas (Netral), menghasilkan Recall Netral sebesar 51,2% (berbanding hanya 21,9% pada TF-IDF). Oleh karena itu, Eksperimen 3 ditetapkan sebagai model inti sistem.
   </p>
 </div>
 
 <!-- TAHAP 11 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.11 TAHAP 11: PERFORMANCE EVALUATION & ERROR ANALYSIS</span>
-    <span class="comp-badge">Tahap Wajib E.11</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.11 Tahap 11: Performance Evaluation & Error Analysis</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Evaluasi menggunakan metrik formal Confusion Matrix, Precision, Recall, Macro F1, dan Weighted F1. Error analysis menginvestigasi sampel data uji yang mengalami salah prediksi guna memetakan batasan intrinsik metode Naive Bayes.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix
 
 cm = confusion_matrix(y_test, y_pred, labels=[<span class="code-string">"positif"</span>, <span class="code-string">"netral"</span>, <span class="code-string">"negatif"</span>])
 print(<span class="code-string">"Confusion Matrix:\n"</span>, cm)
-print(classification_report(y_test, y_pred, digits=<span class="code-num">4</span>))
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(classification_report(y_test, y_pred, digits=<span class="code-num">4</span>))</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Dari 1.092 data uji, model memprediksi 932 sampel dengan benar (455 Positif benar, 414 Negatif benar, dan 63 Netral benar). Kesalahan utama terjadi pada ulasan netral yang diklasifikasikan sebagai negatif (46 sampel) karena ulasan netral sering memuat kritik halus seperti <em>"pengiriman agak lama tapi ya lumayan"</em>.
   </p>
 </div>
 
 <!-- TAHAP 12 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.12 TAHAP 12: FINAL OUTPUT, WEB DEPLOYMENT & ONLINE LEARNING</span>
-    <span class="comp-badge">Tahap Wajib E.12</span>
-  </div>
-  <p><strong>A. Konsep dan Arsitektur Deployment:</strong></p>
+<div class="stage-section">
+  <h3>3.3.12 Tahap 12: Final Output, Web Deployment & Online Learning</h3>
+  <h4>A. Konsep dan Arsitektur Deployment</h4>
   <p>
   Model AI diintegrasikan ke dalam arsitektur aplikasi berbasis web:
   </p>
@@ -1570,9 +1520,8 @@ print(classification_report(y_test, y_pred, digits=<span class="code-num">4</spa
     <li><strong>Frontend (React SPA + Tailwind CSS + Lucide Icons):</strong> Dashboard interaktif modern dengan 10 modul analitik komprehensif, fitur komparasi produk, serta panduan bantuan presentasi pada setiap komponen.</li>
     <li><strong>Mekanisme Online Incremental Learning (<code>partial_fit</code>):</strong> Saat pengguna memberikan koreksi sentimen atau menambahkan ulasan baru melalui antarmuka web, server mengeksekusi metode <code>classifier.partial_fit()</code>. Bobot frekuensi kata diperbarui secara atomik tanpa memerlukan pelatihan ulang dataset secara menyeluruh.</li>
   </ul>
-  <p><strong>B. Implementasi Coding Online Learning:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Endpoint Incremental Online Learning (main.py)</span>
+  <h4>B. Implementasi Coding Online Learning</h4>
+  <div class="code-box"><span class="code-comment"># Endpoint Incremental Online Learning (main.py)</span>
 <span class="code-keyword">@app.route</span>(<span class="code-string">"/api/learn"</span>, methods=[<span class="code-string">"POST"</span>])
 <span class="code-keyword">def</span> online_learn():
     data = request.json
@@ -1586,9 +1535,8 @@ print(classification_report(y_test, y_pred, digits=<span class="code-num">4</spa
     model_pipeline.named_steps[<span class="code-string">"classifier"</span>].partial_fit(
         X_new, [correct_label], classes=[<span class="code-string">"positif"</span>, <span class="code-string">"netral"</span>, <span class="code-string">"negatif"</span>]
     )
-    <span class="code-keyword">return</span> jsonify({<span class="code-string">"status"</span>: <span class="code-string">"success"</span>, <span class="code-string">"message"</span>: <span class="code-string">"Model berhasil disinkronisasi"</span>})
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-keyword">return</span> jsonify({<span class="code-string">"status"</span>: <span class="code-string">"success"</span>, <span class="code-string">"message"</span>: <span class="code-string">"Model berhasil disinkronisasi"</span>})</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Integrasi web berjalan stabil dan responsif. Pengujian online learning membuktikan bahwa setelah koreksi ulasan baru dimasukkan, model seketika mengenali pola ulasan sejenis berikutnya dengan perubahan probabilitas log-likelihood terverifikasi, menjamin sistem adaptif terhadap perkembangan kosakata konsumen.
   </p>
@@ -1921,25 +1869,30 @@ Untuk pengembangan lebih lanjut dari sistem AI ini di masa mendatang, disarankan
 <h1 class="chapter-title">LAMPIRAN</h1>
 
 <h2>Lampiran 1: Tautan Dataset dan Repositori Kode Sumber</h2>
-<table class="academic-table">
+<table class="plain-table">
   <tr>
     <td width="30%"><strong>Repositori Kode Sumber</strong></td>
+    <td width="3%">:</td>
     <td><a href="https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk.git">https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk.git</a></td>
   </tr>
   <tr>
     <td><strong>Tautan Sumber Dataset</strong></td>
+    <td>:</td>
     <td>Dataset PRDECT-ID Tokopedia (Kaggle / Open Data Repository)</td>
   </tr>
   <tr>
     <td><strong>Teknologi Backend</strong></td>
+    <td>:</td>
     <td>Python 3.11, Flask 3.1, Scikit-Learn 1.9, Pandas, Joblib</td>
   </tr>
   <tr>
     <td><strong>Teknologi Frontend</strong></td>
+    <td>:</td>
     <td>React 19, TypeScript, Vite 8, Tailwind CSS, Lucide Icons</td>
   </tr>
   <tr>
     <td><strong>Branch Utama</strong></td>
+    <td>:</td>
     <td><code>main</code> (Aktif, Sinkron, & Bebas Konflik Port)</td>
   </tr>
 </table>
@@ -1971,8 +1924,7 @@ Berikut disajikan dokumentasi tangkapan layar antarmuka pengguna sistem web cerd
 </div>
 
 <h2>Lampiran 3: Cuplikan Kode Sumber Script Otomasi Dev Bebas Bentrok Port</h2>
-<div class="code-box">
-<span class="code-comment">#!/usr/bin/env bash</span>
+<div class="code-box"><span class="code-comment">#!/usr/bin/env bash</span>
 <span class="code-comment"># frontend/scripts/dev.sh - Skrip Otomasi Sinkronisasi Port Backend & Frontend</span>
 <span class="code-keyword">set</span> -euo pipefail
 
@@ -1989,48 +1941,162 @@ FRONTEND_PORT="${FRONTEND_PORT:-5173}"
 <span class="code-keyword">done</span>
 
 <span class="code-keyword">export</span> VITE_BACKEND_PORT="$BACKEND_PORT"
-<span class="code-comment"># Menjalankan Flask dan Vite secara paralel dan sinkron...</span>
-</div>
+<span class="code-comment"># Menjalankan Flask dan Vite secara paralel dan sinkron...</span></div>
 
 </body>
 </html>
 """
 
 # Replace image placeholders
-html_content = html_template.replace("__IMG_CLASS_DIST__", img_class_dist)
-html_content = html_content.replace("__IMG_CM__", img_cm)
-html_content = html_content.replace("__IMG_MODEL_COMP__", img_model_comp)
-html_content = html_content.replace("__IMG_TOP_TOKENS__", img_top_tokens)
-html_content = html_content.replace("__IMG_PIPE_FLOW__", img_pipe_flow)
-html_content = html_content.replace("__IMG_NB_FLOW__", img_nb_flow)
-html_content = html_content.replace("__IMG_UI_ANALISIS__", img_ui_analisis)
-html_content = html_content.replace("__IMG_UI_KPI__", img_ui_kpi)
-html_content = html_content.replace("__IMG_UI_KORPUS__", img_ui_korpus)
-html_content = html_content.replace("__IMG_UI_KOMPARASI__", img_ui_komparasi)
+base_html = html_template.replace("__IMG_LOGO_POLINDRA__", img_logo_polindra)
+base_html = base_html.replace("__IMG_CLASS_DIST__", img_class_dist)
+base_html = base_html.replace("__IMG_CM__", img_cm)
+base_html = base_html.replace("__IMG_MODEL_COMP__", img_model_comp)
+base_html = base_html.replace("__IMG_TOP_TOKENS__", img_top_tokens)
+base_html = base_html.replace("__IMG_PIPE_FLOW__", img_pipe_flow)
+base_html = base_html.replace("__IMG_NB_FLOW__", img_nb_flow)
+base_html = base_html.replace("__IMG_UI_ANALISIS__", img_ui_analisis)
+base_html = base_html.replace("__IMG_UI_KPI__", img_ui_kpi)
+base_html = base_html.replace("__IMG_UI_KORPUS__", img_ui_korpus)
+base_html = base_html.replace("__IMG_UI_KOMPARASI__", img_ui_komparasi)
 
-# Write HTML to file
 html_path = "Laporan_Tugas_Besar_Kecerdasan_Buatan.html"
-with open(html_path, "w", encoding="utf-8") as f:
-    f.write(html_content)
-
-print(f"HTML report successfully written to {html_path}")
-
-# Compile HTML to PDF using Chrome Headless
 pdf_path = "Laporan_Tugas_Besar_Kecerdasan_Buatan_Kelompok.pdf"
-chrome_cmd = [
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    "--headless",
-    "--disable-gpu",
-    "--no-pdf-header-footer",
-    f"--print-to-pdf={pdf_path}",
-    f"file://{os.path.abspath(html_path)}"
-]
+chrome_bin = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
-print("Compiling PDF with Google Chrome Headless...")
-res = subprocess.run(chrome_cmd, capture_output=True, text=True)
-print("Return code:", res.returncode)
+def compile_pdf(html_str):
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_str)
+    chrome_cmd = [
+        chrome_bin,
+        "--headless",
+        "--disable-gpu",
+        "--no-pdf-header-footer",
+        f"--print-to-pdf={pdf_path}",
+        f"file://{os.path.abspath(html_path)}"
+    ]
+    subprocess.run(chrome_cmd, capture_output=True, text=True)
+
+# Pass 1: Compile with placeholder page numbers
+print("Pass 1: Compiling draft PDF to detect exact page numbers...")
+compile_pdf(base_html)
+
+# Extract exact page numbers using pypdf
+import pypdf
+reader = pypdf.PdfReader(pdf_path)
+total_pages = len(reader.pages)
+print(f"Draft PDF Pages: {total_pages}")
+
+markers = {
+    "__P_COVER__": "LAPORAN TUGAS BESAR KECERDASAN BUATAN",
+    "__P_PENGESAHAN__": "LEMBAR PENGESAHAN",
+    "__P_ABSTRAK__": "ABSTRAK",
+    "__P_ABSTRACT__": "ABSTRACT",
+    "__P_KATA_PENGANTAR__": "KATA PENGANTAR",
+    "__P_DAFTAR_ISI__": "DAFTAR ISI",
+    "__P_DAFTAR_TABEL__": "DAFTAR TABEL",
+    "__P_DAFTAR_GAMBAR__": "DAFTAR GAMBAR",
+    "__P_BAB1__": "BAB I",
+    "__P_1_1__": "1.1 Latar Belakang",
+    "__P_1_2__": "1.2 Tujuan Pengembangan",
+    "__P_1_3__": "1.3 Deskripsi Singkat",
+    "__P_1_4__": "1.4 Metode / Algoritma",
+    "__P_1_5__": "1.5 Batasan Masalah",
+    "__P_BAB2__": "BAB II",
+    "__P_2_1__": "2.1 Deskripsi Dataset",
+    "__P_2_2__": "2.2 Dimensi Data",
+    "__P_2_3__": "2.3 Penjelasan Fungsi",
+    "__P_2_4__": "2.4 Identifikasi Variabel",
+    "__P_2_5__": "2.5 Contoh Data",
+    "__P_2_6__": "2.6 Keterkaitan Dataset",
+    "__P_BAB3__": "BAB III",
+    "__P_3_1__": "3.1 Flowchart Pipeline Umum",
+    "__P_3_2__": "3.2 Flowchart Khusus",
+    "__P_3_3__": "3.3 Penjelasan Rinci",
+    "__P_3_3_1__": "3.3.1 Tahap 1:",
+    "__P_3_3_2__": "3.3.2 Tahap 2:",
+    "__P_3_3_3__": "3.3.3 Tahap 3:",
+    "__P_3_3_4__": "3.3.4 Tahap 4:",
+    "__P_3_3_5__": "3.3.5 Tahap 5:",
+    "__P_3_3_6__": "3.3.6 Tahap 6:",
+    "__P_3_3_7__": "3.3.7 Tahap 7:",
+    "__P_3_3_8__": "3.3.8 Tahap 8:",
+    "__P_3_3_9__": "3.3.9 Tahap 9:",
+    "__P_3_3_10__": "3.3.10 Tahap 10:",
+    "__P_3_3_11__": "3.3.11 Tahap 11:",
+    "__P_3_3_12__": "3.3.12 Tahap 12:",
+    "__P_BAB4__": "BAB IV",
+    "__P_4_1__": "4.1 Skenario dan Data",
+    "__P_4_2__": "4.2 Hasil Implementasi",
+    "__P_4_3__": "4.3 Metrik Evaluasi",
+    "__P_4_4__": "4.4 Perbandingan Hasil",
+    "__P_4_5__": "4.5 Analisis Kesalahan",
+    "__P_BAB5__": "BAB V",
+    "__P_5_1__": "5.1 Kesimpulan Hasil",
+    "__P_5_2__": "5.2 Ketercapaian Tujuan",
+    "__P_5_3__": "5.3 Evaluasi Kinerja",
+    "__P_5_4__": "5.4 Saran dan Arah",
+    "__P_DAPUS__": "DAFTAR PUSTAKA",
+    "__P_LAMPIRAN__": "LAMPIRAN",
+    "__T_2_1__": "Tabel 2.1:",
+    "__T_2_2__": "Tabel 2.2:",
+    "__T_3_1__": "Tabel 3.1:",
+    "__T_3_2__": "Tabel 3.2:",
+    "__T_3_3__": "Tabel 3.3:",
+    "__T_3_4__": "Tabel 3.4:",
+    "__T_3_5__": "Tabel 3.5:",
+    "__T_3_6__": "Tabel 3.6:",
+    "__T_3_7__": "Tabel 3.7:",
+    "__T_4_1__": "Tabel 4.1:",
+    "__T_4_2__": "Tabel 4.2:",
+    "__T_4_3__": "Tabel 4.3:",
+    "__T_4_4__": "Tabel 4.4:",
+    "__G_2_1__": "Gambar 2.1:",
+    "__G_3_1__": "Gambar 3.1:",
+    "__G_3_2__": "Gambar 3.2:",
+    "__G_4_1__": "Gambar 4.1:",
+    "__G_4_2__": "Gambar 4.2:",
+    "__G_4_3__": "Gambar 4.3:",
+    "__G_L_1__": "Gambar L.1:",
+    "__G_L_2__": "Gambar L.2:",
+    "__G_L_3__": "Gambar L.3:",
+    "__G_L_4__": "Gambar L.4:",
+}
+
+# Skip TOC pages when searching for body headings (TOC is roughly pages 5-9)
+page_texts = [p.extract_text() or "" for p in reader.pages]
+
+final_html = base_html
+for placeholder, query in markers.items():
+    found_page = "-"
+    # Determine minimum page index to search (so we don't match TOC itself)
+    start_idx = 0
+    if placeholder in ["__P_COVER__"]:
+        start_idx = 0
+    elif placeholder in ["__P_PENGESAHAN__", "__P_ABSTRAK__", "__P_ABSTRACT__", "__P_KATA_PENGANTAR__", "__P_DAFTAR_ISI__", "__P_DAFTAR_TABEL__", "__P_DAFTAR_GAMBAR__"]:
+        start_idx = 1
+    else:
+        start_idx = 8 # Body content starts after Daftar Gambar
+        
+    for idx in range(start_idx, len(page_texts)):
+        if query in page_texts[idx]:
+            found_page = str(idx + 1)
+            break
+    # fallback if start_idx was too high
+    if found_page == "-":
+        for idx in range(len(page_texts)):
+            if query in page_texts[idx] and idx > 4:
+                found_page = str(idx + 1)
+                break
+    final_html = final_html.replace(placeholder, found_page)
+
+# Pass 2: Compile final PDF with exact page numbers in TOC
+print("Pass 2: Compiling final clean PDF with exact TOC page numbers...")
+compile_pdf(final_html)
+
 if os.path.exists(pdf_path):
+    reader2 = pypdf.PdfReader(pdf_path)
     size_mb = os.path.getsize(pdf_path) / (1024 * 1024)
-    print(f"SUCCESS! PDF created at: {pdf_path} ({size_mb:.2f} MB)")
+    print(f"SUCCESS! Final Clean PDF created at: {pdf_path} ({len(reader2.pages)} pages, {size_mb:.2f} MB)")
 else:
-    print("FAILED to create PDF. Stderr:", res.stderr)
+    print("FAILED to create PDF.")

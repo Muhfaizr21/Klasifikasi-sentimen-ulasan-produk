@@ -6,11 +6,18 @@
 <style>
   @page {
     size: A4 portrait;
-    margin: 25mm 25mm 25mm 30mm;
+    margin: 30mm 25mm 25mm 35mm;
     @bottom-center {
       content: counter(page);
       font-family: 'Times New Roman', Times, serif;
-      font-size: 10pt;
+      font-size: 11pt;
+      color: #1a1a1a;
+    }
+  }
+
+  @page :first {
+    @bottom-center {
+      content: none;
     }
   }
 
@@ -22,7 +29,7 @@
     font-family: 'Times New Roman', Times, serif;
     font-size: 12pt;
     line-height: 1.5;
-    color: #1a1a1a;
+    color: #000000;
     background-color: #ffffff;
     margin: 0;
     padding: 0;
@@ -35,7 +42,7 @@
     break-before: page;
   }
 
-  /* Cover Page Styling */
+  /* Cover Page Styling - Clean Academic Thesis */
   .cover {
     min-height: 92vh;
     display: flex;
@@ -43,65 +50,68 @@
     justify-content: space-between;
     align-items: center;
     text-align: center;
-    padding: 20px 0;
+    padding: 10px 0;
   }
 
   .cover-inst-header {
-    font-size: 12.5pt;
+    font-size: 13pt;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.3;
+    letter-spacing: 0.4px;
+    line-height: 1.4;
+    color: #000000;
   }
 
   .cover-title-box {
-    margin: 25px 0;
+    margin: 22px 0;
   }
 
   .cover-title {
     font-size: 14pt;
     font-weight: bold;
     text-transform: uppercase;
-    line-height: 1.4;
-    color: #0f172a;
+    line-height: 1.45;
+    color: #000000;
   }
 
   .cover-subtitle {
     font-size: 11.5pt;
     font-weight: normal;
-    margin-top: 12px;
+    margin-top: 10px;
     font-style: italic;
-    color: #334155;
+    color: #222222;
   }
 
-  .cover-emblem {
-    width: 130px;
-    height: 130px;
+  .cover-logo {
+    width: 135px;
+    height: auto;
     margin: 18px auto;
+    display: block;
   }
 
   .cover-purpose {
-    font-size: 11pt;
-    margin: 15px 0;
-    line-height: 1.4;
+    font-size: 11.5pt;
+    margin: 14px 0;
+    line-height: 1.45;
   }
 
   .cover-authors-table {
-    margin: 15px auto;
-    font-size: 11pt;
+    margin: 12px auto;
+    font-size: 11.5pt;
     border-collapse: collapse;
     text-align: left;
   }
 
   .cover-authors-table td {
-    padding: 3px 12px;
+    padding: 3px 14px;
   }
 
   .cover-footer {
-    font-size: 12pt;
+    font-size: 12.5pt;
     font-weight: bold;
     text-transform: uppercase;
-    line-height: 1.3;
+    line-height: 1.4;
+    margin-top: 15px;
   }
 
   /* Headings */
@@ -111,38 +121,38 @@
     text-align: center;
     text-transform: uppercase;
     margin-top: 0;
-    margin-bottom: 25px;
+    margin-bottom: 24px;
     line-height: 1.4;
-    letter-spacing: 0.5px;
+    color: #000000;
   }
 
   h2 {
-    font-size: 12.5pt;
+    font-size: 12pt;
     font-weight: bold;
-    margin-top: 22px;
+    margin-top: 20px;
     margin-bottom: 10px;
-    color: #0f172a;
+    color: #000000;
   }
 
   h3 {
     font-size: 12pt;
     font-weight: bold;
-    margin-top: 16px;
+    margin-top: 18px;
     margin-bottom: 8px;
-    color: #1e293b;
+    color: #000000;
   }
 
   h4 {
-    font-size: 11.5pt;
+    font-size: 12pt;
     font-weight: bold;
-    font-style: italic;
-    margin-top: 12px;
+    margin-top: 10px;
     margin-bottom: 6px;
+    color: #000000;
   }
 
   p {
     margin-top: 0;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-indent: 1.27cm;
   }
 
@@ -152,176 +162,163 @@
 
   ol, ul {
     margin-top: 0;
-    margin-bottom: 12px;
-    padding-left: 2.2cm;
+    margin-bottom: 10px;
+    padding-left: 1.8cm;
   }
 
   li {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
   }
 
-  /* Tables */
+  /* Clean Academic Tables (Booktabs style - no outer side borders) */
   table.academic-table {
     width: 100%;
     border-collapse: collapse;
-    margin: 18px 0;
+    margin: 14px 0 18px 0;
     font-size: 10.5pt;
     line-height: 1.35;
   }
 
   table.academic-table th {
-    border-top: 2px solid #000;
-    border-bottom: 1.5px solid #000;
-    padding: 8px 10px;
+    border-top: 1.5pt solid #000000;
+    border-bottom: 1pt solid #000000;
+    padding: 7px 9px;
     text-align: left;
     font-weight: bold;
-    background-color: #f8fafc;
+    background-color: transparent;
+    color: #000000;
   }
 
   table.academic-table td {
-    padding: 7px 10px;
-    border-bottom: 1px solid #e2e8f0;
+    padding: 6px 9px;
+    border-bottom: 0.5pt solid #d4d4d8;
     vertical-align: top;
   }
 
   table.academic-table tr:last-child td {
-    border-bottom: 2px solid #000;
+    border-bottom: 1.5pt solid #000000;
   }
 
   .caption-table {
-    font-size: 10.5pt;
+    font-size: 11pt;
     font-weight: bold;
+    margin-top: 14px;
     margin-bottom: 6px;
     text-align: left;
+    color: #000000;
   }
 
-  /* Figures */
+  /* Clean Figures - No Border/Shadow */
   .figure-container {
     text-align: center;
-    margin: 20px 0;
+    margin: 18px 0;
     page-break-inside: avoid;
   }
 
   .figure-img {
-    max-width: 95%;
+    max-width: 92%;
     height: auto;
-    border: 1px solid #cbd5e1;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: none;
   }
 
   .caption-figure {
-    font-size: 10.5pt;
+    font-size: 11pt;
     font-style: italic;
     margin-top: 8px;
-    color: #1e293b;
+    color: #000000;
+    text-align: center;
   }
 
-  /* Math & Formula Box */
-  .formula-box {
-    background-color: #f8fafc;
-    border-left: 3px solid #0284c7;
-    padding: 12px 18px;
-    margin: 14px 0;
-    font-family: 'Cambria Math', 'Times New Roman', serif;
-    font-size: 11pt;
+  /* Clean Centered Math Formula */
+  .formula-clean {
+    margin: 12px 0;
+    padding: 4px 0;
     page-break-inside: avoid;
   }
 
   .formula-center {
     text-align: center;
-    font-weight: bold;
+    font-family: 'Cambria Math', 'Times New Roman', serif;
     font-size: 12pt;
     margin: 8px 0;
   }
 
-  /* Code Snippet Box */
+  /* Clean Printable Code Block (Light Subtle Background, No Harsh Black Box) */
   .code-box {
-    background-color: #0f172a;
-    color: #f8fafc;
-    border-radius: 5px;
-    padding: 14px;
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-left: 2.5pt solid #475569;
+    padding: 10px 14px;
     font-family: 'Courier New', Courier, monospace;
     font-size: 9.5pt;
-    line-height: 1.3;
+    line-height: 1.35;
     overflow-x: auto;
-    margin: 15px 0;
+    margin: 10px 0 14px 0;
     page-break-inside: avoid;
-    border: 1px solid #334155;
+    white-space: pre-wrap;
   }
 
   .code-comment {
-    color: #94a3b8;
+    color: #64748b;
     font-style: italic;
   }
 
   .code-keyword {
-    color: #38bdf8;
+    color: #0369a1;
     font-weight: bold;
   }
 
   .code-string {
-    color: #4ade80;
+    color: #15803d;
   }
 
   .code-num {
-    color: #facc15;
+    color: #b45309;
   }
 
-  /* Three Component Box (Format Wajib H) */
-  .component-block {
-    border: 1px solid #94a3b8;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin: 16px 0;
-    background-color: #ffffff;
-    page-break-inside: avoid;
+  /* Clean Subsection for Pipeline Stages (No Outer Box) */
+  .stage-section {
+    margin: 14px 0 18px 0;
   }
 
-  .comp-header {
+  /* Clean Abstract (No Outer Box) */
+  .abstract-section {
+    margin: 12px 0 22px 0;
+    font-size: 12pt;
+    line-height: 1.5;
+  }
+
+  .abstract-title {
     font-weight: bold;
-    font-size: 11pt;
-    color: #0f172a;
-    border-bottom: 1.5px solid #e2e8f0;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .comp-badge {
-    background-color: #0284c7;
-    color: white;
-    font-size: 9pt;
-    padding: 2px 8px;
-    border-radius: 4px;
+    text-align: center;
     text-transform: uppercase;
+    margin-bottom: 12px;
+    font-size: 12.5pt;
   }
 
-  .abstract-box {
-    border: 1px solid #cbd5e1;
-    padding: 18px 24px;
-    margin: 20px 0;
-    background-color: #fcfcfc;
-    font-size: 11pt;
-    line-height: 1.45;
-  }
-
+  /* Table of Contents */
   .toc-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 11pt;
+    align-items: baseline;
+    margin-bottom: 5px;
+    font-size: 11.5pt;
+  }
+
+  .toc-dots {
+    flex-grow: 1;
+    border-bottom: 1pt dotted #666666;
+    margin: 0 8px;
   }
 
   .toc-page {
-    font-weight: bold;
+    font-weight: normal;
   }
 
   /* Signatures */
   .sig-table {
     width: 100%;
-    margin-top: 40px;
+    margin-top: 36px;
     border-collapse: collapse;
   }
 
@@ -332,10 +329,24 @@
   }
 
   .sig-line {
-    margin-top: 75px;
-    border-top: 1px solid #000;
+    margin-top: 70px;
+    border-top: 1pt solid #000000;
     display: inline-block;
-    width: 80%;
+    width: 75%;
+  }
+
+  /* Plain key-value table for Pengesahan & Lampiran */
+  table.plain-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 11.5pt;
+  }
+
+  table.plain-table td {
+    padding: 5px 8px;
+    vertical-align: top;
+    border: none;
   }
 </style>
 </head>
@@ -349,8 +360,7 @@
     <div class="cover-inst-header">
       KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI<br>
       POLITEKNIK NEGERI INDRAMAYU<br>
-      JURUSAN TEKNIK INFORMATIKA<br>
-      PROGRAM STUDI REKAYASA PERANGKAT LUNAK / TEKNIK INFORMATIKA
+      JURUSAN TEKNIK INFORMATIKA
     </div>
 
     <div class="cover-title-box">
@@ -365,49 +375,42 @@
   </div>
 
   <div>
-    <!-- Logo SVG Politeknik -->
-    <svg class="cover-emblem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="90" fill="#0369a1" stroke="#0f172a" stroke-width="4"/>
-      <circle cx="100" cy="100" r="75" fill="#ffffff" stroke="#0284c7" stroke-width="3"/>
-      <polygon points="100,35 150,65 150,135 100,165 50,135 50,65" fill="#f0f9ff" stroke="#0284c7" stroke-width="2"/>
-      <path d="M100,45 L100,155 M55,75 L145,75 M55,125 L145,125" stroke="#0284c7" stroke-width="2"/>
-      <circle cx="100" cy="100" r="16" fill="#0284c7"/>
-      <text x="100" y="105" font-family="'Times New Roman', serif" font-size="14" fill="#ffffff" font-weight="bold" text-anchor="middle">POLINDRA</text>
-    </svg>
+    <img src="data:image/jpeg;base64,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" class="cover-logo" alt="Logo Politeknik Negeri Indramayu">
 
     <div class="cover-purpose">
-      Laporan Tugas Besar ini Diajukan sebagai Syarat Memenuhi Kelulusan<br>
-      Mata Kuliah <strong>Kecerdasan Buatan</strong> pada Semester Ganjil Tahun Akademik 2025/2026
+      Laporan Tugas Besar ini Diajukan untuk Memenuhi Penilaian<br>
+      Mata Kuliah <strong>Kecerdasan Buatan</strong> Semester Ganjil Tahun Akademik 2025/2026
     </div>
 
-    <div style="font-size: 11pt; font-weight: bold; margin-bottom: 5px;">Disusun Oleh (Kelompok):</div>
+    <div style="font-size: 11.5pt; font-weight: bold; margin-bottom: 4px;">Disusun Oleh:</div>
     <table class="cover-authors-table">
       <tr>
-        <td><strong>1. Muhammad Faiz Ramadhan</strong></td>
-        <td>NIM. 2305072</td>
+        <td>1. Muhammad Faiz Ramadhan</td>
+        <td>(2305072)</td>
       </tr>
       <tr>
-        <td><strong>2. AYIP MUHAMMAD</strong></td>
-        <td>NIM. 2305059</td>
+        <td>2. AYIP MUHAMMAD</td>
+        <td>(2305059)</td>
       </tr>
       <tr>
-        <td><strong>3. MUHAMMAD IHYA ’ULUMUDDIN</strong></td>
-        <td>NIM. 2305073</td>
+        <td>3. MUHAMMAD IHYA ’ULUMUDDIN</td>
+        <td>(2305073)</td>
       </tr>
       <tr>
-        <td><strong>4. NAILYAA DLIYAA’AN SYAH</strong></td>
-        <td>NIM. 2305075</td>
+        <td>4. NAILYAA DLIYAA’AN SYAH</td>
+        <td>(2305075)</td>
       </tr>
     </table>
 
-    <div style="font-size: 11pt; margin-top: 10px;">
+    <div style="font-size: 11.5pt; margin-top: 12px;">
       Dosen Pengampu:<br>
       <strong>Vera Wati, M.Kom</strong>
     </div>
   </div>
 
   <div class="cover-footer">
-    INDRAMAYU<br>
+    PROGRAM STUDI TEKNIK INFORMATIKA<br>
+    POLITEKNIK NEGERI INDRAMAYU<br>
     2026
   </div>
 </div>
@@ -422,35 +425,40 @@
 Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Terstruktur dengan judul:
 </p>
 
-<div style="text-align: center; font-weight: bold; margin: 15px 0; font-size: 12.5pt; text-transform: uppercase;">
+<div style="text-align: center; font-weight: bold; margin: 16px 0; font-size: 12pt; text-transform: uppercase;">
   "PENGEMBANGAN SISTEM ARTIFICIAL INTELLIGENCE KLASIFIKASI SENTIMEN DAN EVALUASI REPUTASI PRODUK E-COMMERCE BERBASIS MULTINOMIAL NAIVE BAYES PADA DATA TABULAR PRDECT-ID"
 </div>
 
-<p class="no-indent">Telah diperiksa, dievaluasi, dan disetujui untuk memenuhi seluruh kriteria penugasan pada mata kuliah <strong>Kecerdasan Buatan</strong> Program Studi Teknik Informatika, Politeknik Negeri Indramayu.</p>
+<p class="no-indent">Telah diperiksa, dievaluasi, dan disetujui untuk memenuhi seluruh kriteria penugasan pada mata kuliah <strong>Kecerdasan Buatan</strong> Jurusan Teknik Informatika, Politeknik Negeri Indramayu.</p>
 
-<table class="academic-table" style="margin: 20px 0;">
+<table class="plain-table">
   <tr>
-    <td width="30%"><strong>Mata Kuliah</strong></td>
-    <td>: Kecerdasan Buatan</td>
+    <td width="32%"><strong>Mata Kuliah</strong></td>
+    <td width="3%">:</td>
+    <td>Kecerdasan Buatan</td>
   </tr>
   <tr>
     <td><strong>Dosen Pengampu</strong></td>
-    <td>: Vera Wati, M.Kom</td>
+    <td>:</td>
+    <td>Vera Wati, M.Kom</td>
   </tr>
   <tr>
-    <td><strong>Nama Anggota Kelompok</strong></td>
-    <td>: 1. Muhammad Faiz Ramadhan (2305072)<br>
-          : 2. AYIP MUHAMMAD (2305059)<br>
-          : 3. MUHAMMAD IHYA ’ULUMUDDIN (2305073)<br>
-          : 4. NAILYAA DLIYAA’AN SYAH (2305075)</td>
+    <td><strong>Anggota Kelompok</strong></td>
+    <td>:</td>
+    <td>1. Muhammad Faiz Ramadhan (2305072)<br>
+        2. AYIP MUHAMMAD (2305059)<br>
+        3. MUHAMMAD IHYA ’ULUMUDDIN (2305073)<br>
+        4. NAILYAA DLIYAA’AN SYAH (2305075)</td>
   </tr>
   <tr>
-    <td><strong>Program Studi</strong></td>
-    <td>: Rekayasa Perangkat Lunak / Teknik Informatika</td>
+    <td><strong>Jurusan / Prodi</strong></td>
+    <td>:</td>
+    <td>Teknik Informatika</td>
   </tr>
   <tr>
     <td><strong>Tanggal Pengesahan</strong></td>
-    <td>: 16 November 2026</td>
+    <td>:</td>
+    <td>16 November 2026</td>
   </tr>
 </table>
 
@@ -467,26 +475,28 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
       Disetujui Oleh,<br>
       Dosen Pengampu Mata Kuliah<br><br><br><br>
       <div class="sig-line"></div><br>
-      <strong>Vera Wati, M.Kom</strong><br>
-      NIDN. / NIP. Dosen
+      <strong>Vera Wati, M.Kom</strong>
     </td>
   </tr>
 </table>
 
 <!-- ==================================================================== -->
-<!-- RINGKASAN EKSEKUTIF / ABSTRAK                                        -->
+<!-- ABSTRAK                                                              -->
 <!-- ==================================================================== -->
 <div class="page-break"></div>
-<h1 class="chapter-title">RINGKASAN EKSEKUTIF</h1>
+<h1 class="chapter-title">ABSTRAK</h1>
 
-<div class="abstract-box">
-  <p><strong>ABSTRAK</strong> — Dalam ekosistem perdagangan elektronik (e-commerce), ulasan pelanggan merupakan aset data terstruktur dan tekstual yang sangat berharga untuk memahami persepsi pasar, kepuasan konsumen, serta kualitas produk. Namun, volume ulasan yang masif menyulitkan analisis manual. Proyek Tugas Besar ini bertujuan membangun sistem <em>Artificial Intelligence</em> (AI) klasifikasi sentimen berbasis data tabular menggunakan algoritma <strong>Multinomial Naive Bayes</strong> dengan pembobotan ekstraksi fitur n-gram (unigram dan bigram) serta optimasi <em>Laplace Smoothing</em>. Dataset yang digunakan adalah korpus terbuka terstruktur <strong>PRDECT-ID</strong> (Indonesian E-Commerce Product Review Dataset) yang terdiri atas 5.459 baris data tabular dengan 11 atribut komprehensif, mencakup metadata toko, harga, kategori produk, rating bintang, hingga emosi konsumen. Pipeline pengembangan AI disusun secara sistematis mencakup 12 tahapan: identifikasi masalah, akuisisi data, audit kualitas data, <em>Exploratory Data Analysis</em> (EDA), <em>text preprocessing</em> (case folding, pembersihan tanda baca/URL, normalisasi kata gaul/slang, dan penghapusan stopword), ekstraksi fitur frekuensi <em>CountVectorizer</em>, <em>stratified train-test split</em> (80:20), perancangan algoritma probabilistik, pelatihan model, eksperimen multi-model, evaluasi performa, hingga penerapan pada aplikasi web interaktif berbasis Flask dan React. Berdasarkan pengujian terhadap 1.092 sampel uji terstratifikasi, model Multinomial Naive Bayes terpilih berhasil mencapai <strong>Akurasi sebesar 85,35%</strong> dan <strong>Macro F1-Score sebesar 76,64%</strong>, melampaui target ambang batas performa yang ditetapkan (Macro F1 &ge; 70%). Sistem dilengkapi dengan fungsionalitas <em>Online Learning</em> (incremental update menggunakan <code>partial_fit</code>), penalaran konteks kalimat kontrastif, pelacak <em>Net Sentiment Score</em> (NSS), modul komparasi dua produk berdampingan, serta antarmuka pemantauan KPI korpus yang intuitif.</p>
-  <p style="margin-bottom: 0;"><strong>Kata Kunci:</strong> Artificial Intelligence, Sentimen Analisis, Multinomial Naive Bayes, PRDECT-ID, Data Tabular, Natural Language Processing, E-Commerce, Online Learning.</p>
+<div class="abstract-section">
+  <p>Dalam ekosistem perdagangan elektronik (<em>e-commerce</em>), ulasan pelanggan merupakan aset data terstruktur dan tekstual yang sangat berharga untuk memahami persepsi pasar, kepuasan konsumen, serta kualitas produk. Namun, volume ulasan yang masif menyulitkan analisis manual. Proyek Tugas Besar ini bertujuan membangun sistem <em>Artificial Intelligence</em> (AI) klasifikasi sentimen berbasis data tabular menggunakan algoritma <strong>Multinomial Naive Bayes</strong> dengan pembobotan ekstraksi fitur n-gram (unigram dan bigram) serta optimasi <em>Laplace Smoothing</em>. Dataset yang digunakan adalah korpus terbuka terstruktur <strong>PRDECT-ID</strong> (Indonesian E-Commerce Product Review Dataset) yang terdiri atas 5.459 baris data tabular dengan 11 atribut komprehensif, mencakup metadata toko, harga, kategori produk, rating bintang, hingga emosi konsumen. Pipeline pengembangan AI disusun secara sistematis mencakup 12 tahapan: identifikasi masalah, akuisisi data, audit kualitas data, <em>Exploratory Data Analysis</em> (EDA), <em>text preprocessing</em> (case folding, pembersihan tanda baca/URL, normalisasi kata gaul/slang, dan penghapusan stopword), ekstraksi fitur frekuensi <em>CountVectorizer</em>, <em>stratified train-test split</em> (80:20), perancangan algoritma probabilistik, pelatihan model, eksperimen multi-model, evaluasi performa, hingga penerapan pada aplikasi web interaktif berbasis Flask dan React. Berdasarkan pengujian terhadap 1.092 sampel uji terstratifikasi, model Multinomial Naive Bayes terpilih berhasil mencapai <strong>Akurasi sebesar 85,35%</strong> dan <strong>Macro F1-Score sebesar 76,64%</strong>, melampaui target ambang batas performa yang ditetapkan (Macro F1 &ge; 70%). Sistem dilengkapi dengan fungsionalitas <em>Online Learning</em> (incremental update menggunakan <code>partial_fit</code>), penalaran konteks kalimat kontrastif, pelacak <em>Net Sentiment Score</em> (NSS), modul komparasi dua produk berdampingan, serta antarmuka pemantauan KPI korpus yang intuitif.</p>
+  <p class="no-indent" style="margin-top: 12px;"><strong>Kata Kunci:</strong> Artificial Intelligence, Sentimen Analisis, Multinomial Naive Bayes, PRDECT-ID, Data Tabular, Natural Language Processing, E-Commerce, Online Learning.</p>
 </div>
 
-<div class="abstract-box" style="margin-top: 25px;">
-  <p><strong>ABSTRACT</strong> — In the e-commerce ecosystem, customer reviews represent a vital source of structured tabular and textual intelligence for assessing market reputation and customer satisfaction. This Artificial Intelligence (AI) project develops a production-grade sentiment classification and product intelligence system utilizing the <strong>Multinomial Naive Bayes</strong> probabilistic algorithm with n-gram feature extraction (unigrams and bigrams) and Laplace Smoothing. The model is trained on the benchmark tabular dataset <strong>PRDECT-ID</strong> comprising 5,459 entries across 11 attributes from Indonesian marketplaces, including product category, pricing, ratings, raw reviews, and secondary emotions. Following a rigorous 12-stage AI development pipeline—from problem formulation, data quality auditing, exploratory data analysis, Indonesian text preprocessing, feature mapping, to web deployment—the proposed model was validated on a stratified test set of 1,092 samples. The system achieved an <strong>Accuracy of 85.35%</strong> and a <strong>Macro F1-Score of 76.64%</strong>, successfully outperforming the required institutional performance benchmarks. The engineered platform incorporates online incremental learning via <code>partial_fit</code>, contrastive linguistic rule handling, Net Sentiment Score (NSS) tracking, side-by-side product comparisons, and a full-stack Flask/React interactive interface.</p>
-  <p style="margin-bottom: 0;"><strong>Keywords:</strong> Artificial Intelligence, Sentiment Analysis, Multinomial Naive Bayes, PRDECT-ID, Tabular Dataset, Natural Language Processing, E-Commerce Analytics, Incremental Learning.</p>
+<div class="page-break"></div>
+<h1 class="chapter-title">ABSTRACT</h1>
+
+<div class="abstract-section">
+  <p>In the e-commerce ecosystem, customer reviews represent a vital source of structured tabular and textual intelligence for assessing market reputation and customer satisfaction. This Artificial Intelligence (AI) project develops a production-grade sentiment classification and product intelligence system utilizing the <strong>Multinomial Naive Bayes</strong> probabilistic algorithm with n-gram feature extraction (unigrams and bigrams) and Laplace Smoothing. The model is trained on the benchmark tabular dataset <strong>PRDECT-ID</strong> comprising 5,459 entries across 11 attributes from Indonesian marketplaces, including product category, pricing, ratings, raw reviews, and secondary emotions. Following a rigorous 12-stage AI development pipeline—from problem formulation, data quality auditing, exploratory data analysis, Indonesian text preprocessing, feature mapping, to web deployment—the proposed model was validated on a stratified test set of 1,092 samples. The system achieved an <strong>Accuracy of 85.35%</strong> and a <strong>Macro F1-Score of 76.64%</strong>, successfully outperforming the required institutional performance benchmarks. The engineered platform incorporates online incremental learning via <code>partial_fit</code>, contrastive linguistic rule handling, Net Sentiment Score (NSS) tracking, side-by-side product comparisons, and a full-stack Flask/React interactive interface.</p>
+  <p class="no-indent" style="margin-top: 12px;"><strong>Keywords:</strong> Artificial Intelligence, Sentiment Analysis, Multinomial Naive Bayes, PRDECT-ID, Tabular Dataset, Natural Language Processing, E-Commerce Analytics, Incremental Learning.</p>
 </div>
 
 <!-- ==================================================================== -->
@@ -509,12 +519,12 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
 
 <p>Kami menyadari bahwa laporan ini masih memiliki ruang untuk penyempurnaan. Oleh sebab itu, kritik dan saran yang membangun dari dosen penguji serta pembaca sangat kami harapkan guna penyempurnaan karya di masa mendatang. Semoga laporan ini dapat memberikan manfaat nyata bagi pengembangan ilmu pengetahuan dan aplikasi AI terapan.</p>
 
-<table style="width: 100%; margin-top: 30px;">
+<table style="width: 100%; margin-top: 30px; border-collapse: collapse;">
   <tr>
     <td width="60%"></td>
     <td style="text-align: center;">
       Indramayu, 16 November 2026<br><br>
-      <strong>Tim Penulis (Kelompok)</strong>
+      <strong>Tim Penulis</strong>
     </td>
   </tr>
 </table>
@@ -525,92 +535,94 @@ Laporan Tugas Besar Pengembangan Proyek Artificial Intelligence Berbasis Data Te
 <div class="page-break"></div>
 <h1 class="chapter-title">DAFTAR ISI</h1>
 
-<div class="toc-row"><strong>HALAMAN JUDUL / COVER</strong> <span class="toc-page">i</span></div>
-<div class="toc-row"><strong>LEMBAR PENGESAHAN</strong> <span class="toc-page">ii</span></div>
-<div class="toc-row"><strong>RINGKASAN EKSEKUTIF / ABSTRAK</strong> <span class="toc-page">iii</span></div>
-<div class="toc-row"><strong>KATA PENGANTAR</strong> <span class="toc-page">iv</span></div>
-<div class="toc-row"><strong>DAFTAR ISI</strong> <span class="toc-page">v</span></div>
-<div class="toc-row"><strong>DAFTAR TABEL</strong> <span class="toc-page">vi</span></div>
-<div class="toc-row"><strong>DAFTAR GAMBAR</strong> <span class="toc-page">vii</span></div>
+<div class="toc-row"><strong>HALAMAN JUDUL / COVER</strong><span class="toc-dots"></span><span class="toc-page">1</span></div>
+<div class="toc-row"><strong>LEMBAR PENGESAHAN</strong><span class="toc-dots"></span><span class="toc-page">2</span></div>
+<div class="toc-row"><strong>ABSTRAK</strong><span class="toc-dots"></span><span class="toc-page">3</span></div>
+<div class="toc-row"><strong>ABSTRACT</strong><span class="toc-dots"></span><span class="toc-page">4</span></div>
+<div class="toc-row"><strong>KATA PENGANTAR</strong><span class="toc-dots"></span><span class="toc-page">5</span></div>
+<div class="toc-row"><strong>DAFTAR ISI</strong><span class="toc-dots"></span><span class="toc-page">6</span></div>
+<div class="toc-row"><strong>DAFTAR TABEL</strong><span class="toc-dots"></span><span class="toc-page">6</span></div>
+<div class="toc-row"><strong>DAFTAR GAMBAR</strong><span class="toc-dots"></span><span class="toc-page">6</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB I PENDAHULUAN</strong> <span class="toc-page">1</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.1 Latar Belakang dan Permasalahan <span class="toc-page">1</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.2 Tujuan Pengembangan Proyek <span class="toc-page">2</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.3 Deskripsi Singkat Sistem AI yang Dibangun <span class="toc-page">2</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.4 Metode / Algoritma AI yang Dipilih dan Alasan Pemilihan <span class="toc-page">3</span></div>
-<div class="toc-row" style="padding-left: 20px;">1.5 Batasan Masalah dan Ruang Lingkup <span class="toc-page">3</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB I PENDAHULUAN</strong><span class="toc-dots"></span><span class="toc-page">10</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.1 Latar Belakang dan Permasalahan<span class="toc-dots"></span><span class="toc-page">10</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.2 Tujuan Pengembangan Proyek<span class="toc-dots"></span><span class="toc-page">10</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.3 Deskripsi Singkat Sistem AI yang Dibangun<span class="toc-dots"></span><span class="toc-page">11</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.4 Metode / Algoritma AI yang Dipilih dan Alasan Pemilihan<span class="toc-dots"></span><span class="toc-page">11</span></div>
+<div class="toc-row" style="padding-left: 20px;">1.5 Batasan Masalah dan Ruang Lingkup<span class="toc-dots"></span><span class="toc-page">11</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB II DATASET DAN PERMASALAHAN</strong> <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.1 Deskripsi Dataset dan Sumber Pengambilan Data <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.2 Dimensi Data, Atribut, dan Tipe Data Tabular <span class="toc-page">4</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.3 Penjelasan Fungsi Atribut Tabular dan Korelasi Bisnis <span class="toc-page">5</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.4 Identifikasi Variabel Input (X) dan Target/Label (y) <span class="toc-page">6</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.5 Contoh Data dan Visualisasi Distribusi Awal Korpus <span class="toc-page">6</span></div>
-<div class="toc-row" style="padding-left: 20px;">2.6 Keterkaitan Dataset dengan Penyelesaian Permasalahan <span class="toc-page">7</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB II DATASET DAN PERMASALAHAN</strong><span class="toc-dots"></span><span class="toc-page">13</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.1 Deskripsi Dataset dan Sumber Pengambilan Data<span class="toc-dots"></span><span class="toc-page">13</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.2 Dimensi Data, Atribut, dan Tipe Data Tabular<span class="toc-dots"></span><span class="toc-page">13</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.3 Penjelasan Fungsi Atribut Tabular dan Korelasi Bisnis<span class="toc-dots"></span><span class="toc-page">14</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.4 Identifikasi Variabel Input (X) dan Target/Label (y)<span class="toc-dots"></span><span class="toc-page">14</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.5 Contoh Data dan Visualisasi Distribusi Awal Korpus<span class="toc-dots"></span><span class="toc-page">14</span></div>
+<div class="toc-row" style="padding-left: 20px;">2.6 Keterkaitan Dataset dengan Penyelesaian Permasalahan<span class="toc-dots"></span><span class="toc-page">15</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB III PIPELINE PENGEMBANGAN ARTIFICIAL INTELLIGENCE</strong> <span class="toc-page">8</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.1 Flowchart Pipeline Umum Pengembangan AI (12 Tahapan) <span class="toc-page">8</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes <span class="toc-page">10</span></div>
-<div class="toc-row" style="padding-left: 20px;">3.3 Penjelasan Rinci 12 Tahap Pipeline (Teori, Koding, & Hasil Analisis) <span class="toc-page">11</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.1 Tahap 1: Problem Identification <span class="toc-page">11</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.2 Tahap 2: Data Acquisition / Data Ingestion <span class="toc-page">12</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.3 Tahap 3: Data Understanding & Quality Assessment <span class="toc-page">13</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.4 Tahap 4: Exploratory Data Analysis (EDA) <span class="toc-page">14</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia <span class="toc-page">15</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.6 Tahap 6: Data Transformation & Feature Engineering <span class="toc-page">16</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.7 Tahap 7: Data Preparation / Problem Representation <span class="toc-page">17</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.8 Tahap 8: AI Method / Algorithm Design & Perhitungan Manual <span class="toc-page">18</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.9 Tahap 9: Algorithm / Model Implementation <span class="toc-page">21</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios <span class="toc-page">23</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.11 Tahap 11: Evaluation & Error Analysis <span class="toc-page">24</span></div>
-<div class="toc-row" style="padding-left: 40px;">3.3.12 Tahap 12: Final Output, Web Deployment, & Online Learning <span class="toc-page">25</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB III PIPELINE PENGEMBANGAN ARTIFICIAL INTELLIGENCE</strong><span class="toc-dots"></span><span class="toc-page">16</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.1 Flowchart Pipeline Umum Pengembangan AI (12 Tahapan)<span class="toc-dots"></span><span class="toc-page">16</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes<span class="toc-dots"></span><span class="toc-page">18</span></div>
+<div class="toc-row" style="padding-left: 20px;">3.3 Penjelasan Rinci 12 Tahap Pipeline (Teori, Koding, & Hasil Analisis)<span class="toc-dots"></span><span class="toc-page">19</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.1 Tahap 1: Problem Identification<span class="toc-dots"></span><span class="toc-page">19</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.2 Tahap 2: Data Acquisition / Data Ingestion<span class="toc-dots"></span><span class="toc-page">19</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.3 Tahap 3: Data Understanding & Quality Assessment<span class="toc-dots"></span><span class="toc-page">20</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.4 Tahap 4: Exploratory Data Analysis (EDA)<span class="toc-dots"></span><span class="toc-page">20</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia<span class="toc-dots"></span><span class="toc-page">21</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.6 Tahap 6: Data Transformation & Feature Engineering<span class="toc-dots"></span><span class="toc-page">21</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.7 Tahap 7: Data Preparation / Problem Representation<span class="toc-dots"></span><span class="toc-page">22</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.8 Tahap 8: AI Method / Algorithm Design & Perhitungan Manual<span class="toc-dots"></span><span class="toc-page">23</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.9 Tahap 9: Algorithm / Model Implementation<span class="toc-dots"></span><span class="toc-page">25</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios<span class="toc-dots"></span><span class="toc-page">26</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.11 Tahap 11: Evaluation & Error Analysis<span class="toc-dots"></span><span class="toc-page">27</span></div>
+<div class="toc-row" style="padding-left: 40px;">3.3.12 Tahap 12: Final Output, Web Deployment, & Online Learning<span class="toc-dots"></span><span class="toc-page">27</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB IV PENGUJIAN DAN EVALUASI</strong> <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.1 Skenario dan Data Kasus Pengujian <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.2 Hasil Implementasi dan Output Sistem <span class="toc-page">27</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.3 Metrik Evaluasi Kinerja (Akurasi, F1, Precision, Recall) <span class="toc-page">28</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.4 Perbandingan Hasil 5 Eksperimen Model <span class="toc-page">29</span></div>
-<div class="toc-row" style="padding-left: 20px;">4.5 Analisis Kesalahan (Error Analysis) & Keterbatasan Sistem <span class="toc-page">30</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB IV PENGUJIAN DAN EVALUASI</strong><span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.1 Skenario dan Data Kasus Pengujian<span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.2 Hasil Implementasi dan Output Sistem<span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.3 Metrik Evaluasi Kinerja (Akurasi, F1, Precision, Recall)<span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.4 Perbandingan Hasil 5 Eksperimen Model<span class="toc-dots"></span><span class="toc-page">30</span></div>
+<div class="toc-row" style="padding-left: 20px;">4.5 Analisis Kesalahan (Error Analysis) & Keterbatasan Sistem<span class="toc-dots"></span><span class="toc-page">32</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>BAB V KESIMPULAN DAN SARAN</strong> <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.1 Kesimpulan Hasil Pengembangan Proyek <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.2 Ketercapaian Tujuan dan Manfaat Sistem <span class="toc-page">32</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.3 Hasil Evaluasi Metode Naive Bayes <span class="toc-page">33</span></div>
-<div class="toc-row" style="padding-left: 20px;">5.4 Saran dan Arah Pengembangan Selanjutnya <span class="toc-page">33</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>BAB V KESIMPULAN DAN SARAN</strong><span class="toc-dots"></span><span class="toc-page">33</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.1 Kesimpulan Hasil Pengembangan Proyek<span class="toc-dots"></span><span class="toc-page">33</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.2 Ketercapaian Tujuan dan Manfaat Sistem<span class="toc-dots"></span><span class="toc-page">33</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.3 Hasil Evaluasi Metode Naive Bayes<span class="toc-dots"></span><span class="toc-page">33</span></div>
+<div class="toc-row" style="padding-left: 20px;">5.4 Saran dan Arah Pengembangan Selanjutnya<span class="toc-dots"></span><span class="toc-page">33</span></div>
 
-<div class="toc-row" style="margin-top: 10px;"><strong>DAFTAR PUSTAKA</strong> <span class="toc-page">34</span></div>
-<div class="toc-row"><strong>LAMPIRAN</strong> <span class="toc-page">35</span></div>
+<div class="toc-row" style="margin-top: 10px;"><strong>DAFTAR PUSTAKA</strong><span class="toc-dots"></span><span class="toc-page">35</span></div>
+<div class="toc-row"><strong>LAMPIRAN</strong><span class="toc-dots"></span><span class="toc-page">36</span></div>
 
 <!-- ==================================================================== -->
 <!-- DAFTAR TABEL & GAMBAR                                                -->
 <!-- ==================================================================== -->
 <div class="page-break"></div>
 <h1 class="chapter-title">DAFTAR TABEL</h1>
-<div class="toc-row">Tabel 2.1: Spesifikasi Metadata Struktur Atribut Tabular Dataset PRDECT-ID <span class="toc-page">5</span></div>
-<div class="toc-row">Tabel 2.2: Contoh Baris Data Tabular Korpus Ulasan Tokopedia PRDECT-ID <span class="toc-page">6</span></div>
-<div class="toc-row">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan <span class="toc-page">13</span></div>
-<div class="toc-row">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia <span class="toc-page">15</span></div>
-<div class="toc-row">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram <span class="toc-page">16</span></div>
-<div class="toc-row">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split <span class="toc-page">17</span></div>
-<div class="toc-row">Tabel 3.5: Korpus Mini Sederhana untuk Simulasi Perhitungan Manual Bayes <span class="toc-page">18</span></div>
-<div class="toc-row">Tabel 3.6: Frekuensi Kemunculan Kata pada Korpus Mini Sederhana <span class="toc-page">19</span></div>
-<div class="toc-row">Tabel 3.7: Hasil Perhitungan Probabilitas Posterior Ulasan Uji Manual <span class="toc-page">20</span></div>
-<div class="toc-row">Tabel 4.1: Classification Report Model Multinomial Naive Bayes Terpilih <span class="toc-page">28</span></div>
-<div class="toc-row">Tabel 4.2: Confusion Matrix Pengujian Model (Test Set N=1.092) <span class="toc-page">28</span></div>
-<div class="toc-row">Tabel 4.3: Perbandingan Komprehensif Kinerja 5 Eksperimen Model AI <span class="toc-page">29</span></div>
-<div class="toc-row">Tabel 4.4: Sampel Analisis Kasus Misklasifikasi Model dan Diagnosa Akar Masalah <span class="toc-page">31</span></div>
+<div class="toc-row">Tabel 2.1: Spesifikasi Metadata Struktur Atribut Tabular Dataset PRDECT-ID<span class="toc-dots"></span><span class="toc-page">13</span></div>
+<div class="toc-row">Tabel 2.2: Contoh Baris Data Tabular Korpus Ulasan Tokopedia PRDECT-ID<span class="toc-dots"></span><span class="toc-page">14</span></div>
+<div class="toc-row">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan<span class="toc-dots"></span><span class="toc-page">20</span></div>
+<div class="toc-row">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia<span class="toc-dots"></span><span class="toc-page">21</span></div>
+<div class="toc-row">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram<span class="toc-dots"></span><span class="toc-page">22</span></div>
+<div class="toc-row">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split<span class="toc-dots"></span><span class="toc-page">23</span></div>
+<div class="toc-row">Tabel 3.5: Korpus Mini Sederhana untuk Simulasi Perhitungan Manual Bayes<span class="toc-dots"></span><span class="toc-page">23</span></div>
+<div class="toc-row">Tabel 3.6: Frekuensi Kemunculan Kata pada Korpus Mini Sederhana<span class="toc-dots"></span><span class="toc-page">24</span></div>
+<div class="toc-row">Tabel 3.7: Hasil Perhitungan Probabilitas Posterior Ulasan Uji Manual<span class="toc-dots"></span><span class="toc-page">25</span></div>
+<div class="toc-row">Tabel 4.1: Classification Report Model Multinomial Naive Bayes Terpilih<span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row">Tabel 4.2: Confusion Matrix Pengujian Model (Test Set N=1.092)<span class="toc-dots"></span><span class="toc-page">29</span></div>
+<div class="toc-row">Tabel 4.3: Perbandingan Komprehensif Kinerja 5 Eksperimen Model AI<span class="toc-dots"></span><span class="toc-page">30</span></div>
+<div class="toc-row">Tabel 4.4: Sampel Analisis Kasus Misklasifikasi Model dan Diagnosa Akar Masalah<span class="toc-dots"></span><span class="toc-page">32</span></div>
 
-<h1 class="chapter-title" style="margin-top: 35px;">DAFTAR GAMBAR</h1>
-<div class="toc-row">Gambar 2.1: Grafik Distribusi Frekuensi dan Proporsi Kelas Sentimen PRDECT-ID <span class="toc-page">7</span></div>
-<div class="toc-row">Gambar 3.1: Flowchart Pipeline Umum Pengembangan Artificial Intelligence (12 Tahapan) <span class="toc-page">9</span></div>
-<div class="toc-row">Gambar 3.2: Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes <span class="toc-page">10</span></div>
-<div class="toc-row">Gambar 4.1: Visualisasi Confusion Matrix Model Terpilih (CountVec + MNB) <span class="toc-page">29</span></div>
-<div class="toc-row">Gambar 4.2: Grafik Perbandingan Akurasi dan Macro F1-Score 5 Eksperimen Model <span class="toc-page">30</span></div>
-<div class="toc-row">Gambar 4.3: Fitur Kata Paling Berpengaruh (Top Log-Likelihood Ratio Positif vs Negatif) <span class="toc-page">31</span></div>
-<div class="toc-row">Gambar L.1: Tangkapan Layar Modul Analisis Sentimen Tunggal dengan Bukti Matematis <span class="toc-page">36</span></div>
-<div class="toc-row">Gambar L.2: Tangkapan Layar Modul Pelacak Target KPI & Net Sentiment Score (NSS) <span class="toc-page">36</span></div>
-<div class="toc-row">Gambar L.3: Tangkapan Layar Modul Peta Korpus 30 Kategori Produk Tokopedia <span class="toc-page">37</span></div>
-<div class="toc-row">Gambar L.4: Tangkapan Layar Modul Komparasi Reputasi 2 Produk Berdampingan <span class="toc-page">37</span></div>
+<div class="page-break"></div>
+<h1 class="chapter-title">DAFTAR GAMBAR</h1>
+<div class="toc-row">Gambar 2.1: Grafik Distribusi Frekuensi dan Proporsi Kelas Sentimen PRDECT-ID<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar 3.1: Flowchart Pipeline Umum Pengembangan Artificial Intelligence (12 Tahapan)<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar 3.2: Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar 4.1: Visualisasi Confusion Matrix Model Terpilih (CountVec + MNB)<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar 4.2: Grafik Perbandingan Akurasi dan Macro F1-Score 5 Eksperimen Model<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar 4.3: Fitur Kata Paling Berpengaruh (Top Log-Likelihood Ratio Positif vs Negatif)<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar L.1: Tangkapan Layar Modul Analisis Sentimen Tunggal dengan Bukti Matematis<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar L.2: Tangkapan Layar Modul Pelacak Target KPI & Net Sentiment Score (NSS)<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar L.3: Tangkapan Layar Modul Peta Korpus 30 Kategori Produk Tokopedia<span class="toc-dots"></span><span class="toc-page">9</span></div>
+<div class="toc-row">Gambar L.4: Tangkapan Layar Modul Komparasi Reputasi 2 Produk Berdampingan<span class="toc-dots"></span><span class="toc-page">9</span></div>
 
 <!-- ==================================================================== -->
 <!-- BAB I PENDAHULUAN                                                    -->
@@ -885,6 +897,7 @@ Sesuai instruksi baku tugas besar, arsitektur pengembangan AI dirancang secara b
   <div class="caption-figure">Gambar 3.1: Flowchart Pipeline Umum Pengembangan AI (12 Tahapan Sistematis End-to-End)</div>
 </div>
 
+<div class="page-break"></div>
 <h2>3.2 Flowchart Khusus Mekanisme Algoritma Multinomial Naive Bayes</h2>
 <p>
 Untuk memahami secara mendalam cara kerja komputasi internal dari model AI yang dipilih, disusun flowchart khusus mekanisme algoritma <strong>Multinomial Naive Bayes</strong> yang diperkaya dengan tahapan prapemrosesan teks, pembentukan vektor n-gram, kalkulasi prior dan likelihood dengan <em>Laplace Smoothing</em>, evaluasi aturan konjungsi kalimat kontrastif, hingga pembaruan inkremental secara <em>real-time</em> (Gambar 3.2).
@@ -902,81 +915,66 @@ Setiap tahapan dalam pipeline pengembangan di bawah ini diuraikan secara kompreh
 </p>
 
 <!-- TAHAP 1 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.1 TAHAP 1: PROBLEM IDENTIFICATION (IDENTIFIKASI MASALAH)</span>
-    <span class="comp-badge">Tahap Wajib E.1</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.1 Tahap 1: Problem Identification (Identifikasi Masalah)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Tahap awal berfokus pada perumusan kebutuhan bisnis dan ilmiah. Dalam domain e-commerce, ulasan pelanggan adalah sinyal vital reputasi. Masalah diklasifikasikan sebagai <em>Supervised Multi-Class Text Classification</em> dengan 3 kelas target. Pengguna sasaran adalah pemilik toko, analis produk, dan pembeli yang memerlukan rekapitulasi sentimen instan tanpa harus membaca ribuan ulasan manual.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
+  <h4>B. Implementasi Coding</h4>
   <p>
   Perumusan kriteria SLA diwujudkan dalam konfigurasi KPI pada modul backend analitik (<code>backend/app/main.py</code>):
   </p>
-  <div class="code-box">
-<span class="code-comment"># Konfigurasi Target SLA dan Batas Kinerja Sistem (main.py)</span>
+  <div class="code-box"><span class="code-comment"># Konfigurasi Target SLA dan Batas Kinerja Sistem (main.py)</span>
 KPI_TARGETS = {
-    <span class="code-string">"target_macro_f1"</span>: <span class="code-num">0.70</span>,       <span class="code-comment"># Target ambang batas F1-Score &gt;= 70%</span>
-    <span class="code-string">"target_accuracy"</span>: <span class="code-num">0.80</span>,       <span class="code-comment"># Target akurasi pengujian &gt;= 80%</span>
+    <span class="code-string">"target_macro_f1"</span>: <span class="code-num">0.70</span>,          <span class="code-comment"># Target ambang batas F1-Score &gt;= 70%</span>
+    <span class="code-string">"target_accuracy"</span>: <span class="code-num">0.80</span>,          <span class="code-comment"># Target akurasi pengujian &gt;= 80%</span>
     <span class="code-string">"max_critical_anger_ratio"</span>: <span class="code-num">0.15</span>, <span class="code-comment"># Ambang batas komplain emosi marah &lt;= 15%</span>
-    <span class="code-string">"target_nss_score"</span>: <span class="code-num">0.0</span>        <span class="code-comment"># Net Sentiment Score harus bernilai positif</span>
-}
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-string">"target_nss_score"</span>: <span class="code-num">0.0</span>           <span class="code-comment"># Net Sentiment Score harus bernilai positif</span>
+}</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Berhasil ditetapkan acuan pengujian yang jelas: sistem harus menghasilkan model dengan Macro F1-Score &ge; 70% pada data uji terstratifikasi, mendukung respons inferensi di bawah 50 milidetik, serta menyediakan metrik operasional Net Sentiment Score (NSS) untuk analitik bisnis.
   </p>
 </div>
 
 <!-- TAHAP 2 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.2 TAHAP 2: DATA ACQUISITION / INGESTION (AKUISISI DATA)</span>
-    <span class="comp-badge">Tahap Wajib E.2</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.2 Tahap 2: Data Acquisition / Ingestion (Akuisisi Data)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Akuisisi data melibatkan pemuatan berkas tabular terstruktur dari repositori terbuka PRDECT-ID ke dalam struktur memori DataFrame Python menggunakan library <code>pandas</code>. Verifikasi integritas data dilakukan untuk memastikan jumlah baris, pemisah kolom, dan representasi karakter UTF-8 terpelihara secara presisi.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
 
 <span class="code-comment"># Memuat dataset tabular mentah ulasan e-commerce</span>
 raw_df = pd.read_csv(<span class="code-string">"data/raw/prdect_id_tokopedia.csv"</span>, encoding=<span class="code-string">"utf-8"</span>)
 print(f"Dimensi Awal: {raw_df.shape[0]} baris, {raw_df.shape[1]} kolom")
-print(raw_df.head(3)[[<span class="code-string">"Product Name"</span>, <span class="code-string">"Customer Rating"</span>, <span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>]])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(raw_df.head(3)[[<span class="code-string">"Product Name"</span>, <span class="code-string">"Customer Rating"</span>, <span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>]])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Sebanyak 5.400 baris data dari berkas mentah PRDECT-ID berhasil dimuat secara lengkap. Setelah penggabungan sampel validasi korpus terverifikasi, jumlah data final mencapai 5.459 baris dengan 11 kolom tanpa kegagalan encoding huruf.
   </p>
 </div>
 
 <!-- TAHAP 3 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.3 TAHAP 3: DATA UNDERSTANDING & QUALITY ASSESSMENT (AUDIT KUALITAS)</span>
-    <span class="comp-badge">Tahap Wajib E.3</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.3 Tahap 3: Data Understanding & Quality Assessment (Audit Kualitas)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Pemeriksaan kualitas data mencakup identifikasi nilai kosong (<em>missing values</em> / <code>NaN</code>), data duplikat yang berpotensi menyebabkan bias memori, inkonsistensi penamaan label kelas (misal huruf kapital vs kecil), serta keberadaan teks ulasan yang hanya berupa deretan spasi atau karakter non-alfanumerik.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Audit missing values, duplikasi, dan standardisasi label</span>
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-comment"># Audit missing values, duplikasi, dan standardisasi label</span>
 missing_counts = raw_df.isnull().sum()
 duplicate_count = raw_df.duplicated(subset=[<span class="code-string">"Customer Review"</span>]).sum()
 
 <span class="code-comment"># Standarisasi nilai target sentiment ke format huruf kecil konsisten</span>
 raw_df[<span class="code-string">"Sentiment"</span>] = raw_df[<span class="code-string">"Sentiment"</span>].astype(str).str.strip().str.lower()
 clean_df = raw_df.dropna(subset=[<span class="code-string">"Customer Review"</span>, <span class="code-string">"Sentiment"</span>])
-clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer Review"</span>])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer Review"</span>])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.1: Audit Kualitas Data Tabular Sebelum dan Sesudah Pembersihan</div>
   <table class="academic-table">
     <thead>
@@ -1011,36 +1009,27 @@ clean_df = clean_df.drop_duplicates(subset=[<span class="code-string">"Customer 
 </div>
 
 <!-- TAHAP 4 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.4 TAHAP 4: EXPLORATORY DATA ANALYSIS (EDA)</span>
-    <span class="comp-badge">Tahap Wajib E.4</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.4 Tahap 4: Exploratory Data Analysis (EDA)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Eksplorasi data bertujuan memahami karakteristik distribusi panjang teks, perbandingan rating bintang terhadap sentimen, dan statistik ringkasan korpus. Analisis ini memberikan intuisi linguistik mengenai pola kata yang mendominasi ulasan positif dan ulasan negatif.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Analisis statistik panjang kata ulasan per kelas</span>
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-comment"># Analisis statistik panjang kata ulasan per kelas</span>
 clean_df[<span class="code-string">"word_count"</span>] = clean_df[<span class="code-string">"Customer Review"</span>].apply(<span class="code-keyword">lambda</span> x: len(str(x).split()))
 stats = clean_df.groupby(<span class="code-string">"Sentiment"</span>)[<span class="code-string">"word_count"</span>].describe()
-print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">"std"</span>, <span class="code-string">"min"</span>, <span class="code-string">"50%"</span>, <span class="code-string">"max"</span>]])
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">"std"</span>, <span class="code-string">"min"</span>, <span class="code-string">"50%"</span>, <span class="code-string">"max"</span>]])</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Ulasan negatif memiliki rata-rata panjang kata lebih tinggi (rata-rata 18,4 kata per ulasan) dibandingkan ulasan positif (rata-rata 11,2 kata). Hal ini secara psikologis menunjukkan bahwa konsumen yang merasa kecewa cenderung menuliskan kronologi komplain yang lebih panjang dan detail mengenai kerusakan barang atau keterlambatan pengiriman.
   </p>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 5 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.5 TAHAP 5: DATA PREPROCESSING NLP BAHASA INDONESIA</span>
-    <span class="comp-badge">Tahap Wajib E.5</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.5 Tahap 5: Data Preprocessing NLP Bahasa Indonesia</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Tahap preprocessing membersihkan noise dan menstandarisasi ragam bahasa Indonesia. Urutan tahapan:
   </p>
@@ -1050,9 +1039,8 @@ print(stats[[<span class="code-string">"mean"</span>, <span class="code-string">
     <li><em>Slang Word Normalization:</em> Mengganti singkatan atau kata gaul dengan bentuk bakunya menggunakan kamus leksikal (misal: <em>"yg"</em> &rarr; <em>"yang"</em>, <em>"ga"</em> &rarr; <em>"tidak"</em>).</li>
     <li><em>Selective Stopword Removal:</em> Menghapus kata hubung netral namun <strong>tetap mempertahankan</strong> kata negasi penting (seperti <em>"tidak"</em>, <em>"bukan"</em>, <em>"jangan"</em>, <em>"kurang"</em>) karena kata-kata ini membalikkan polaritas sentimen secara drastis.</li>
   </ol>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">import</span> re
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">import</span> re
 
 SLANG_DICT = {
     <span class="code-string">"bgt"</span>: <span class="code-string">"banget"</span>, <span class="code-string">"yg"</span>: <span class="code-string">"yang"</span>, <span class="code-string">"gak"</span>: <span class="code-string">"tidak"</span>, <span class="code-string">"ga"</span>: <span class="code-string">"tidak"</span>,
@@ -1065,9 +1053,8 @@ SLANG_DICT = {
     text = re.sub(r"http\S+|www\S+|https\S+", " ", text)
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     words = [SLANG_DICT.get(w, w) <span class="code-keyword">for</span> w <span class="code-keyword">in</span> text.split()]
-    <span class="code-keyword">return</span> <span class="code-string">" "</span>.join(words)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-keyword">return</span> <span class="code-string">" "</span>.join(words)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.2: Contoh Normalisasi Kata Gaul (Slang Words) Bahasa Indonesia</div>
   <table class="academic-table">
     <thead>
@@ -1093,18 +1080,14 @@ SLANG_DICT = {
 </div>
 
 <!-- TAHAP 6 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.6 TAHAP 6: DATA TRANSFORMATION & FEATURE ENGINEERING</span>
-    <span class="comp-badge">Tahap Wajib E.6</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.6 Tahap 6: Data Transformation & Feature Engineering</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Teks yang telah bersih ditransformasikan ke dalam representasi numerik menggunakan <strong>CountVectorizer</strong> dengan skema n-gram gabungan (unigram dan bigram, range 1-2). Penggunaan unigram mengekstrak kata tunggal (misal: <em>"bagus"</em>), sedangkan bigram menangkap pasangan dua kata berurutan yang sangat esensial untuk membedakan negasi (misal: <em>"tidak bagus"</em>, <em>"kurang rapi"</em>).
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> CountVectorizer
 
 <span class="code-comment"># Inisialisasi CountVectorizer unigram + bigram</span>
 vectorizer = CountVectorizer(
@@ -1113,9 +1096,8 @@ vectorizer = CountVectorizer(
     max_df=<span class="code-num">0.85</span>          <span class="code-comment"># Mengabaikan korpus umum (muncul di &gt; 85% dokumen)</span>
 )
 X_matrix = vectorizer.fit_transform(clean_df[<span class="code-string">"cleaned_text"</span>])
-print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary_)} fitur")
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary_)} fitur")</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.3: Komparasi Matriks Fitur Teks Sebelum dan Sesudah N-Gram</div>
   <table class="academic-table">
     <thead>
@@ -1144,18 +1126,14 @@ print(f"Jumlah Kosakata Fitur Unik (Vocabulary Size): {len(vectorizer.vocabulary
 </div>
 
 <!-- TAHAP 7 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.7 TAHAP 7: DATA PREPARATION & STRATIFIED TRAIN-TEST SPLIT</span>
-    <span class="comp-badge">Tahap Wajib E.7</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.7 Tahap 7: Data Preparation & Stratified Train-Test Split</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Untuk menguji kemampuan generalisasi model secara adil dan mencegah bias data (<em>data leakage</em>), dataset dibagi menjadi <strong>Data Latih (Training Set - 80%)</strong> dan <strong>Data Uji (Testing Set - 20%)</strong>. Pembagian wajib menggunakan teknik <strong>Stratified Splitting</strong> agar proporsi kelas minoritas (Netral 11,2%) tetap identik di kedua subset data.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.model_selection <span class="code-keyword">import</span> train_test_split
 
 X = clean_df[<span class="code-string">"cleaned_text"</span>]
 y = clean_df[<span class="code-string">"Sentiment"</span>]
@@ -1165,9 +1143,8 @@ X_train, X_test, y_train, y_test = train_test_split(
     test_size=<span class="code-num">0.20</span>,
     random_state=<span class="code-num">42</span>,
     stratify=y          <span class="code-comment"># Menjamin distribusi rasio kelas tetap proporsional</span>
-)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <div class="caption-table">Tabel 3.4: Pembagian Data Uji dan Latih Menggunakan Stratified Split</div>
   <table class="academic-table">
     <thead>
@@ -1209,32 +1186,23 @@ X_train, X_test, y_train, y_test = train_test_split(
   </table>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 8 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.8 TAHAP 8: AI METHOD DESIGN & PERHITUNGAN MANUAL LENGKAP</span>
-    <span class="comp-badge">Tahap Wajib E.8</span>
-  </div>
-  <p><strong>A. Konsep, Asumsi, dan Rumus Matematis:</strong></p>
+<div class="stage-section">
+  <h3>3.3.8 Tahap 8: AI Method Design & Perhitungan Manual Lengkap</h3>
+  <h4>A. Konsep, Asumsi, dan Rumus Matematis</h4>
   <p>
   Multinomial Naive Bayes berakar dari Teorema Bayes dengan asumsi independensi bersyarat antar fitur (kata) terhadap kelas. Probabilitas posterior kelas c diberikan dokumen ulasan x dirumuskan sebagai:
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       P(c | x) = P(c) &times; &prod; [ P(w<sub>i</sub> | c)<sup>x<sub>i</sub></sup> ] / P(x)
     </div>
-    <p class="no-indent">Di mana:</p>
-    <ul>
-      <li>P(c): Probabilitas prior kelas c, dihitung sebagai N<sub>c</sub> / N<sub>total</sub>.</li>
-      <li>P(w<sub>i</sub> | c): Likelihood kemunculan kata w<sub>i</sub> pada kelas c.</li>
-      <li>x<sub>i</sub>: Frekuensi kemunculan kata w<sub>i</sub> dalam dokumen x.</li>
-    </ul>
+    <p class="no-indent">Di mana P(c) = N<sub>c</sub> / N<sub>total</sub> adalah probabilitas prior kelas c, P(w<sub>i</sub> | c) adalah likelihood kemunculan kata w<sub>i</sub> pada kelas c, dan x<sub>i</sub> adalah frekuensi kata w<sub>i</sub> dalam dokumen x.</p>
   </div>
   <p>
   Untuk mengatasi masalah probabilitas nol (<em>zero-frequency problem</em>) ketika sebuah kata pada data uji tidak pernah muncul di data latih kelas tertentu, diterapkan <strong>Additive Laplace Smoothing</strong> (&alpha; = 1.0):
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       P(w<sub>i</sub> | c) = [ count(w<sub>i</sub>, c) + &alpha; ] / [ &sum; count(w, c) + &alpha; &times; |V| ]
     </div>
@@ -1243,13 +1211,13 @@ X_train, X_test, y_train, y_test = train_test_split(
   <p>
   Untuk menghindari masalah <em>arithmetic underflow</em> akibat perkalian banyak probabilitas pecahan bernilai kecil, komputasi diimplementasikan dalam domain logaritma alami (Log-Likelihood):
   </p>
-  <div class="formula-box">
+  <div class="formula-clean">
     <div class="formula-center">
       c* = argmax<sub>c &isin; C</sub> [ ln P(c) + &sum; x<sub>i</sub> &times; ln P(w<sub>i</sub> | c) ]
     </div>
   </div>
 
-  <p><strong>CONTOH PERHITUNGAN MANUAL LANGKAH DEMI LANGKAH:</strong></p>
+  <h4>Contoh Perhitungan Manual Langkah Demi Langkah</h4>
   <p>
   Misalkan kita memiliki korpus mini mainan (<em>toy corpus</em>) berisi 5 ulasan untuk mengklasifikasikan kalimat uji baru: <em>"barang bagus respon cepat"</em>.
   </p>
@@ -1424,20 +1392,15 @@ X_train, X_test, y_train, y_test = train_test_split(
   </p>
 </div>
 
-<div class="page-break"></div>
 <!-- TAHAP 9 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.9 TAHAP 9: ALGORITHM / MODEL IMPLEMENTATION (IMPLEMENTASI SISTEM)</span>
-    <span class="comp-badge">Tahap Wajib E.9</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.9 Tahap 9: Algorithm / Model Implementation (Implementasi Sistem)</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Pemodelan diimplementasikan menggunakan Python melalui library <code>scikit-learn</code> dengan class <code>MultinomialNB(alpha=1.0)</code>. Model dibungkus ke dalam pipeline bersama <code>CountVectorizer</code> dan diekspor ke format serialisasi biner <code>joblib / pickle</code> agar dapat dimuat seketika oleh server web Flask tanpa overhead waktu training ulang.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> MultinomialNB
 <span class="code-keyword">from</span> sklearn.pipeline <span class="code-keyword">import</span> Pipeline
 <span class="code-keyword">import</span> joblib
 
@@ -1452,21 +1415,17 @@ pipeline.fit(X_train, y_train)
 
 <span class="code-comment"># Simpan model untuk produksi web service</span>
 joblib.dump(pipeline, <span class="code-string">"models/model_sentimen.pkl"</span>)
-print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/model_sentimen.pkl"</span>)
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/model_sentimen.pkl"</span>)</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Pelatihan model berlangsung sangat cepat, membutuhkan waktu hanya 0,48 detik untuk memproses 4.367 baris data latih dengan 14.890 fitur pada lingkungan CPU Intel Core / Apple Silicon. Ukuran berkas model terkompresi sebesar 197 KB, menjadikannya sangat efisien untuk di-deploy pada server web.
   </p>
 </div>
 
 <!-- TAHAP 10 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.10 TAHAP 10: TESTING & MULTI-EXPERIMENTATION SCENARIOS</span>
-    <span class="comp-badge">Tahap Wajib E.10</span>
-  </div>
-  <p><strong>A. Konsep dan Desain Skenario:</strong></p>
+<div class="stage-section">
+  <h3>3.3.10 Tahap 10: Testing & Multi-Experimentation Scenarios</h3>
+  <h4>A. Konsep dan Desain Skenario</h4>
   <p>
   Untuk menemukan konfigurasi terbaik, dirancang <strong>5 (lima) variasi eksperimen</strong> komparatif dengan menguji kombinasi:
   </p>
@@ -1477,9 +1436,8 @@ print(<span class="code-string">"Model berhasil dilatih dan disimpan ke models/m
     <li>Eksperimen 4: CountVectorizer + ComplementNB.</li>
     <li>Eksperimen 5: TF-IDF Vectorizer + MultinomialNB (tanpa stopword removal / raw text).</li>
   </ol>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> ComplementNB
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.naive_bayes <span class="code-keyword">import</span> ComplementNB
 <span class="code-keyword">from</span> sklearn.feature_extraction.text <span class="code-keyword">import</span> TfidfVectorizer
 <span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> classification_report, accuracy_score, f1_score
 
@@ -1493,46 +1451,37 @@ results = []
         <span class="code-string">"name"</span>: exp_name,
         <span class="code-string">"accuracy"</span>: accuracy_score(y_test, y_pred),
         <span class="code-string">"f1_macro"</span>: f1_score(y_test, y_pred, average=<span class="code-string">"macro"</span>)
-    })
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    })</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Meskipun TF-IDF menghasilkan akurasi sedikit lebih tinggi (86,54%), <strong>CountVectorizer + MultinomialNB unggul mutlak pada metrik Macro F1-Score sebesar 76,64%</strong>. Hal ini dikarenakan CountVectorizer mempertahankan bobot frekuensi kata pada kelas minoritas (Netral), menghasilkan Recall Netral sebesar 51,2% (berbanding hanya 21,9% pada TF-IDF). Oleh karena itu, Eksperimen 3 ditetapkan sebagai model inti sistem.
   </p>
 </div>
 
 <!-- TAHAP 11 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.11 TAHAP 11: PERFORMANCE EVALUATION & ERROR ANALYSIS</span>
-    <span class="comp-badge">Tahap Wajib E.11</span>
-  </div>
-  <p><strong>A. Konsep dan Teori:</strong></p>
+<div class="stage-section">
+  <h3>3.3.11 Tahap 11: Performance Evaluation & Error Analysis</h3>
+  <h4>A. Konsep dan Teori</h4>
   <p>
   Evaluasi menggunakan metrik formal Confusion Matrix, Precision, Recall, Macro F1, dan Weighted F1. Error analysis menginvestigasi sampel data uji yang mengalami salah prediksi guna memetakan batasan intrinsik metode Naive Bayes.
   </p>
-  <p><strong>B. Implementasi Coding:</strong></p>
-  <div class="code-box">
-<span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix
+  <h4>B. Implementasi Coding</h4>
+  <div class="code-box"><span class="code-keyword">from</span> sklearn.metrics <span class="code-keyword">import</span> confusion_matrix
 
 cm = confusion_matrix(y_test, y_pred, labels=[<span class="code-string">"positif"</span>, <span class="code-string">"netral"</span>, <span class="code-string">"negatif"</span>])
 print(<span class="code-string">"Confusion Matrix:
 "</span>, cm)
-print(classification_report(y_test, y_pred, digits=<span class="code-num">4</span>))
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+print(classification_report(y_test, y_pred, digits=<span class="code-num">4</span>))</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Dari 1.092 data uji, model memprediksi 932 sampel dengan benar (455 Positif benar, 414 Negatif benar, dan 63 Netral benar). Kesalahan utama terjadi pada ulasan netral yang diklasifikasikan sebagai negatif (46 sampel) karena ulasan netral sering memuat kritik halus seperti <em>"pengiriman agak lama tapi ya lumayan"</em>.
   </p>
 </div>
 
 <!-- TAHAP 12 -->
-<div class="component-block">
-  <div class="comp-header">
-    <span>3.3.12 TAHAP 12: FINAL OUTPUT, WEB DEPLOYMENT & ONLINE LEARNING</span>
-    <span class="comp-badge">Tahap Wajib E.12</span>
-  </div>
-  <p><strong>A. Konsep dan Arsitektur Deployment:</strong></p>
+<div class="stage-section">
+  <h3>3.3.12 Tahap 12: Final Output, Web Deployment & Online Learning</h3>
+  <h4>A. Konsep dan Arsitektur Deployment</h4>
   <p>
   Model AI diintegrasikan ke dalam arsitektur aplikasi berbasis web:
   </p>
@@ -1541,9 +1490,8 @@ print(classification_report(y_test, y_pred, digits=<span class="code-num">4</spa
     <li><strong>Frontend (React SPA + Tailwind CSS + Lucide Icons):</strong> Dashboard interaktif modern dengan 10 modul analitik komprehensif, fitur komparasi produk, serta panduan bantuan presentasi pada setiap komponen.</li>
     <li><strong>Mekanisme Online Incremental Learning (<code>partial_fit</code>):</strong> Saat pengguna memberikan koreksi sentimen atau menambahkan ulasan baru melalui antarmuka web, server mengeksekusi metode <code>classifier.partial_fit()</code>. Bobot frekuensi kata diperbarui secara atomik tanpa memerlukan pelatihan ulang dataset secara menyeluruh.</li>
   </ul>
-  <p><strong>B. Implementasi Coding Online Learning:</strong></p>
-  <div class="code-box">
-<span class="code-comment"># Endpoint Incremental Online Learning (main.py)</span>
+  <h4>B. Implementasi Coding Online Learning</h4>
+  <div class="code-box"><span class="code-comment"># Endpoint Incremental Online Learning (main.py)</span>
 <span class="code-keyword">@app.route</span>(<span class="code-string">"/api/learn"</span>, methods=[<span class="code-string">"POST"</span>])
 <span class="code-keyword">def</span> online_learn():
     data = request.json
@@ -1557,9 +1505,8 @@ print(classification_report(y_test, y_pred, digits=<span class="code-num">4</spa
     model_pipeline.named_steps[<span class="code-string">"classifier"</span>].partial_fit(
         X_new, [correct_label], classes=[<span class="code-string">"positif"</span>, <span class="code-string">"netral"</span>, <span class="code-string">"negatif"</span>]
     )
-    <span class="code-keyword">return</span> jsonify({<span class="code-string">"status"</span>: <span class="code-string">"success"</span>, <span class="code-string">"message"</span>: <span class="code-string">"Model berhasil disinkronisasi"</span>})
-  </div>
-  <p><strong>C. Hasil dan Analisis:</strong></p>
+    <span class="code-keyword">return</span> jsonify({<span class="code-string">"status"</span>: <span class="code-string">"success"</span>, <span class="code-string">"message"</span>: <span class="code-string">"Model berhasil disinkronisasi"</span>})</div>
+  <h4>C. Hasil dan Analisis</h4>
   <p>
   Integrasi web berjalan stabil dan responsif. Pengujian online learning membuktikan bahwa setelah koreksi ulasan baru dimasukkan, model seketika mengenali pola ulasan sejenis berikutnya dengan perubahan probabilitas log-likelihood terverifikasi, menjamin sistem adaptif terhadap perkembangan kosakata konsumen.
   </p>
@@ -1892,25 +1839,30 @@ Untuk pengembangan lebih lanjut dari sistem AI ini di masa mendatang, disarankan
 <h1 class="chapter-title">LAMPIRAN</h1>
 
 <h2>Lampiran 1: Tautan Dataset dan Repositori Kode Sumber</h2>
-<table class="academic-table">
+<table class="plain-table">
   <tr>
     <td width="30%"><strong>Repositori Kode Sumber</strong></td>
+    <td width="3%">:</td>
     <td><a href="https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk.git">https://github.com/Muhfaizr21/Klasifikasi-sentimen-ulasan-produk.git</a></td>
   </tr>
   <tr>
     <td><strong>Tautan Sumber Dataset</strong></td>
+    <td>:</td>
     <td>Dataset PRDECT-ID Tokopedia (Kaggle / Open Data Repository)</td>
   </tr>
   <tr>
     <td><strong>Teknologi Backend</strong></td>
+    <td>:</td>
     <td>Python 3.11, Flask 3.1, Scikit-Learn 1.9, Pandas, Joblib</td>
   </tr>
   <tr>
     <td><strong>Teknologi Frontend</strong></td>
+    <td>:</td>
     <td>React 19, TypeScript, Vite 8, Tailwind CSS, Lucide Icons</td>
   </tr>
   <tr>
     <td><strong>Branch Utama</strong></td>
+    <td>:</td>
     <td><code>main</code> (Aktif, Sinkron, & Bebas Konflik Port)</td>
   </tr>
 </table>
@@ -1942,8 +1894,7 @@ Berikut disajikan dokumentasi tangkapan layar antarmuka pengguna sistem web cerd
 </div>
 
 <h2>Lampiran 3: Cuplikan Kode Sumber Script Otomasi Dev Bebas Bentrok Port</h2>
-<div class="code-box">
-<span class="code-comment">#!/usr/bin/env bash</span>
+<div class="code-box"><span class="code-comment">#!/usr/bin/env bash</span>
 <span class="code-comment"># frontend/scripts/dev.sh - Skrip Otomasi Sinkronisasi Port Backend & Frontend</span>
 <span class="code-keyword">set</span> -euo pipefail
 
@@ -1960,8 +1911,7 @@ FRONTEND_PORT="${FRONTEND_PORT:-5173}"
 <span class="code-keyword">done</span>
 
 <span class="code-keyword">export</span> VITE_BACKEND_PORT="$BACKEND_PORT"
-<span class="code-comment"># Menjalankan Flask dan Vite secara paralel dan sinkron...</span>
-</div>
+<span class="code-comment"># Menjalankan Flask dan Vite secara paralel dan sinkron...</span></div>
 
 </body>
 </html>
