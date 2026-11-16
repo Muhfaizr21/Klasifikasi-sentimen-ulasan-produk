@@ -42,7 +42,7 @@
   /* Layout & Geometry */
   --page-max-width: 1020px;
   --query-max-width: 880px;
-  --sidebar-width: 256px;
+  --sidebar-width: 300px;
   --radius-xs: 6px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -134,7 +134,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 16px 14px;
+  padding: 20px 16px;
   position: sticky;
   top: 0;
   height: 100dvh;
@@ -195,9 +195,9 @@ body {
 }
 
 .brand-mark-text {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   color: var(--color-ink);
 }
 
@@ -227,13 +227,13 @@ body {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-subtle);
   background-color: rgba(39, 37, 30, 0.055);
   color: var(--color-ink);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
@@ -254,21 +254,21 @@ body {
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
 }
 
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-graphite);
   font-family: inherit;
-  font-size: 0.875rem;
+  font-size: 0.925rem;
   font-weight: 400;
   cursor: pointer;
   text-align: left;
@@ -305,13 +305,13 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
   border-radius: var(--radius-xs);
   background: transparent;
   color: var(--color-graphite);
   font-family: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   cursor: pointer;
   text-align: left;
@@ -381,15 +381,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  padding: 6px 10px;
+  padding: 8px 12px;
   border: none;
   border-radius: var(--radius-xs);
   background: transparent;
   color: var(--color-graphite);
   font-family: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   cursor: pointer;
   text-align: left;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -447,8 +447,8 @@ body {
 }
 
 .status-avatar {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: var(--radius-pill);
   background-color: var(--color-deep-teal-tint);
   color: var(--color-deep-teal);
@@ -463,11 +463,11 @@ body {
   flex-direction: column;
   min-width: 0;
   flex: 1;
-  margin-left: 8px;
+  margin-left: 10px;
 }
 
 .status-primary {
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 500;
   color: var(--color-ink);
   white-space: nowrap;
@@ -476,7 +476,7 @@ body {
 }
 
 .status-secondary {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--color-ash);
   white-space: nowrap;
   overflow: hidden;
