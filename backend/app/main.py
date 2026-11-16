@@ -22,6 +22,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 from src.constants import MAX_TEXT_LENGTH, METRICS_ARTIFACT_PATH, RAW_DATA_PATH
 from src.predict import get_predictor, synthesize_product_summary
+from backend.app.supabase_client import (
+    fetch_recent_supabase_predictions,
+    get_supabase_status,
+    log_online_learning_to_supabase,
+    log_prediction_to_supabase,
+)
 
 FRONTEND_DIST_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 
@@ -190,9 +196,24 @@ def health_check() -> Tuple[Response, int]:
             "models_loaded": predictor.is_loaded,
             "corpus_total": predictor.get_corpus_total(),
             "realtime_learned_count": len(predictor.realtime_memory),
+            "supabase": get_supabase_status(),
         }),
         200,
     )
+
+
+@app.route("/api/supabase/status", methods=["GET"])
+def supabase_status() -> Tuple[Response, int]:
+    """Return Supabase connection & table readiness status."""
+    return jsonify({"success": True, **get_supabase_status()}), 200
+
+
+@app.route("/api/supabase/history", methods=["GET"])
+def supabase_history() -> Tuple[Response, int]:
+    """Return recent predictions stored in Supabase."""
+    limit = min(max(request.args.get("limit", default=20, type=int), 1), 100)
+    rows = fetch_recent_supabase_predictions(limit=limit)
+    return jsonify({"success": True, "count": len(rows), "items": rows}), 200
 
 
 @app.route("/api/metrics", methods=["GET"])
@@ -392,6 +413,12 @@ def learn_realtime_review() -> Tuple[Response, int]:
                 product_hint=product_hint,
                 platform_hint=platform_hint,
             )
+
+        log_online_learning_to_supabase(
+            raw_text=review_text,
+            target_label=target_label,
+            category=category,
+        )
 
         return (
             jsonify({
@@ -1377,6 +1404,8 @@ def predict_review() -> Tuple[Response, int]:
             product_hint=product_hint,
             platform_hint=platform_hint,
         )
+
+        log_prediction_to_supabase(review_text, prediction)
 
         return (
             jsonify({
