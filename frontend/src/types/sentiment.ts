@@ -34,6 +34,11 @@ export interface ProductMediaInfo {
   thumbnail_url: string
   product_url?: string
   gallery?: ProductMediaGalleryItem[]
+  is_catalog_verified?: boolean
+  price?: number | null
+  overall_rating?: number | null
+  customer_rating?: number | null
+  emotion?: string | null
 }
 
 export interface LiveStreamItem {

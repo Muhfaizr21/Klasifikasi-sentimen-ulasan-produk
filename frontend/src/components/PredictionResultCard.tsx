@@ -426,25 +426,41 @@ export function PredictionResultCard({
             <div className="ai-product-meta">
               <div className="ai-product-meta-top">
                 <span className="teal-pill-badge">
-                  VISUAL PRODUK REAL · {(productMedia.platform || 'E-COMMERCE').toUpperCase()}
+                  {productMedia.is_catalog_verified
+                    ? `KATALOG PRDECT-ID · ${(productMedia.platform || 'TOKOPEDIA').toUpperCase()}`
+                    : `REFERENSI PRODUK · ${(productMedia.platform || 'E-COMMERCE').toUpperCase()}`}
                 </span>
                 <span className="ai-product-cat-badge">{productMedia.category}</span>
+                {productMedia.is_catalog_verified && productMedia.customer_rating ? (
+                  <span
+                    className="ai-product-cat-badge"
+                    style={{
+                      background: productMedia.customer_rating <= 2 ? '#fee2e2' : productMedia.customer_rating === 3 ? '#fef3c7' : '#dcfce7',
+                      color: productMedia.customer_rating <= 2 ? '#991b1b' : productMedia.customer_rating === 3 ? '#92400e' : '#166534',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Rating Ulasan: ★{productMedia.customer_rating}/5
+                  </span>
+                ) : null}
               </div>
               <h4 className="ai-product-title">
-                {activeGalleryItem.title || productMedia.title}
+                {productMedia.title || activeGalleryItem.title}
               </h4>
               <div className="ai-product-links-row">
                 <span className="ai-product-subnote">
-                  Foto produk asli dari katalog marketplace Indonesia
+                  {productMedia.is_catalog_verified
+                    ? `Data Real PRDECT-ID${productMedia.price ? ` · Rp ${productMedia.price.toLocaleString('id-ID')}` : ''}${productMedia.overall_rating ? ` · Rating Toko ★${productMedia.overall_rating}` : ''}`
+                    : 'Ilustrasi produk terkait berdasarkan kata kunci ulasan'}
                 </span>
-                {(activeGalleryItem.product_url || productMedia.product_url) && (
+                {(productMedia.product_url || activeGalleryItem.product_url) && (
                   <a
-                    href={activeGalleryItem.product_url || productMedia.product_url}
+                    href={productMedia.product_url || activeGalleryItem.product_url}
                     target="_blank"
                     rel="noreferrer"
                     className="ai-product-ext-link"
                   >
-                    Lihat Halaman Produk ↗
+                    Cari Produk di Tokopedia ↗
                   </a>
                 )}
               </div>

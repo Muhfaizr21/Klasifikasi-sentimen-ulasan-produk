@@ -717,8 +717,12 @@ CATEGORY_DEFAULT_PRODUCT_QUERY: Dict[str, str] = {
 }
 
 
-def _get_prdect_product_catalog() -> Tuple[Dict[str, Dict[str, str]], Dict[str, List[str]]]:
-    """Load exact review -> Product Name mapping and category -> Product Name list from PRDECT-ID dataset."""
+def _normalize_review_key(text: str) -> str:
+    return re.sub(r"\s+", " ", (text or "").strip().lower())
+
+
+def _get_prdect_product_catalog() -> Tuple[Dict[str, Dict[str, Any]], Dict[str, List[str]]]:
+    """Load exact review -> Product metadata mapping and category -> Product Name list from PRDECT-ID dataset."""
     global _PRDECT_CATALOG_LOADED
     if _PRDECT_CATALOG_LOADED:
         return _PRDECT_REVIEW_CATALOG, _PRDECT_CATEGORY_PRODUCTS
@@ -730,16 +734,28 @@ def _get_prdect_product_catalog() -> Tuple[Dict[str, Dict[str, str]], Dict[str, 
     try:
         pdf = pd.read_csv(
             PRDECT_RAW_CSV_PATH,
-            usecols=["Category", "Product Name", "Customer Review"],
+            usecols=[
+                "Category",
+                "Product Name",
+                "Price",
+                "Overall Rating",
+                "Customer Rating",
+                "Customer Review",
+                "Emotion",
+            ],
         )
         for _, row in pdf.iterrows():
             rev_txt = str(row.get("Customer Review", "")).strip()
             prod_name = str(row.get("Product Name", "")).strip()
             cat_name = str(row.get("Category", "")).strip()
             if rev_txt and prod_name:
-                _PRDECT_REVIEW_CATALOG[rev_txt.lower()] = {
+                _PRDECT_REVIEW_CATALOG[_normalize_review_key(rev_txt)] = {
                     "product_name": prod_name,
                     "category": cat_name,
+                    "price": int(row.get("Price", 0) or 0),
+                    "overall_rating": float(row.get("Overall Rating", 0) or 0),
+                    "customer_rating": int(row.get("Customer Rating", 0) or 0),
+                    "emotion": str(row.get("Emotion", "")).strip(),
                 }
             if cat_name and prod_name:
                 bucket = _PRDECT_CATEGORY_PRODUCTS.setdefault(cat_name, [])
@@ -826,11 +842,17 @@ def _infer_product_context_from_review(
 ) -> Dict[str, Any]:
     """Infer concrete product query & category from review text, PRDECT-ID catalog, or explicit hint and fetch real photos."""
     clean_rev = review_text.strip()
-    lower_text = clean_rev.lower()
+    lower_text = _normalize_review_key(clean_rev)
     review_catalog, category_products = _get_prdect_product_catalog()
 
-    # 1. Exact lookup in PRDECT-ID Tokopedia 5,400-review catalog
+    # 1. Exact or normalized lookup in PRDECT-ID Tokopedia 5,400-review catalog
     matched_entry = review_catalog.get(lower_text)
+    if not matched_entry and len(lower_text) >= 25:
+        for cat_rev_key, cat_entry in review_catalog.items():
+            if lower_text in cat_rev_key or cat_rev_key in lower_text:
+                matched_entry = cat_entry
+                break
+
     clean_hint_cat = (category_hint or "").strip()
     has_specific_cat = bool(clean_hint_cat and clean_hint_cat.lower() not in ("semua", "otomatis", "all"))
 
@@ -870,8 +892,8 @@ def _infer_product_context_from_review(
         elif any(w in lower_text for w in ("kulit", "wajah", "muka", "serum", "skincare", "jerawat", "lembab", "toner", "sunscreen", "lipstik", "bedak")):
             keyword_query = "Skincare Serum Wajah Moisturizer Original"
             inferred_category = inferred_category or "Beauty"
-        elif any(w in lower_text for w in ("sabun", "shampo", "shampoo", "lotion", "body", "mandi", "wangi", "parfum", "deodorant", "odol")):
-            keyword_query = "Sabun Mandi Body Lotion Shampoo Perawatan Tubuh"
+        elif any(w in lower_text for w in ("sabun", "shampo", "shampoo", "lotion", "body", "mandi", "wangi", "wanginya", "aroma", "parfum", "semprot", "botolnya", "deodorant", "odol")):
+            keyword_query = "Parfum Sabun Mandi Body Lotion Perawatan Tubuh"
             inferred_category = inferred_category or "Body Care"
         elif any(w in lower_text for w in ("hijab", "jilbab", "kerudung", "gamis", "mukena", "pashmina", "koko", "sarung")):
             keyword_query = "Hijab Pashmina Gamis Mukena Busana Muslim"
@@ -943,15 +965,38 @@ def _infer_product_context_from_review(
             )
 
     media_list = _fetch_real_product_media(search_query, limit=4)
-    primary = media_list[0] if media_list else {
+    display_title = resolved_product_name or (media_list[0].get("title") if media_list else "") or search_query
+    display_category = CATEGORY_LABELS_ID.get(inferred_category, inferred_category)
+
+    # Ensure gallery titles & product URLs stay synchronized with the real catalog product
+    tokopedia_search_url = f"https://www.tokopedia.com/search?q={urllib.parse.quote(display_title)}"
+    ref_tokens = {tok for tok in re.findall(r"[a-z0-9]{3,}", display_title.lower())}
+
+    def _is_relevant_media(item_title: str, item_url: str) -> bool:
+        if not ref_tokens:
+            return True
+        combined = f"{item_title} {item_url}".lower()
+        overlap = sum(1 for tok in ref_tokens if tok in combined)
+        return overlap >= min(2, len(ref_tokens))
+
+    synced_gallery: List[Dict[str, str]] = []
+    for item in media_list:
+        item_title = str(item.get("title", "")).strip()
+        item_url = str(item.get("product_url", "")).strip()
+        is_rel = _is_relevant_media(item_title, item_url)
+        synced_gallery.append({
+            "image_url": item.get("image_url", ""),
+            "thumbnail_url": item.get("thumbnail_url", ""),
+            "product_url": item_url if (is_rel and item_url) else tokopedia_search_url,
+            "title": display_title if resolved_product_name else (item_title or display_title),
+        })
+
+    primary = synced_gallery[0] if synced_gallery else {
         "image_url": "",
         "thumbnail_url": "",
-        "product_url": "",
-        "title": resolved_product_name or search_query,
+        "product_url": tokopedia_search_url,
+        "title": display_title,
     }
-
-    display_title = resolved_product_name or primary.get("title") or search_query
-    display_category = CATEGORY_LABELS_ID.get(inferred_category, inferred_category)
 
     return {
         "title": display_title,
@@ -961,8 +1006,13 @@ def _infer_product_context_from_review(
         "platform": platform_hint or "Tokopedia",
         "image_url": primary.get("image_url", ""),
         "thumbnail_url": primary.get("thumbnail_url", ""),
-        "product_url": primary.get("product_url", ""),
-        "gallery": media_list,
+        "product_url": primary.get("product_url", "") or tokopedia_search_url,
+        "gallery": synced_gallery,
+        "is_catalog_verified": bool(matched_entry),
+        "price": matched_entry.get("price") if matched_entry else None,
+        "overall_rating": matched_entry.get("overall_rating") if matched_entry else None,
+        "customer_rating": matched_entry.get("customer_rating") if matched_entry else None,
+        "emotion": matched_entry.get("emotion") if matched_entry else None,
     }
 
 
@@ -1809,7 +1859,7 @@ def get_corpus_analytics() -> Tuple[Response, int]:
                     "formula": "(F1_positif + F1_netral + F1_negatif) / 3",
                     "current_value": f"{f1_pct:.2f}%",
                     "dimension": "Stratified 80/20 Holdout Split",
-                    "owner": "Pipeline MultinomialNB + TF-IDF",
+                    "owner": "Pipeline CountVectorizer + MultinomialNB",
                 },
                 {
                     "id": "critical_emotion_rate",

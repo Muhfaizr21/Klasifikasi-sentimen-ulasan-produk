@@ -952,7 +952,7 @@ export default function App() {
               className="sidebar-sublink"
               onClick={() => navigateToSection('pipeline-comparison')}
             >
-              <span>Pipeline TF-IDF</span>
+              <span>Pipeline N-Gram</span>
               <span>5 Eksperimen</span>
             </button>
             <button
@@ -1223,7 +1223,7 @@ export default function App() {
               <div className="hero-workspace compact">
                 <h1 className="wordmark">sentimen</h1>
                 <p className="wordmark-sub">
-                  Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia · TF-IDF &amp; Multinomial Naive Bayes
+                  Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia · CountVectorizer &amp; Multinomial Naive Bayes
                 </p>
               </div>
             )}
@@ -1276,7 +1276,7 @@ export default function App() {
                     <>
                       <h1 className="wordmark">sentimen</h1>
                       <p className="wordmark-sub">
-                        Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia · TF-IDF &amp; Multinomial Naive Bayes
+                        Klasifikasi Sentimen Ulasan Produk E-Commerce Indonesia · CountVectorizer &amp; Multinomial Naive Bayes
                       </p>
                     </>
                   )}
@@ -1373,7 +1373,7 @@ export default function App() {
                           onClick={() => setActiveTab('evaluasi')}
                           title="Lihat detail model dan matriks evaluasi"
                         >
-                          <span>TF-IDF + MNB ({f1BadgeText})</span>
+                          <span>CountVec + MNB ({f1BadgeText})</span>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                             <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
